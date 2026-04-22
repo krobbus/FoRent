@@ -4,12 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
+    "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "start-frontend": "cd frontend && npm run dev",
-    "start-backend": "cd backend && npm run dev"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.2.5",
