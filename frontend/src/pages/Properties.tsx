@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import type { Property, PropertiesProps} from './props'
+import type { PropertyDataProps, PropertiesProps} from './props'
 import AddProperty from './AddProperty'
 
-function Properties({ userRole, userId }: PropertiesProps) {
-    const [properties, setProperties] = useState<Property[]>([])
+function Properties({ goBack, userRole, userId }: PropertiesProps) {
+    const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [loading, setLoading] = useState(true)
     const [showAddProperty, setShowAddProperty] = useState(false)
 
@@ -28,15 +28,23 @@ function Properties({ userRole, userId }: PropertiesProps) {
     }, []);
 
     if (showAddProperty) {
-        return <AddProperty goBack={() => setShowAddProperty(false)} userId={userId} />
+        return <AddProperty goBack={() => setShowAddProperty(false)} userId={userId} userRole={userRole} />;
     }
 
     return (
         <section id='propertiesContainer'>
+            {userRole && (
+                <span>
+                    &gt;<a onClick={goBack}> Home </a> 
+                    &gt;<span className='activeCrumb'> My Properties </span>
+                </span>
+            )}
+
             <header>
-                {userRole === 'landlord' && (<h1 className='mainTitle'>My Properties</h1>)} 
-                {userRole === 'tenant' && (<h1 className='mainTitle'>My Rentals</h1>)}
-                {!userRole && (<h1 className='mainTitle'>Available Properties</h1>)}
+                {userRole === 'landlord' && (<h1 className='mainTitle'>MY PROPERTIES</h1>)} 
+                {userRole === 'tenant' && (<h1 className='mainTitle'>MY RENTALS</h1>)}
+                {!userRole && (<h1 className='mainTitle'>AVAILABLE PROPERTIES</h1>)}
+                <p>Explore our wide range of rental properties to find your perfect home.</p>
             </header>
 
             <main>
@@ -50,6 +58,7 @@ function Properties({ userRole, userId }: PropertiesProps) {
 
                                 <div className='propertyGrid'>
                                     {properties
+                                        .filter(p => Number(p.landlord_id) === Number(userId))
                                         .map(p => (
                                             <div key={p.id} className='propertyCard'>
                                                 <h3>{p.property_name}</h3>
@@ -69,7 +78,7 @@ function Properties({ userRole, userId }: PropertiesProps) {
                                 <h2>Your Current Rentals</h2>    
                                 <div className='propertyGrid'>
                                     {properties
-                                        .filter(p => p.tenant_id === 1)
+                                        .filter(p => Number(p.tenant_id) === Number(userId))
                                         .map(p => (
                                             <div key={p.id} className='propertyCard rented'>
                                                 <h3>{p.property_name}</h3>
@@ -82,7 +91,7 @@ function Properties({ userRole, userId }: PropertiesProps) {
                                 <h2>Marketplace</h2>
                                 <div className='propertyGrid'>
                                     {properties
-                                        .filter(p => p.status === 'Available')
+                                        .filter(p => String(p.status) === 'Available')
                                         .map(p => (
                                             <div key={p.id} className='propertyCard'>
                                                 <h3>{p.property_name}</h3>
@@ -99,7 +108,7 @@ function Properties({ userRole, userId }: PropertiesProps) {
                             <section className='guestView'>
                                 <div className='propertyGrid'>
                                     {properties
-                                        .filter(p => p.status === 'Available')
+                                        .filter(p => String(p.status) === 'Available')
                                         .map(p => (
                                             <div key={p.id} className='propertyCard'>
                                                 <h3>{p.property_name}</h3>
