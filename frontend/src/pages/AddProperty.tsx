@@ -19,7 +19,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         console.log("Sending Landlord ID:", userId);
         
         try {
-            const response = await fetch('http://localhost:5000/api/properties', {
+            const response = await fetch('http://localhost:5000/api/addproperties', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...formData, landlord_id: userId }) 
@@ -40,7 +40,11 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
 
     return (
         <section id='addPropertiesContainer'>
-            <span><a onClick={goBack}>← My Properties</a>/<a href='/'>Add Property</a></span>
+            <span>
+                &gt;<a onClick={() => { goBack(); goBack(); }}> Home </a> 
+                &gt;<a onClick={goBack}> My Properties </a> 
+                &gt;<span className="activeCrumb"> My Properties </span>
+            </span>
 
             <header>
                 <h1 className='mainTitle'>Add New Property</h1>

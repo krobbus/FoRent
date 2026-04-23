@@ -33,8 +33,7 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
 
             if (response.ok) {
                 const user = await response.json();
-                console.log("User logged in with ID:", user.id);
-
+                localStorage.setItem('user', JSON.stringify(user));
                 setUserRole(user.role);
                 setUserId(user.id);
                 goBack();
@@ -48,10 +47,13 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
 
     return (
         <section id='authContainer'>
-            <a onClick={goBack}>← Go Back to Landpage</a>
+            <span>
+                &gt;<a onClick={goBack}> Home </a> 
+                &gt;<span className='activeCrumb'> Log In/Sign Up </span>
+            </span>
 
             <header>
-                <h1 className='mainTitle'>{isLogin ? 'Log In' : 'Sign Up'} your Account</h1>
+                <h1 className='mainTitle'>{isLogin ? 'LOG IN' : 'SIGN UP'}</h1>
                 <p className='subTitle'>Please {isLogin ? 'log in' : 'sign up'} your account to continue</p>
             </header>
 
@@ -66,7 +68,7 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
                     {!isLogin && (
                         <>
                             <label>PIN:</label>
-                            <input name='pin' type='text' onChange={handleChange} required />
+                            <input name='pin' type='password' onChange={handleChange} required />
                             
                             <label>Role:</label>
                             <select name='role' onChange={handleChange} required>
