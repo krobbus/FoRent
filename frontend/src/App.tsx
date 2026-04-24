@@ -5,16 +5,27 @@ import Properties from './pages/Properties'
 import Auth from './pages/Auth'
 import ViewProfile from './pages/ViewProfile'
 import AddProperty from './pages/AddProperty'
+import ViewDetails from './pages/ViewDetails'
 
 function App() {
   const [userRole, setUserRole] = useState<Role>(null)
   const [userId, setUserId] = useState<number | null>(null)
   const [currentView, setCurrentView] = useState('home')
+  const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
 
   const renderMainContent = () => {
     switch (currentView) {
       case 'auth':
-        return <Auth goBack={() => setCurrentView('home')} setUserRole={setUserRole} setUserId={setUserId} />;
+        return (
+          <Auth 
+            goBack={() => setCurrentView('home')} 
+            setUserRole={(role) => {
+              setUserRole(role);
+              selectedProperty ? setCurrentView('viewDetails') : setCurrentView('home');
+            }}
+            setUserId={setUserId} 
+          />
+        );
 
       case 'viewProfile':
         return <ViewProfile goBack={() => setCurrentView('home')} userRole={userRole} userId={userId || 0} />;
@@ -26,6 +37,10 @@ function App() {
           userRole={userRole} userId={userId || 0} 
           setUserId={setUserId} 
           setUserRole={setUserRole}
+          onViewDetails={(prop) => { 
+            setSelectedProperty(prop);
+            setCurrentView('viewDetails');
+          }}
         />;
 
       case 'addProperty':
@@ -44,6 +59,23 @@ function App() {
             </h2>
             <p>Content for {currentView} will go here.</p>
           </div>
+        );
+
+      case 'viewDetails':
+        if (!userRole) {
+          setCurrentView('auth');
+          return null;
+        }
+
+        return (
+          <ViewDetails 
+            property={selectedProperty} 
+            goBack={() => {
+              setSelectedProperty(null);
+              setCurrentView('home');
+            }}
+            userRole={userRole}
+          />
         );
 
       default:
@@ -66,9 +98,14 @@ function App() {
             <section id='availablePropertySection'>
               <Properties 
                 goBack={() => setCurrentView('home')} 
-                userRole={userRole} userId={userId || 0} 
+                userRole={userRole} 
+                userId={userId || 0} 
                 setUserId={setUserId} 
                 setUserRole={setUserRole}
+                onViewDetails={(prop) => {
+                  setSelectedProperty(prop);
+                  setCurrentView('viewDetails');
+                }}
               />
             </section>
           </>

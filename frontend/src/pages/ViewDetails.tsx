@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import type { PropertyDataProps } from './props'
+import type { PropertyDataProps, ViewDetailsProps } from './props'
 
-function ViewDetails({ goBack, property }: { goBack: () => void; property: PropertyDataProps }) {
+function ViewDetails({ goBack, property, userRole }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
 
@@ -20,12 +20,15 @@ function ViewDetails({ goBack, property }: { goBack: () => void; property: Prope
 
         fetchProperties();
     }, []);
+    
+    const parentLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
 
     return (
         <section id='viewDetailsContainer'>
             <span>
                 &gt;<a onClick={goBack}> Home </a> 
-                &gt;<span className='activeCrumb'> My Properties </span>
+                &gt;<a onClick={goBack} className='activeCrumb'> {parentLabel} </a>
+                &gt;<span className='activeCrumb'> View Details </span>
             </span>
             
             {loading ? (
@@ -44,9 +47,9 @@ function ViewDetails({ goBack, property }: { goBack: () => void; property: Prope
                             
                             <div className='rooms'>
                                 <p>Category: {property.category}</p>
-                                <p>Bedrooms: {property.bedroom_count}</p>
-                                <p>{property.has_kitchen ? `Kitchen: ${property.kitchen_count}` : 'No Kitchen'}</p>
-                                <p>Bathrooms: {property.bathroom_count}</p>
+                                <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
+                                <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
+                                <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
                             </div>
                             
                             <div className='occupants'>
@@ -58,7 +61,7 @@ function ViewDetails({ goBack, property }: { goBack: () => void; property: Prope
                                 <h3>Amenities:</h3>
                                 <p>{property.amenities.aircon ? 'Air Conditioning' : 'No Air Conditioning'}</p>
                                 <p>{property.amenities.parking ? 'Parking Available' : 'No Parking'}</p>
-                                <p>{property.amenities.other ? `Other Amenities: ${property.amenities.other}` : 'No other amenities listed'}</p>
+                                <p>{property.amenities.other_amenities ? `Other Amenities: ${property.amenities.other_amenities}` : 'No other amenities listed'}</p>
                             </div>
                         </div>
                     }

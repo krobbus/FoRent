@@ -1,28 +1,14 @@
 import { useEffect, useState } from 'react'
 import type { PropertyDataProps, PropertiesProps} from './props'
 import AddProperty from './AddProperty'
-import Auth from './Auth'
-import ViewDetails from './ViewDetails'
 
-function Properties({ goBack, userRole, userId, setUserId, setUserRole }: PropertiesProps) {
+function Properties({ goBack, userRole, userId, onViewDetails }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [loading, setLoading] = useState(true)
     const [showAddProperty, setShowAddProperty] = useState(false)
-    const [showAuth, setShowAuth] = useState(false)
-    const [showPropertyDetails, setShowPropertyDetails] = useState(false)
-    const [selectedProperty, setSelectedProperty] = useState<PropertyDataProps | null>(null)
-    const [pendingProperty, setPendingProperty] = useState<PropertyDataProps | null>(null)
-
+    
     const addProperty = () => setShowAddProperty(true)
-    const viewPropertyDetails = (property: PropertyDataProps) => {
-        if (!userRole) {
-            setPendingProperty(property);
-            setShowAuth(true);
-        } else {
-            setSelectedProperty(property);
-            setShowPropertyDetails(true);
-        }
-    };
+    const viewPropertyDetails = (property: PropertyDataProps) => { onViewDetails(property) };
 
     useEffect(() => {
         const fetchProperties = async () => {
@@ -39,15 +25,6 @@ function Properties({ goBack, userRole, userId, setUserId, setUserRole }: Proper
 
         fetchProperties();
     }, []);
-
-    useEffect(() => {
-        if (userRole && pendingProperty) {
-            setSelectedProperty(pendingProperty);
-            setShowPropertyDetails(true);
-            setPendingProperty(null);
-            setShowAuth(false);
-        }
-    }, [userRole, pendingProperty]);
 
     const deleteProperty = async (propertyId: number) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this property? This action cannot be undone.");
@@ -72,17 +49,19 @@ function Properties({ goBack, userRole, userId, setUserId, setUserRole }: Proper
     };
 
     if (showAddProperty) return <AddProperty goBack={() => setShowAddProperty(false)} userId={userId} userRole={userRole} />;
-    if (showAuth) return <Auth goBack={() => setShowAuth(false)} setUserId={setUserId} setUserRole={setUserRole} />;
-    if (showPropertyDetails && selectedProperty) {
-        return <ViewDetails goBack={() => setShowPropertyDetails(false)} property={selectedProperty} />;
-    }
+
+    const landlordProperties = properties.filter(p => Number(p.landlord_id) === Number(userId));
+    const tenantRentals = properties.filter(p => Number(p.tenant_id) === Number(userId));
+    const availableProperties = properties.filter(p => p.status === 'Available');
+
+    const parentLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
 
     return (
         <section id='propertiesContainer'>
             {userRole && (
                 <span>
                     &gt;<a onClick={goBack}> Home </a> 
-                    &gt;<span className='activeCrumb'> My Properties </span>
+                    &gt;<span className='activeCrumb'> {parentLabel} </span>
                 </span>
             )}
 
@@ -102,43 +81,39 @@ function Properties({ goBack, userRole, userId, setUserId, setUserRole }: Proper
                             <section className='landlordView'>
                                 <h2>Manage Your Listings</h2>
                                 <div className='propertyGrid'>
-                                    {properties.length > 0 ? 
+                                    {landlordProperties.length === 0 ?
                                         <p>You have no properties listed. Start by adding a new property.</p>
                                     :
                                         <>
-                                            {properties
-                                                .filter(p => Number(p.landlord_id) === Number(userId))
-                                                .map(p => (
-                                                    <div key={p.id} className='propertyCard'>
-                                                        <h3>{p.property_name}</h3>
+                                            {landlordProperties.map(p => (
+                                                <div key={p.id} className='propertyCard'>
+                                                    <h3>{p.property_name}</h3>
 
-                                                        <div className='propertyInfo'>
-                                                            <p>Price: ₱{p.price}</p>
-                                                            <p>Status: <strong>{p.status}</strong></p>
-                                                        </div>
-
-                                                        <div className='propertyDetails'>
-                                                            <p>Category: {p.category}</p>
-                                                            <p>Bedrooms: {p.bedroom_count}</p>
-                                                            <p>{p.has_kitchen ? `Kitchen: ${p.kitchen_count}` : 'No Kitchen'}</p>
-                                                            <p>Bathrooms: {p.bathroom_count}</p>
-                                                            <p>Max Occupants: {p.max_occupants}</p>
-                                                            <p>{p.pets_allowed ? `Pets Allowed: ${p.pet_count}` : 'Pets not allowed'}</p>
-                                                            <p>{p.description ? `${p.description}` : 'No description available'}</p>
-                                                        </div>
-
-                                                        <div className='btnWrapper'>
-                                                            <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
-                                                                View Details
-                                                            </button>
-
-                                                            <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>
-                                                                Delete Property
-                                                            </button>
-                                                        </div>
+                                                    <div className='propertyInfo'>
+                                                        <p>Price: ₱{p.price}</p>
+                                                        <p>Status: <strong>{p.status}</strong></p>
                                                     </div>
-                                                ))
-                                            }
+
+                                                    <div className='propertyDetails'>
+                                                        <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                        <p>{p.bedroom_count > 0 ? `Bedroom/s: ${p.bedroom_count}` : 'No available bedrooms'}</p>
+                                                        <p>{p.kitchen_count > 0 ? `Kitchen/s: ${p.kitchen_count}` : 'No available kitchens'}</p>
+                                                        <p>{p.bathroom_count > 0 ? `Bathroom/s: ${p.bathroom_count}` : 'No available bathrooms'}</p>
+                                                        <p>Max Occupants: {p.max_occupants}</p>
+                                                        <p>{p.pets_allowed ? `Only ${p.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+                                                    </div>
+
+                                                    <div className='btnWrapper'>
+                                                        <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
+                                                            View Details
+                                                        </button>
+
+                                                        <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>
+                                                            Delete Property
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </>
                                     }
                                 </div>
@@ -151,76 +126,70 @@ function Properties({ goBack, userRole, userId, setUserId, setUserRole }: Proper
                             <section className='tenantView'>
                                 <h2>Your Current Rentals</h2>    
                                 <div className='propertyGrid'>
-                                    {properties.length > 0 ? 
+                                    {tenantRentals.length === 0 ?
                                         <p>You have no current rentals. Start looking for your next home!</p>
                                     :   
                                         <>
-                                            {properties
-                                                .filter(p => Number(p.tenant_id) === Number(userId))
-                                                .map(p => (
-                                                    <div key={p.id} className='propertyCard rented'>
-                                                        <h3>{p.property_name}</h3>
+                                            {tenantRentals.map(p => (
+                                                <div key={p.id} className='propertyCard rented'>
+                                                    <h3>{p.property_name}</h3>
 
-                                                        <div className='propertyInfo'>
-                                                            <p>Active Lease: ₱{p.price}</p>
-                                                        </div>
-
-                                                        <div className='propertyDetails'>
-                                                            <p>Category: {p.category}</p>
-                                                            <p>Bedrooms: {p.bedroom_count}</p>
-                                                            <p>{p.has_kitchen ? `Kitchen: ${p.kitchen_count}` : 'No Kitchen'}</p>
-                                                            <p>Bathrooms: {p.bathroom_count}</p>
-                                                            <p>Max Occupants: {p.max_occupants}</p>
-                                                            <p>{p.pets_allowed ? `Pets Allowed: ${p.pet_count}` : 'Pets not allowed'}</p>
-                                                        </div>
-
-                                                        <div className='btnWrapper'>
-                                                            <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
-                                                                View Details
-                                                            </button>
-                                                        </div>
+                                                    <div className='propertyInfo'>
+                                                        <p>Active Lease: ₱{p.price}</p>
                                                     </div>
-                                                ))
-                                            }
+
+                                                    <div className='propertyDetails'>
+                                                        <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                        <p>{p.bedroom_count > 0 ? `Bedroom/s: ${p.bedroom_count}` : 'No available bedrooms'}</p>
+                                                        <p>{p.kitchen_count > 0 ? `Kitchen/s: ${p.kitchen_count}` : 'No available kitchens'}</p>
+                                                        <p>{p.bathroom_count > 0 ? `Bathroom/s: ${p.bathroom_count}` : 'No available bathrooms'}</p>
+                                                        <p>Max Occupants: {p.max_occupants}</p>
+                                                        <p>{p.pets_allowed ? `Only ${p.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+                                                    </div>
+
+                                                    <div className='btnWrapper'>
+                                                        <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
+                                                            View Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </>
                                     }
                                 </div>
 
                                 <h2>Marketplace</h2>
                                 <div className='propertyGrid'>
-                                    {properties.length > 0 ? 
+                                    {availableProperties.length === 0 ?
                                         <p>Currently no available properties.</p>
                                     :   
                                         <>
-                                            {properties
-                                                .filter(p => String(p.status) === 'Available')
-                                                .map(p => (
-                                                    <div key={p.id} className='propertyCard'>
-                                                        <h3>{p.property_name}</h3>
+                                            {availableProperties.map(p => (
+                                                <div key={p.id} className='propertyCard'>
+                                                    <h3>{p.property_name}</h3>
 
-                                                        <div className='propertyInfo'>
-                                                            <p>Price: ₱{p.price}</p>
-                                                            <p>Status: <strong>{p.status}</strong></p>
-                                                        </div>
-
-                                                        <div className='propertyDetails'>
-                                                            <p>Category: {p.category}</p>
-                                                            <p>Bedrooms: {p.bedroom_count}</p>
-                                                            <p>{p.has_kitchen ? `Kitchen: ${p.kitchen_count}` : 'No Kitchen'}</p>
-                                                            <p>Bathrooms: {p.bathroom_count}</p>
-                                                            <p>Max Occupants: {p.max_occupants}</p>
-                                                            <p>{p.pets_allowed ? `Pets Allowed: ${p.pet_count}` : 'Pets not allowed'}</p>
-                                                        </div>
-
-                                                        <div className='btnWrapper'>
-                                                            <button className='applyBtn'>Apply Now</button>
-                                                            <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
-                                                                View Details
-                                                            </button>
-                                                        </div>
+                                                    <div className='propertyInfo'>
+                                                        <p>Price: ₱{p.price}</p>
+                                                        <p>Status: <strong>{p.status}</strong></p>
                                                     </div>
-                                                ))
-                                            }
+
+                                                    <div className='propertyDetails'>
+                                                        <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                        <p>{p.bedroom_count > 0 ? `Bedroom/s: ${p.bedroom_count}` : 'No available bedrooms'}</p>
+                                                        <p>{p.kitchen_count > 0 ? `Kitchen/s: ${p.kitchen_count}` : 'No available kitchens'}</p>
+                                                        <p>{p.bathroom_count > 0 ? `Bathroom/s: ${p.bathroom_count}` : 'No available bathrooms'}</p>
+                                                        <p>Max Occupants: {p.max_occupants}</p>
+                                                        <p>{p.pets_allowed ? `Only ${p.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+                                                    </div>
+
+                                                    <div className='btnWrapper'>
+                                                        <button className='applyBtn'>Apply Now</button>
+                                                        <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
+                                                            View Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </>
                                     }
                                 </div>
@@ -231,39 +200,36 @@ function Properties({ goBack, userRole, userId, setUserId, setUserRole }: Proper
                             <section className='guestView'>
                                 <h2>Marketplace</h2>
                                 <div className='propertyGrid'>
-                                    {properties.length > 0 ? 
+                                    {availableProperties.length === 0 ?
                                         <p>Currently no available properties.</p>
                                     :   
                                         <>
-                                            {properties
-                                                .filter(p => String(p.status) === 'Available')
-                                                .map(p => (
-                                                    <div key={p.id} className='propertyCard'>
-                                                        <h3>{p.property_name}</h3>
+                                            {availableProperties.map(p => (
+                                                <div key={p.id} className='propertyCard'>
+                                                    <h3>{p.property_name}</h3>
 
-                                                        <div className='propertyInfo'>
-                                                            <p>Price: ₱{p.price}</p>
-                                                            <p>Status: <strong>{p.status}</strong></p>
-                                                        </div>
-
-                                                        <div className='propertyDetails'>
-                                                            <p>Category: {p.category}</p>
-                                                            <p>Bedrooms: {p.bedroom_count}</p>
-                                                            <p>{p.has_kitchen ? `Kitchen: ${p.kitchen_count}` : 'No Kitchen'}</p>
-                                                            <p>Bathrooms: {p.bathroom_count}</p>
-                                                            <p>Max Occupants: {p.max_occupants}</p>
-                                                            <p>{p.pets_allowed ? `Pets Allowed: ${p.pet_count}` : 'Pets not allowed'}</p>
-                                                        </div>
-
-                                                        <div className='btnWrapper'>
-                                                            <button className='applyBtn'>Apply Now</button>
-                                                            <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
-                                                                View Details
-                                                            </button>
-                                                        </div>
+                                                    <div className='propertyInfo'>
+                                                        <p>Price: ₱{p.price}</p>
+                                                        <p>Status: <strong>{p.status}</strong></p>
                                                     </div>
-                                                ))
-                                            }
+
+                                                    <div className='propertyDetails'>
+                                                        <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                        <p>{p.bedroom_count > 0 ? `Bedroom/s: ${p.bedroom_count}` : 'No available bedrooms'}</p>
+                                                        <p>{p.kitchen_count > 0 ? `Kitchen/s: ${p.kitchen_count}` : 'No available kitchens'}</p>
+                                                        <p>{p.bathroom_count > 0 ? `Bathroom/s: ${p.bathroom_count}` : 'No available bathrooms'}</p>
+                                                        <p>Max Occupants: {p.max_occupants}</p>
+                                                        <p>{p.pets_allowed ? `Only ${p.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+                                                    </div>
+
+                                                    <div className='btnWrapper'>
+                                                        <button className='applyBtn'>Apply Now</button>
+                                                        <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
+                                                            View Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </>
                                     }
                                 </div>
