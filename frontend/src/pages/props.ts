@@ -28,6 +28,7 @@ export interface PropertiesProps {
     userId: number;
     setUserId: (id: number) => void;
     setUserRole: (role: Role) => void;
+    onViewDetails: (property: any) => void;
 }
 
 export interface PropertyDataProps {
@@ -40,7 +41,6 @@ export interface PropertyDataProps {
     description: string;
     category: string;
     bedroom_count: number;
-    has_kitchen: boolean;
     kitchen_count: number;
     bathroom_count: number;
     other_rooms: string;
@@ -50,7 +50,7 @@ export interface PropertyDataProps {
     amenities: {
         aircon: boolean;
         parking: boolean;
-        other: string;
+        other_amenities: string;
     };
 }
 
@@ -58,4 +58,10 @@ export interface AddPropertyProps {
     goBack: () => void;
     userRole: Role;
     userId: number;
+}
+
+export interface ViewDetailsProps {
+    goBack: () => void;
+    property: PropertyDataProps;
+    userRole: Role;
 }

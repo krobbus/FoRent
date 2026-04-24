@@ -34,9 +34,8 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
             if (response.ok) {
                 const user = await response.json();
                 localStorage.setItem('user', JSON.stringify(user));
-                setUserRole(user.role);
                 setUserId(user.id);
-                goBack();
+                setUserRole(user.role);
             } else {
                 alert("Auth failed!");
             }

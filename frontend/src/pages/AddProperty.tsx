@@ -1,7 +1,7 @@
 import React, { useState, type ChangeEvent } from 'react'
 import type { AddPropertyProps } from './props'
 
-function AddProperty({ goBack, userId }: AddPropertyProps){
+function AddProperty({ goBack, userId, userRole }: AddPropertyProps){
     const [formData, setFormData] = useState({
         name: '',
         address: '',
@@ -9,23 +9,29 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         description: '',
         category: '',
         bedroom_count: 0,
-        has_kitchen: false,
         kitchen_count: 0,
         bathroom_count: 0,
-        other_rooms: '',
+        other_rooms: [] as string[],
+        other_rooms_count: 0,
         max_occupants: 1,
         pets_allowed: false,
-        pet_count: 0,
+        pet_count: 1,
         amenities: {
             wifi: false,
             aircon: false,
             parking: false,
-            other: ''
+            other_amenities: ''
         },
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleCapitalize = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
+        setFormData({ ...formData, [e.target.name]: capitalized });
     };
 
     const adjustCount = (field: string, delta: number) => {
@@ -34,10 +40,10 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         }));
     };
 
-    const handleCapitalize = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
-        setFormData({ ...formData, [e.target.name]: capitalized });
+    const handleOtherRoomCountChange = (index: number, value: string) => {
+        const updatedRooms = [...formData.other_rooms];
+        updatedRooms[index] = value.charAt(0).toUpperCase() + value.slice(1);
+        setFormData({ ...formData, other_rooms: updatedRooms });
     };
 
     const handleSubmit = async (e: ChangeEvent) => {
@@ -60,10 +66,10 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                     description: '',
                     category: '',
                     bedroom_count: 0,
-                    has_kitchen: false,
                     kitchen_count: 0,
                     bathroom_count: 0,
-                    other_rooms: '',
+                    other_rooms: [] as string[],
+                    other_rooms_count: 0,
                     max_occupants: 1,
                     pets_allowed: false,
                     pet_count: 0,
@@ -71,7 +77,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         wifi: false,
                         aircon: false,
                         parking: false,
-                        other: ''
+                        other_amenities: ''
                     }
                 });
                 alert("Property added successfully!");
@@ -85,11 +91,13 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         }
     };
 
+    const parentLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
+
     return (
         <section id='addPropertiesContainer'>
             <span>
                 &gt;<a onClick={() => { goBack(); goBack(); }}> Home </a> 
-                &gt;<a onClick={goBack}> My Properties </a> 
+                &gt;<a onClick={goBack}> {parentLabel} </a> 
                 &gt;<span className="activeCrumb"> Add New Property </span>
             </span>
 
@@ -100,10 +108,10 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             <main>
                 <form onSubmit={handleSubmit}>
                     <label>Property Name:</label>
-                    <input name='name' type='text' placeholder={`Type the property name here...`} onChange={handleChange} required />
+                    <input name='name' type='text' placeholder={`Type the property name here...`} value={formData.name} onChange={handleCapitalize} required />
                     
                     <label>Address:</label>
-                    <input name='address' type='text' placeholder={`Type the complete address here...`} onChange={handleChange} required />
+                    <input name='address' type='text' placeholder={`Type the complete address here...`} value={formData.address} onChange={handleChange} required />
 
                     <label>Price:</label>
                     <input name='price' type='number' step='0.01' onChange={handleChange} required />
@@ -113,6 +121,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         name='description' 
                         type='text' 
                         placeholder={`e.g. Spacious balcony, quiet neighborhood... [Put "N/A" if you don't want to add details]`} 
+                        value={formData.description}
                         onChange={handleChange} 
                         required 
                     />
@@ -141,12 +150,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         </div>
 
                         <div className="counterRow">
-                            <input 
-                                type="checkbox" 
-                                checked={formData.kitchen_count > 0 && formData.has_kitchen} 
-                                onChange={(e) => setFormData({...formData, has_kitchen: e.target.checked})} 
-                                readOnly 
-                            />
+                            <input type="checkbox" checked={formData.kitchen_count > 0} readOnly />
 
                             <label>Kitchen</label>
 
@@ -169,17 +173,30 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                             </div>
                         </div>
 
-                        <div className="inputRow">
-                            <label>Others:</label>
+                        <fieldset>
+                            <legend>Other Rooms</legend>
+                            <div className="counterRow">
+                                <label>How many other rooms?</label>
+                                <div className="stepper">
+                                    <button type="button" onClick={() => adjustCount('other_rooms_count', -1)}>-</button>
+                                    <span>{formData.other_rooms_count}</span>
+                                    <button type="button" onClick={() => adjustCount('other_rooms_count', 1)}>+</button>
+                                </div>
+                            </div>
 
-                            <input 
-                                name="other_rooms" 
-                                type="text" 
-                                placeholder="e.g. Balcony, Storage Room, etc."
-                                value={formData.other_rooms}
-                                onChange={handleCapitalize} 
-                            />
-                        </div>
+                            {Array.from({ length: formData.other_rooms_count }).map((_, i) => (
+                                <div key={i} className="inputRow" style={{ marginTop: '10px' }}>
+                                    <label>Room {i + 1} Name:</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="e.g. Balcony, Attic, Library"
+                                        value={formData.other_rooms[i] || ''}
+                                        onChange={(e) => handleOtherRoomCountChange(i, e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            ))}
+                        </fieldset>
                     </fieldset>
 
                     <fieldset>
@@ -205,9 +222,9 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
 
                             {formData.pets_allowed && (
                                 <div className="stepper">
-                                    <button type="button" onClick={() => adjustCount('pet_count', -1)}>-</button>
+                                    <button type="button" onClick={() => setFormData(prev => ({...prev, pet_count: Math.max(1, prev.pet_count - 1)}))}>-</button>
                                     <span>{formData.pet_count}</span>
-                                    <button type="button" onClick={() => adjustCount('pet_count', 1)}>+</button>
+                                    <button type="button" onClick={() => setFormData(prev => ({...prev, pet_count: Math.max(1, prev.pet_count + 1)}))}>+</button>
                                 </div>
                             )}
                         </div>
@@ -231,7 +248,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                                     name="other_amenity" 
                                     type="text" 
                                     placeholder="e.g. Gym, Pool, etc."
-                                    onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, other: e.target.value}})} 
+                                    onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, other_amenities: e.target.value}})} 
                                 />
                             </div>
                         </div>
