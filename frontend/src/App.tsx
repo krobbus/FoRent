@@ -21,7 +21,12 @@ function App() {
       
       case 'myProperties':
       case 'myRentals':
-        return <Properties goBack={() => setCurrentView('home')} userRole={userRole} userId={userId || 0} />;
+        return <Properties 
+          goBack={() => setCurrentView('home')} 
+          userRole={userRole} userId={userId || 0} 
+          setUserId={setUserId} 
+          setUserRole={setUserRole}
+        />;
 
       case 'addProperty':
         return <AddProperty goBack={() => setCurrentView('myProperties')} userRole={userRole} userId={userId || 0} />;
@@ -59,7 +64,12 @@ function App() {
             )}
 
             <section id='availablePropertySection'>
-              <Properties goBack={() => setCurrentView('home')} userRole={userRole} userId={userId || 0} />
+              <Properties 
+                goBack={() => setCurrentView('home')} 
+                userRole={userRole} userId={userId || 0} 
+                setUserId={setUserId} 
+                setUserRole={setUserRole}
+              />
             </section>
           </>
         );
@@ -83,7 +93,7 @@ function App() {
   const handleLogout = () => {
     setUserRole(null); 
     setUserId(null); 
-    localStorage.removeItem('user'); 
+    localStorage.removeItem('user');
     setCurrentView('home');
   }
 
