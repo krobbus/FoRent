@@ -6,11 +6,38 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         name: '',
         address: '',
         price: '',
-        category: ''
+        description: '',
+        category: '',
+        bedroom_count: 0,
+        has_kitchen: false,
+        kitchen_count: 0,
+        bathroom_count: 0,
+        other_rooms: '',
+        max_occupants: 1,
+        pets_allowed: false,
+        pet_count: 0,
+        amenities: {
+            wifi: false,
+            aircon: false,
+            parking: false,
+            other: ''
+        },
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const adjustCount = (field: string, delta: number) => {
+        setFormData(prev => ({
+            ...prev, [field]: Math.max(0, (prev[field as keyof typeof prev] as number) + delta)
+        }));
+    };
+
+    const handleCapitalize = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
+        setFormData({ ...formData, [e.target.name]: capitalized });
     };
 
     const handleSubmit = async (e: ChangeEvent) => {
@@ -26,11 +53,31 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             });
 
             if (response.ok) {
-                setFormData({ name: '', address: '', price: '', category: '' });
+                setFormData({ 
+                    name: '', 
+                    address: '', 
+                    price: '',
+                    description: '',
+                    category: '',
+                    bedroom_count: 0,
+                    has_kitchen: false,
+                    kitchen_count: 0,
+                    bathroom_count: 0,
+                    other_rooms: '',
+                    max_occupants: 1,
+                    pets_allowed: false,
+                    pet_count: 0,
+                    amenities: {
+                        wifi: false,
+                        aircon: false,
+                        parking: false,
+                        other: ''
+                    }
+                });
+                alert("Property added successfully!");
                 goBack();
             } else {
                 const errorData = await response.json();
-                console.error("Server says:", errorData.error);
                 alert("Failed to add property: " + errorData.error);
             }
         } catch (error) {
@@ -43,7 +90,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             <span>
                 &gt;<a onClick={() => { goBack(); goBack(); }}> Home </a> 
                 &gt;<a onClick={goBack}> My Properties </a> 
-                &gt;<span className="activeCrumb"> My Properties </span>
+                &gt;<span className="activeCrumb"> Add New Property </span>
             </span>
 
             <header>
@@ -53,13 +100,22 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             <main>
                 <form onSubmit={handleSubmit}>
                     <label>Property Name:</label>
-                    <input name='name' type='text' onChange={handleChange} required />
+                    <input name='name' type='text' placeholder={`Type the property name here...`} onChange={handleChange} required />
                     
                     <label>Address:</label>
-                    <input name='address' type='text' onChange={handleChange} required />
+                    <input name='address' type='text' placeholder={`Type the complete address here...`} onChange={handleChange} required />
 
                     <label>Price:</label>
                     <input name='price' type='number' step='0.01' onChange={handleChange} required />
+
+                    <label>Description:</label>
+                    <input 
+                        name='description' 
+                        type='text' 
+                        placeholder={`e.g. Spacious balcony, quiet neighborhood... [Put "N/A" if you don't want to add details]`} 
+                        onChange={handleChange} 
+                        required 
+                    />
 
                     <label>Category:</label>
                     <select name='category' onChange={handleChange} required>
@@ -69,9 +125,121 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         <option value='condo'>Condo</option>
                     </select>
 
+                    <fieldset>
+                        <legend>Select Type of Rooms</legend>
+                        
+                        <div className="counterRow">
+                            <input type="checkbox" checked={formData.bedroom_count > 0} readOnly />
+
+                            <label>Bedrooms</label>
+
+                            <div className="stepper">
+                                <button type="button" onClick={() => adjustCount('bedroom_count', -1)}>-</button>
+                                <span>{formData.bedroom_count}</span>
+                                <button type="button" onClick={() => adjustCount('bedroom_count', 1)}>+</button>
+                            </div>
+                        </div>
+
+                        <div className="counterRow">
+                            <input 
+                                type="checkbox" 
+                                checked={formData.kitchen_count > 0 && formData.has_kitchen} 
+                                onChange={(e) => setFormData({...formData, has_kitchen: e.target.checked})} 
+                                readOnly 
+                            />
+
+                            <label>Kitchen</label>
+
+                            <div className="stepper">
+                                <button type="button" onClick={() => adjustCount('kitchen_count', -1)}>-</button>
+                                <span>{formData.kitchen_count}</span>
+                                <button type="button" onClick={() => adjustCount('kitchen_count', 1)}>+</button>
+                            </div>
+                        </div>
+
+                        <div className="counterRow">
+                            <input type="checkbox" checked={formData.bathroom_count > 0} readOnly />
+
+                            <label>Bathrooms</label>
+
+                            <div className="stepper">
+                                <button type="button" onClick={() => adjustCount('bathroom_count', -1)}>-</button>
+                                <span>{formData.bathroom_count}</span>
+                                <button type="button" onClick={() => adjustCount('bathroom_count', 1)}>+</button>
+                            </div>
+                        </div>
+
+                        <div className="inputRow">
+                            <label>Others:</label>
+
+                            <input 
+                                name="other_rooms" 
+                                type="text" 
+                                placeholder="e.g. Balcony, Storage Room, etc."
+                                value={formData.other_rooms}
+                                onChange={handleCapitalize} 
+                            />
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Occupants & Pets</legend>
+                        <div className="counterRow">
+                            <label>Max Persons</label>
+
+                            <div className="stepper">
+                                <button type="button" onClick={() => adjustCount('max_occupants', -1)}>-</button>
+                                <span>{formData.max_occupants}</span>
+                                <button type="button" onClick={() => adjustCount('max_occupants', 1)}>+</button>
+                            </div>
+                        </div>
+
+                        <div className="counterRow">
+                            <input 
+                                type="checkbox" 
+                                checked={formData.pets_allowed} 
+                                onChange={(e) => setFormData({...formData, pets_allowed: e.target.checked})} 
+                            />
+
+                            <label>Pets Allowed</label>
+
+                            {formData.pets_allowed && (
+                                <div className="stepper">
+                                    <button type="button" onClick={() => adjustCount('pet_count', -1)}>-</button>
+                                    <span>{formData.pet_count}</span>
+                                    <button type="button" onClick={() => adjustCount('pet_count', 1)}>+</button>
+                                </div>
+                            )}
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Amenities</legend>
+                        <div className="checkboxGrid">
+                            <label>
+                                <input type="checkbox" onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, wifi: e.target.checked}})} /> Wifi
+                            </label>
+                            <label>
+                                <input type="checkbox" onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, aircon: e.target.checked}})} /> Aircon
+                            </label>
+                            <label>
+                                <input type="checkbox" onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, parking: e.target.checked}})} /> Parking
+                            </label>
+                            <div className="inputRow">
+                                <label>Other:</label>
+                                <input 
+                                    name="other_amenity" 
+                                    type="text" 
+                                    placeholder="e.g. Gym, Pool, etc."
+                                    onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, other: e.target.value}})} 
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+
                     <div className='btnWrapper'>
-                        <button type='submit'>+ Add Property</button>
-                        <button type='button' onClick={goBack}>Cancel</button>
+                        <button type='submit' className='submitBtn'>+ Add Property</button>
+                        <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
                     </div>
                 </form>
             </main>
