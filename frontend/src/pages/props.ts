@@ -7,9 +7,12 @@ export interface AuthProps {
 }
 
 export interface ProfileProps {
-    goBack: () => void;
     userRole: Role;
     userId: number;
+}
+
+export interface MarketplaceProps {
+  onViewDetails: (property: PropertyDataProps) => void;
 }
 
 export interface ProfileDataProps{
@@ -23,7 +26,6 @@ export interface ProfileDataProps{
 }
 
 export interface PropertiesProps {
-    goBack: () => void;
     userRole: Role;
     userId: number;
     setUserId: (id: number) => void;
@@ -56,12 +58,9 @@ export interface PropertyDataProps {
 
 export interface AddPropertyProps {
     goBack: () => void;
-    userRole: Role;
     userId: number;
 }
 
 export interface ViewDetailsProps {
-    goBack: () => void;
     property: PropertyDataProps;
-    userRole: Role;
 }

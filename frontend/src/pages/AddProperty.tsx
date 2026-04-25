@@ -1,7 +1,7 @@
 import React, { useState, type ChangeEvent } from 'react'
 import type { AddPropertyProps } from './props'
 
-function AddProperty({ goBack, userId, userRole }: AddPropertyProps){
+function AddProperty({ goBack, userId }: AddPropertyProps){
     const [formData, setFormData] = useState({
         name: '',
         address: '',
@@ -91,16 +91,8 @@ function AddProperty({ goBack, userId, userRole }: AddPropertyProps){
         }
     };
 
-    const parentLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
-
     return (
         <section id='addPropertiesContainer'>
-            <span>
-                &gt;<a onClick={() => { goBack(); goBack(); }}> Home </a> 
-                &gt;<a onClick={goBack}> {parentLabel} </a> 
-                &gt;<span className="activeCrumb"> Add New Property </span>
-            </span>
-
             <header>
                 <h1 className='mainTitle'>Add New Property</h1>
             </header>
@@ -256,7 +248,7 @@ function AddProperty({ goBack, userId, userRole }: AddPropertyProps){
 
                     <div className='btnWrapper'>
                         <button type='submit' className='submitBtn'>+ Add Property</button>
-                        <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
+                        <button type='button' className='cancelBtn'>Cancel</button>
                     </div>
                 </form>
             </main>

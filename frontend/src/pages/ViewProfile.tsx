@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { ProfileDataProps, ProfileProps } from './props'
 
-function ViewProfile({ goBack, userRole, userId }: ProfileProps){
+function ViewProfile({ userRole, userId }: ProfileProps){
     const [profile, setProfile] = useState<ProfileDataProps | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -26,11 +26,6 @@ function ViewProfile({ goBack, userRole, userId }: ProfileProps){
 
     return (
         <section id='viewProfileContainer'>
-            <span>
-                &gt;<a onClick={goBack}> Home </a> 
-                &gt;<span className="activeCrumb"> My Profile </span>
-            </span>
-
             <header>
                 <h1 className='mainTitle'>My Profile</h1>
             </header>
