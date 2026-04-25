@@ -248,7 +248,9 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
 
                     <div className='btnWrapper'>
                         <button type='submit' className='submitBtn'>+ Add Property</button>
-                        <button type='button' className='cancelBtn'>Cancel</button>
+                        <button type='button' className='cancelBtn' onClick={goBack}>
+                            Cancel
+                        </button>
                     </div>
                 </form>
             </main>

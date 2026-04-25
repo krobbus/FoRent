@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { MarketplaceProps, PropertyDataProps } from './props'
 
-function Marketplace({ onViewDetails }: MarketplaceProps) {
+function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -52,7 +52,10 @@ function Marketplace({ onViewDetails }: MarketplaceProps) {
                                 </div>
 
                                 <div className='btnWrapper'>
-                                    <button className='applyBtn'>Apply Now</button>
+                                    <button className='applyBtn' onClick={() => onViewApplyRental(p)}>
+                                        Apply Now
+                                    </button>
+                                    
                                     <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                         View Details
                                     </button>

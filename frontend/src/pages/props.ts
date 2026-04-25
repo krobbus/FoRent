@@ -1,4 +1,5 @@
 export type Role = 'landlord' | 'tenant' | null;
+export type ApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
 
 export interface AuthProps {
     goBack: () => void;
@@ -7,12 +8,15 @@ export interface AuthProps {
 }
 
 export interface ProfileProps {
+    goBack: () => void;
     userRole: Role;
     userId: number;
 }
 
 export interface MarketplaceProps {
-  onViewDetails: (property: PropertyDataProps) => void;
+    property: any;
+    onViewDetails: (property: PropertyDataProps) => void;
+    onViewApplyRental: (property: PropertyDataProps) => void;
 }
 
 export interface ProfileDataProps{
@@ -26,6 +30,7 @@ export interface ProfileDataProps{
 }
 
 export interface PropertiesProps {
+    goBack: () => void;
     userRole: Role;
     userId: number;
     setUserId: (id: number) => void;
@@ -62,5 +67,37 @@ export interface AddPropertyProps {
 }
 
 export interface ViewDetailsProps {
+    onViewApplyRental: () => void;
+    goBack: () => void;
     property: PropertyDataProps;
+}
+
+export interface ApplyRentalProps {
+    property: any;
+    userId: number;
+    userRole: Role;
+    onSuccess: () => void;
+    onCancel: () => void;
+}
+
+export interface RentalApplicationDataProps {
+    id: number;
+    property_name: string;
+    applicant_name: string;
+    status: ApplicationStatus;
+    applied_at: string;
+    message?: string;
+    lease_term: number;
+    move_in_date: string;
+    tenant_contact: string; 
+}
+
+export interface RentalApplicationsProps {
+    goBack: () => void;
+    userId: number;
+    userRole: Role;
+}
+
+export interface MaintenanceRequestsProps {
+    userId: number;
 }

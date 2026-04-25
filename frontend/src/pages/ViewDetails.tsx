@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { PropertyDataProps, ViewDetailsProps } from './props'
 
-function ViewDetails({ property }: ViewDetailsProps) {
+function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
 
@@ -28,34 +28,41 @@ function ViewDetails({ property }: ViewDetailsProps) {
             ) : (
                 <>
                     {properties.length > 0 &&
-                        <div className='fullDetailsView'>
-                            <h1>{property.property_name}</h1>
-                            <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
+                        <>
+                            <div className='fullDetailsView'>
+                                <h1>{property.property_name}</h1>
+                                <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
 
-                            <div className='pricing'>
-                                <p>Price: ₱{property.price}</p>
-                                <p>Status: <strong>{property.status}</strong></p>
-                            </div>
-                            
-                            <div className='rooms'>
-                                <p>Category: {property.category}</p>
-                                <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
-                                <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
-                                <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
-                            </div>
-                            
-                            <div className='occupants'>
-                                <p>Max Occupants: {property.max_occupants}</p>
-                                <p>{property.pets_allowed ? `Pets Allowed: ${property.pet_count}` : 'Pets not allowed'}</p>
+                                <div className='pricing'>
+                                    <p>Price: ₱{property.price}</p>
+                                    <p>Status: <strong>{property.status}</strong></p>
+                                </div>
+                                
+                                <div className='rooms'>
+                                    <p>Category: {property.category.charAt(0).toUpperCase() + property.category.slice(1)}</p>
+                                    <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
+                                    <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
+                                    <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
+                                </div>
+                                
+                                <div className='occupants'>
+                                    <p>Max Occupants: {property.max_occupants}</p>
+                                    <p>{property.pets_allowed ? `Pets Allowed: ${property.pet_count}` : 'Pets not allowed'}</p>
+                                </div>
+
+                                <div className='amenities'>
+                                    <h3>Amenities:</h3>
+                                    <p>{property.amenities.aircon ? 'Air Conditioning' : 'No Air Conditioning'}</p>
+                                    <p>{property.amenities.parking ? 'Parking Available' : 'No Parking'}</p>
+                                    <p>{property.amenities.other_amenities ? `Other Amenities: ${property.amenities.other_amenities}` : 'No other amenities listed'}</p>
+                                </div>
                             </div>
 
-                            <div className='amenities'>
-                                <h3>Amenities:</h3>
-                                <p>{property.amenities.aircon ? 'Air Conditioning' : 'No Air Conditioning'}</p>
-                                <p>{property.amenities.parking ? 'Parking Available' : 'No Parking'}</p>
-                                <p>{property.amenities.other_amenities ? `Other Amenities: ${property.amenities.other_amenities}` : 'No other amenities listed'}</p>
+                            <div className='btnWrapper'>
+                                <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
+                                <button className='detailBtn' onClick={goBack}>Go Back</button>
                             </div>
-                        </div>
+                        </>
                     }
                 </>
             )}

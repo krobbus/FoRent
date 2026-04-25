@@ -1,7 +1,7 @@
 import React, { useState, type ChangeEvent } from 'react'
 import type { AuthProps } from './props'
 
-function Auth({ setUserRole, setUserId }: AuthProps){
+function Auth({ goBack, setUserRole, setUserId }: AuthProps){
     const [isLogin, setIsLogin] = useState(true)
     const [formData, setFormData] = useState({
         username: '',
@@ -54,15 +54,15 @@ function Auth({ setUserRole, setUserId }: AuthProps){
             <main>
                 <form onSubmit={handleSubmit}>
                     <label>Username:</label>
-                    <input name='username' type='text' onChange={handleChange} required />
+                    <input name='username' type='text' placeholder="Enter your username" onChange={handleChange} required />
                     
                     <label>Password:</label>
-                    <input name='password' type='password' onChange={handleChange} required />
+                    <input name='password' type='password' placeholder="Enter your password" onChange={handleChange} required />
 
                     {!isLogin && (
                         <>
                             <label>PIN:</label>
-                            <input name='pin' type='password' onChange={handleChange} required />
+                            <input name='pin' type='password' placeholder="Enter your PIN" onChange={handleChange} required />
                             
                             <label>Role:</label>
                             <select name='role' onChange={handleChange} required>
@@ -72,28 +72,29 @@ function Auth({ setUserRole, setUserId }: AuthProps){
                             </select>
 
                             <label>First Name:</label>
-                            <input name='firstName' type='text' onChange={handleChange} required />
+                            <input name='firstName' type='text' placeholder="Enter your first name" onChange={handleChange} required />
 
                             <label>Middle Name:</label>
-                            <input name='middleName' type='text' onChange={handleChange} required />
+                            <input name='middleName' type='text' placeholder="Enter your middle name" onChange={handleChange} />
 
                             <label>LastName:</label>
-                            <input name='lastName' type='text' onChange={handleChange} required />
+                            <input name='lastName' type='text' placeholder="Enter your last name" onChange={handleChange} required />
 
                             <label>Extension:</label>
-                            <input name='extension' type='text' onChange={handleChange} required />
+                            <input name='extension' type='text' placeholder="e.g. jr., sr., III" onChange={handleChange} />
 
                             <label>Email:</label>
-                            <input name='email' type='email' onChange={handleChange} required />
+                            <input name='email' type='email' placeholder="e.g. XXXXXXX@XXXXX.com" onChange={handleChange} required />
 
                             <label>Contact Number:</label>
-                            <input name='contactNumber' type='text' onChange={handleChange} required />
+                            <input name='contactNumber' type='text' placeholder="09XXXXXXXXX" onChange={handleChange} required />
                         </>
                     )}
 
                     <div className='btnWrapper'>
                         <button type='submit'>{isLogin ? 'Login' : 'Register'}</button>
                         <button type='button' onClick={() => setIsLogin(!isLogin)}>Switch to {isLogin ? 'Registration' : 'Login'}</button>
+                        <button type='button' onClick={goBack}>Go Back</button>
                     </div>
                 </form>
             </main>
