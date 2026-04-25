@@ -174,13 +174,12 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
                             </div>
 
                             <div className="formGroup">
-                                <label>Application Contact Number</label>
+                                <label>Application Contact Number (Optional)</label>
                                 <input 
                                     type="tel" 
                                     placeholder="09XXXXXXXXX"
                                     value={formData.tenantContact}
                                     onChange={(e) => setFormData({...formData, tenantContact: e.target.value})}
-                                    required
                                 />
                             </div>
 
