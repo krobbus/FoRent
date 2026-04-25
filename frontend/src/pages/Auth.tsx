@@ -87,7 +87,7 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
                             <input name='email' type='email' placeholder="e.g. XXXXXXX@XXXXX.com" onChange={handleChange} required />
 
                             <label>Contact Number:</label>
-                            <input name='contactNumber' type='text' placeholder="09XXXXXXXXX" onChange={handleChange} required />
+                            <input name='contactNumber' type='text' placeholder="09XXXXXXXXX" onChange={handleChange} />
                         </>
                     )}
 
