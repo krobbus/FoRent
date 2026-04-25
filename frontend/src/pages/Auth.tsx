@@ -1,7 +1,7 @@
 import React, { useState, type ChangeEvent } from 'react'
 import type { AuthProps } from './props'
 
-function Auth({ goBack, setUserRole, setUserId }: AuthProps){
+function Auth({ setUserRole, setUserId }: AuthProps){
     const [isLogin, setIsLogin] = useState(true)
     const [formData, setFormData] = useState({
         username: '',
@@ -46,11 +46,6 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
 
     return (
         <section id='authContainer'>
-            <span>
-                &gt;<a onClick={goBack}> Home </a> 
-                &gt;<span className='activeCrumb'> Log In/Sign Up </span>
-            </span>
-
             <header>
                 <h1 className='mainTitle'>{isLogin ? 'LOG IN' : 'SIGN UP'}</h1>
                 <p className='subTitle'>Please {isLogin ? 'log in' : 'sign up'} your account to continue</p>

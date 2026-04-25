@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { PropertyDataProps, ViewDetailsProps } from './props'
 
-function ViewDetails({ goBack, property, userRole }: ViewDetailsProps) {
+function ViewDetails({ property }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
 
@@ -20,17 +20,9 @@ function ViewDetails({ goBack, property, userRole }: ViewDetailsProps) {
 
         fetchProperties();
     }, []);
-    
-    const parentLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
 
     return (
-        <section id='viewDetailsContainer'>
-            <span>
-                &gt;<a onClick={goBack}> Home </a> 
-                &gt;<a onClick={goBack} className='activeCrumb'> {parentLabel} </a>
-                &gt;<span className='activeCrumb'> View Details </span>
-            </span>
-            
+        <section id='viewDetailsContainer'>         
             {loading ? (
                 <p>Loading property details...</p>
             ) : (
