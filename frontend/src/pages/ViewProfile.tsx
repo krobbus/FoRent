@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { ProfileDataProps, ProfileProps } from './props'
 
-function ViewProfile({ userRole, userId }: ProfileProps){
+function ViewProfile({ goBack, userRole, userId }: ProfileProps){
     const [profile, setProfile] = useState<ProfileDataProps | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -34,13 +34,19 @@ function ViewProfile({ userRole, userId }: ProfileProps){
                 {loading ? (
                     <p>Loading profile...</p>
                 ) : (
-                    <div>
-                        <p><strong>Name:</strong> {profile?.first_name || 'N/A'} {profile?.middle_name || 'N/A'} {profile?.last_name || 'N/A'} {profile?.ext_name || 'N/A'}</p>
-                        <p><strong>Email:</strong> {profile?.email || 'N/A'}</p>
-                        <p><strong>Contact Number:</strong> {profile?.contact_num || 'N/A'}</p>
-                        <p><strong>Role:</strong> {profile?.role || 'N/A'}</p>
-                    </div>
-                )} 
+                    <>
+                        <div>
+                            <p><strong>Name:</strong> {profile?.first_name || 'N/A'} {profile?.middle_name || 'N/A'} {profile?.last_name || 'N/A'} {profile?.ext_name || 'N/A'}</p>
+                            <p><strong>Email:</strong> {profile?.email || 'N/A'}</p>
+                            <p><strong>Contact Number:</strong> {profile?.contact_num || 'N/A'}</p>
+                            <p><strong>Role:</strong> {profile?.role || 'N/A'}</p>
+                        </div>
+
+                        <div className="btnWrapper">
+                            <button type="button" className="cancelBtn" onClick={goBack}>Go Back</button>
+                        </div>
+                    </>
+                )}
             </main>
         </section>
     )
