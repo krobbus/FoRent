@@ -21,6 +21,15 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
         fetchProperties();
     }, []);
 
+    if (!property) {
+        return (
+            <section id='viewDetailsContainer'>
+                <p>No property selected.</p>
+                <button onClick={goBack}>Go Back</button>
+            </section>
+        );
+    }
+
     return (
         <section id='viewDetailsContainer'>         
             {loading ? (
@@ -31,6 +40,7 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
                         <>
                             <div className='fullDetailsView'>
                                 <h1>{property.property_name}</h1>
+                                <p>{property.address ? `Address: ${property.address}` : 'No address available'}</p>
                                 <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
 
                                 <div className='pricing'>
@@ -43,6 +53,17 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
                                     <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
                                     <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
                                     <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
+                                    <div className='otherRooms'>
+                                        {property.other_rooms && property.other_rooms.length > 0 ? (
+                                            <p>Other Rooms: {
+                                                Array.isArray(property.other_rooms) 
+                                                    ? property.other_rooms.join(', ')
+                                                    : property.other_rooms
+                                            }</p>
+                                        ) : (
+                                            <p>Other Rooms: No other rooms listed</p>
+                                        )}
+                                    </div>
                                 </div>
                                 
                                 <div className='occupants'>
@@ -51,10 +72,11 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
                                 </div>
 
                                 <div className='amenities'>
-                                    <h3>Amenities:</h3>
-                                    <p>{property.amenities.aircon ? 'Air Conditioning' : 'No Air Conditioning'}</p>
-                                    <p>{property.amenities.parking ? 'Parking Available' : 'No Parking'}</p>
-                                    <p>{property.amenities.other_amenities ? `Other Amenities: ${property.amenities.other_amenities}` : 'No other amenities listed'}</p>
+                                    {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
+                                        <p>Amenities: {property.amenities.join(', ')}</p>
+                                    ) : (
+                                        <p>Amenities: No amenities listed</p>
+                                    )}
                                 </div>
                             </div>
 

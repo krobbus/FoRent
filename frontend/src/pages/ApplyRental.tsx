@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import type { ProfileDataProps, ApplyRentalProps } from './props';
 
-function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyRentalProps) {
+function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingApplication = null }: ApplyRentalProps) {
     const [loading, setLoading] = useState(true)
-    const [profile, setProfile] = useState<ProfileDataProps | null>(null);
+    const [profile, setProfile] = useState<ProfileDataProps | null>(null)
     const [submitting, setSubmitting] = useState(false)
 
     const [formData, setFormData] = useState({
-        moveInDate: '',
-        leaseTerm: '12',
-        message: '',
-        tenantContact: '',
-        tenantEmail: ''
+        moveInDate: existingApplication?.move_in_date ? existingApplication.move_in_date.slice(0, 10) : '',
+        leaseTerm: existingApplication?.lease_term != null ? String(existingApplication.lease_term) : '12',
+        message: existingApplication?.message ?? '',
+        tenantContact: existingApplication?.tenant_contact ?? '',
+        tenantEmail: existingApplication?.tenant_email ?? ''
     });
 
     const full_name = [
@@ -28,7 +28,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
                 if (response.ok) {
                     const data = await response.json();
                     setProfile(data);
-                    setFormData(prev => ({ ...prev, tenantContact: data.contact_num || '', tenantEmail: data.email || '' }));
+                    if (!editMode) {setFormData(prev => ({ ...prev, tenantContact: data.contact_num || '', tenantEmail: data.email || '' }))};
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -40,41 +40,50 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
         userId ? fetchProfile() : setLoading(false);
     }, [userId]);
    
-    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitting(true);
 
         const applicationData = {
-            property_id: property?.id,
-            tenant_id: userId,
             move_in_date: formData.moveInDate,
             tenant_contact: formData.tenantContact,
             tenant_email: formData.tenantEmail,
             lease_term: formData.leaseTerm,
             message: formData.message,
-            status: 'pending'
         };
 
-        try {   
-            const response = await fetch('http://localhost:5000/api/applications', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(applicationData), 
-            }); 
+        try {
+            const url = editMode
+                ? `http://localhost:5000/api/applications/${existingApplication?.id}`
+                : 'http://localhost:5000/api/applications';
+            
+            const method = editMode ? 'PATCH' : 'POST';
+            const body = editMode ? applicationData : {
+                property_id: property?.id,
+                tenant_id: userId,
+                tenant_fullname: full_name,
+                status: 'pending',
+                ...applicationData,
+            };
+
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
 
             if (response.ok) {
-                alert(`Application for ${property?.property_name} submitted successfully!`);
+                alert(editMode 
+                    ? 'Application updated successfully!' 
+                    : `Application for ${property?.property_name} submitted successfully!`
+                );
                 onSuccess();
             } else {
                 const errorData = await response.json();
-                console.error(`Error: ${errorData.message}`);
-                alert(`Error: ${errorData.message || 'Failed to submit application'}`);
+                alert(`Error: ${errorData.error || 'Failed to submit'}`);
             }
         } catch (error) {
             console.error("Submission failed", error);
-            setSubmitting(false);
         } finally {
             setLoading(false);
             setSubmitting(false);
@@ -97,7 +106,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
             ) : (
                 <>
                     <header>
-                        <h1 className="mainTitle">APPLY FOR RENTAL</h1>
+                        <h1 className="mainTitle">{editMode ? 'UPDATE APPLICATION' : 'APPLY FOR RENTAL'}</h1>
                         <p className="subTitle">
                             You're applying for <strong>{property?.property_name ?? 'this Property'}</strong>
                         </p>
@@ -108,17 +117,36 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
                             <h3>{property.property_name}</h3>
 
                             <div className='propertyInfo'>
-                                <p>Price: ₱{property.price.toLocaleString()}</p>
-                                <p>Status: <strong>{property.status}</strong></p>
+                                <p>Price: {property.price != null ? `₱${property.price.toLocaleString()}` : 'N/A'}</p>
+                                <p>Status: <strong>{property.status || 'N/A'}</strong></p>
                             </div>
 
                             <div className='propertyDetails'>
-                                <p>Category: {property.category.charAt(0).toUpperCase() + property.category.slice(1)}</p>
+                                <p>Category: {property.category != null ? property.category.charAt(0).toUpperCase() + property.category.slice(1) : 'N/A'}</p>
                                 <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
                                 <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
                                 <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
-                                <p>Max Occupants: {property.max_occupants}</p>
+                                <div className='otherRooms'>
+                                    {property.other_rooms && property.other_rooms.length > 0 ? (
+                                        <p>Other Rooms: {
+                                            Array.isArray(property.other_rooms) 
+                                                ? property.other_rooms.join(', ')
+                                                : property.other_rooms
+                                        }</p>
+                                    ) : (
+                                        <p>Other Rooms: No other rooms listed</p>
+                                    )}
+                                </div>
+                                <p>Max Occupants: {property.max_occupants || 0}</p>
                                 <p>{property.pets_allowed ? `Only ${property.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+                            </div>
+
+                             <div className='amenitiesDetails'>
+                                {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
+                                    <p>Amenities: {property.amenities.join(', ')}</p>
+                                ) : (
+                                    <p>Amenities: No amenities listed</p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -131,7 +159,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
                                 <label>Full Name</label>
                                 <input 
                                     type="text" 
-                                    value={full_name || 'Loading...'} 
+                                    value={full_name} 
                                     disabled 
                                     className="disabledInput"
                                 />
@@ -208,7 +236,9 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel }: ApplyR
                         <div className="btnWrapper">
                             <button type="button" className="cancelBtn" onClick={onCancel}>Cancel</button>
                             <button type="submit" className="submitBtn" disabled={submitting}>
-                                {submitting ? 'Submitting...' : 'Submit Application'}
+                                {submitting 
+                                ? 'Saving...' : editMode 
+                                ? 'Save Changes' : 'Submit Application'}
                             </button>
                         </div>
                     </form>
