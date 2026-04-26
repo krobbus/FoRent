@@ -20,31 +20,38 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             wifi: false,
             aircon: false,
             parking: false,
-            other_amenities: ''
         },
+        other_amenities: [] as string[],
+        other_amenities_count: 0,
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    }
 
     const handleCapitalize = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, [e.target.name]: capitalized });
-    };
+    }
 
     const adjustCount = (field: string, delta: number) => {
         setFormData(prev => ({
             ...prev, [field]: Math.max(0, (prev[field as keyof typeof prev] as number) + delta)
         }));
-    };
+    }
 
     const handleOtherRoomCountChange = (index: number, value: string) => {
         const updatedRooms = [...formData.other_rooms];
         updatedRooms[index] = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, other_rooms: updatedRooms });
-    };
+    }
+
+    const handleOtherAmenityChange = (index: number, value: string) => {
+        const updatedAmenities = [...formData.other_amenities];
+        updatedAmenities[index] = value.charAt(0).toUpperCase() + value.slice(1);
+        setFormData({ ...formData, other_amenities: updatedAmenities });
+    }
 
     const handleSubmit = async (e: ChangeEvent) => {
         e.preventDefault();
@@ -55,7 +62,14 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             const response = await fetch('http://localhost:5000/api/addproperties', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, landlord_id: userId }) 
+                body: JSON.stringify({ 
+                    ...formData, 
+                    landlord_id: userId,
+                    amenities: {
+                        ...formData.amenities,
+                        other_amenities: formData.other_amenities.join(', ')
+                    }
+                }) 
             });
 
             if (response.ok) {
@@ -77,8 +91,9 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         wifi: false,
                         aircon: false,
                         parking: false,
-                        other_amenities: ''
-                    }
+                    },
+                    other_amenities: [] as string[],
+                    other_amenities_count: 0
                 });
                 alert("Property added successfully!");
                 goBack();
@@ -228,21 +243,39 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                             <label>
                                 <input type="checkbox" onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, wifi: e.target.checked}})} /> Wifi
                             </label>
+
                             <label>
                                 <input type="checkbox" onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, aircon: e.target.checked}})} /> Aircon
                             </label>
+
                             <label>
                                 <input type="checkbox" onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, parking: e.target.checked}})} /> Parking
                             </label>
-                            <div className="inputRow">
-                                <label>Other:</label>
-                                <input 
-                                    name="other_amenity" 
-                                    type="text" 
-                                    placeholder="e.g. Gym, Pool, etc."
-                                    onChange={(e) => setFormData({...formData, amenities: {...formData.amenities, other_amenities: e.target.value}})} 
-                                />
-                            </div>
+
+                            <fieldset>
+                                <legend>Other Amenities</legend>
+                                <div className="counterRow">
+                                    <label>How many other amenities?</label>
+                                    <div className="stepper">
+                                        <button type="button" onClick={() => adjustCount('other_amenities_count', -1)}>-</button>
+                                        <span>{formData.other_amenities_count}</span>
+                                        <button type="button" onClick={() => adjustCount('other_amenities_count', 1)}>+</button>
+                                    </div>
+                                </div>
+
+                                {Array.from({ length: formData.other_amenities_count }).map((_, i) => (
+                                    <div key={i} className="inputRow" style={{ marginTop: '10px' }}>
+                                        <label>Amenities {i + 1}:</label>
+                                        <input 
+                                            type="text" 
+                                            placeholder="e.g. Appliances, 24/7 Gym, Pool, etc."
+                                            value={formData.other_amenities[i] || ''}
+                                            onChange={(e) => handleOtherAmenityChange(i, e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                ))}
+                            </fieldset>
                         </div>
                     </fieldset>
 

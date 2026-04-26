@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react'
 import type { PropertyDataProps, PropertiesProps} from './props'
 import AddProperty from './AddProperty'
 
-function Properties({ goBack, userRole, userId, onViewDetails }: PropertiesProps) {
+function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [loading, setLoading] = useState(true)
     const [showAddProperty, setShowAddProperty] = useState(false)
     
     const addProperty = () => setShowAddProperty(true)
-    const viewPropertyDetails = (property: PropertyDataProps) => { onViewDetails(property) };
 
     useEffect(() => {
         const fetchProperties = async () => {
@@ -52,6 +51,14 @@ function Properties({ goBack, userRole, userId, onViewDetails }: PropertiesProps
 
     const landlordProperties = properties.filter(p => Number(p.landlord_id) === Number(userId));
     const tenantRentals = properties.filter(p => Number(p.tenant_id) === Number(userId));
+    const getOccupancyLabel = (max: number) => {
+        if (max <= 1) return 'Solo-friendly';
+        if (max <= 2) return 'Couple-friendly';
+        if (max <= 4) return 'Small group-friendly';
+        if (max <= 6) return 'Family-friendly';
+        if (max <= 10) return 'Large family-friendly';
+        return 'Group-friendly';
+    };
 
     return (
         <section id='propertiesContainer'>
@@ -75,25 +82,46 @@ function Properties({ goBack, userRole, userId, onViewDetails }: PropertiesProps
                                         <>
                                             {landlordProperties.map(p => (
                                                 <div key={p.id} className='propertyCard'>
-                                                    <h3>{p.property_name}</h3>
-
                                                     <div className='propertyInfo'>
+                                                        <h3>{p.property_name}</h3>
+                                                        <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
                                                         <p>Price: ₱{p.price}</p>
                                                         <p>Status: <strong>{p.status}</strong></p>
                                                     </div>
 
                                                     <div className='propertyDetails'>
                                                         <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
-                                                        <p>{p.bedroom_count > 0 ? `Bedroom/s: ${p.bedroom_count}` : 'No available bedrooms'}</p>
-                                                        <p>{p.kitchen_count > 0 ? `Kitchen/s: ${p.kitchen_count}` : 'No available kitchens'}</p>
-                                                        <p>{p.bathroom_count > 0 ? `Bathroom/s: ${p.bathroom_count}` : 'No available bathrooms'}</p>
-                                                        <p>Max Occupants: {p.max_occupants}</p>
-                                                        <p>{p.pets_allowed ? `Only ${p.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+
+                                                        <p>Available Rooms: 
+                                                            {[ 
+                                                                p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                p.other_rooms ? p.other_rooms : ''
+                                                            ].filter(Boolean).join(', ') || 'No rooms listed'}
+                                                        </p>
+
+                                                        <p>Occupancy: 
+                                                            {[ p.pets_allowed ? 'Pet-friendly' : '',
+                                                                getOccupancyLabel(p.max_occupants)
+                                                            ].filter(Boolean).join(' and ')}
+                                                        </p>
+
+                                                        <p>Amenities: 
+                                                            { Array.isArray(p.amenities) && p.amenities.length > 0
+                                                                ? p.amenities.join(', ')
+                                                                : 'No amenities listed'
+                                                            }
+                                                        </p>
                                                     </div>
 
                                                     <div className='btnWrapper'>
-                                                        <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
+                                                        <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                                             View Details
+                                                        </button>
+
+                                                        <button className='updateBtn' onClick={() => onUpdateProperty(p)}>
+                                                            Update Details
                                                         </button>
 
                                                         <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>
@@ -105,7 +133,7 @@ function Properties({ goBack, userRole, userId, onViewDetails }: PropertiesProps
                                         </>
                                     }
                                 </div>
-
+                                
                                 <button className='addBtn' onClick={addProperty}>+ Add New Property</button>
                             </section>
                         )}
@@ -120,23 +148,41 @@ function Properties({ goBack, userRole, userId, onViewDetails }: PropertiesProps
                                         <>
                                             {tenantRentals.map(p => (
                                                 <div key={p.id} className='propertyCard rented'>
-                                                    <h3>{p.property_name}</h3>
-
                                                     <div className='propertyInfo'>
-                                                        <p>Active Lease: ₱{p.price}</p>
+                                                        <h3>{p.property_name}</h3>
+                                                        <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
+                                                        <p>Price: ₱{p.price}</p>
+                                                        <p>Status: <strong>{p.status}</strong></p>
                                                     </div>
 
                                                     <div className='propertyDetails'>
                                                         <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
-                                                        <p>{p.bedroom_count > 0 ? `Bedroom/s: ${p.bedroom_count}` : 'No available bedrooms'}</p>
-                                                        <p>{p.kitchen_count > 0 ? `Kitchen/s: ${p.kitchen_count}` : 'No available kitchens'}</p>
-                                                        <p>{p.bathroom_count > 0 ? `Bathroom/s: ${p.bathroom_count}` : 'No available bathrooms'}</p>
-                                                        <p>Max Occupants: {p.max_occupants}</p>
-                                                        <p>{p.pets_allowed ? `Only ${p.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
+
+                                                        <p>Available Rooms: 
+                                                            {[ 
+                                                                p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                p.other_rooms ? p.other_rooms : ''
+                                                            ].filter(Boolean).join(', ') || 'No rooms listed'}
+                                                        </p>
+
+                                                        <p>Occupancy: 
+                                                            {[ p.pets_allowed ? 'Pet-friendly' : '',
+                                                                getOccupancyLabel(p.max_occupants)
+                                                            ].filter(Boolean).join(' and ')}
+                                                        </p>
+
+                                                        <p>Amenities: 
+                                                            { Array.isArray(p.amenities) && p.amenities.length > 0
+                                                                ? p.amenities.join(', ')
+                                                                : 'No amenities listed'
+                                                            }
+                                                        </p>
                                                     </div>
 
                                                     <div className='btnWrapper'>
-                                                        <button className='detailBtn' onClick={() => viewPropertyDetails(p)}>
+                                                        <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                                             View Details
                                                         </button>
                                                     </div>

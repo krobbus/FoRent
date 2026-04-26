@@ -6,6 +6,7 @@ import Properties from './pages/Properties'
 import Auth from './pages/Auth'
 import ViewProfile from './pages/ViewProfile'
 import AddProperty from './pages/AddProperty'
+import UpdateProperty from './pages/UpdateProperty'
 import ViewDetails from './pages/ViewDetails'
 import RentalApplications from './pages/RentalApplications'
 import MaintenanceRequests from './pages/MaintenanceRequests'
@@ -87,6 +88,11 @@ function App() {
                 setPreviousView(currentView);
                 setCurrentView('viewDetails');
               }}
+              onUpdateProperty={(prop) => { 
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('updateProperty');
+              }}
             />
           </>
         );
@@ -143,6 +149,42 @@ function App() {
             />
           </>
         );
+        
+      case 'updateProperty':
+        return (
+          <>
+            <span>
+              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
+              &gt;<a onClick={() => setCurrentView('myProperties')}> {propertyLabel} </a>
+              &gt;<span className='activeCrumb'> Update Property </span>
+            </span>
+
+            <UpdateProperty 
+              goBack={() => setCurrentView('myProperties')}
+              property={selectedProperty}
+              onSuccess={() => {
+                setSelectedProperty(null);
+                setCurrentView('myProperties');
+              }}
+            />
+          </>
+        );
+      
+      case 'addProperty':
+        return (
+          <>
+            <span>
+              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
+              &gt;<a onClick={() => setCurrentView('myProperties')}> {propertyLabel} </a>
+              &gt;<span className='activeCrumb'> Add New Property </span>
+            </span>
+
+            <AddProperty 
+              goBack={() => setCurrentView('myProperties')}
+              userId={userId || 0} 
+            />
+          </>
+        );
       
       case 'applyRental':
         if (!userRole) {
@@ -162,12 +204,14 @@ function App() {
                 }
               }}> Home </a> 
               
-              {(previousView === 'myProperties' || previousView === 'myRentals') && (
+              {(previousView === 'myProperties' || previousView === 'myRentals' || previousView === 'rentalApplications') && (
                 <>
                   &gt;<a onClick={() => {
                     setSelectedProperty(null);
                     setCurrentView(previousView);
-                  }}> {propertyLabel} </a> 
+                  }}>
+                    {previousView === 'rentalApplications' ? 'Rental Applications' : `${propertyLabel}`}
+                  </a>
                 </>
               )}
 
@@ -205,22 +249,6 @@ function App() {
           </>
         );
 
-      case 'addProperty':
-        return (
-          <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<a onClick={() => setCurrentView('myProperties')}> {propertyLabel} </a>
-              &gt;<span className='activeCrumb'> Add New Property </span>
-            </span>
-
-            <AddProperty 
-              goBack={() => setCurrentView('myProperties')}
-              userId={userId || 0} 
-            />
-          </>
-        );
-
       case 'rentalApplications':
         return (
           <>
@@ -233,6 +261,11 @@ function App() {
               goBack={() => setCurrentView('home')}
               userId={userId || 0} 
               userRole={userRole}
+              onViewDetails={(prop) => { 
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('viewDetails');
+              }}
             />
           </>
         );

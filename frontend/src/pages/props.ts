@@ -35,7 +35,8 @@ export interface PropertiesProps {
     userId: number;
     setUserId: (id: number) => void;
     setUserRole: (role: Role) => void;
-    onViewDetails: (property: any) => void;
+    onViewDetails: (property: PropertyDataProps) => void;
+    onUpdateProperty: (property: PropertyDataProps) => void;
 }
 
 export interface PropertyDataProps {
@@ -43,6 +44,7 @@ export interface PropertyDataProps {
     property_name: string;
     landlord_id: number;
     tenant_id: number | null;
+    address: string,
     status: string;
     price: number;
     description: string;
@@ -51,14 +53,23 @@ export interface PropertyDataProps {
     kitchen_count: number;
     bathroom_count: number;
     other_rooms: string;
+    other_rooms_count: number;
     max_occupants: number;
     pets_allowed: boolean;
     pet_count: number;
     amenities: {
+        wifi: boolean;
         aircon: boolean;
         parking: boolean;
-        other_amenities: string;
     };
+    other_amenities: string[];
+    other_amenities_count: number;
+}
+
+export interface UpdatePropertyProps {
+    goBack: () => void;
+    property: PropertyDataProps;
+    onSuccess: () => void;
 }
 
 export interface AddPropertyProps {
@@ -78,24 +89,28 @@ export interface ApplyRentalProps {
     userRole: Role;
     onSuccess: () => void;
     onCancel: () => void;
+    editMode?: boolean;
+    existingApplication?: RentalApplicationDataProps | null;
 }
 
 export interface RentalApplicationDataProps {
     id: number;
-    property_name: string;
-    applicant_name: string;
+    property_id: number;
     status: ApplicationStatus;
     applied_at: string;
     message?: string;
     lease_term: number;
     move_in_date: string;
+    tenant_fullname: string;
     tenant_contact: string; 
+    tenant_email: string;
 }
 
 export interface RentalApplicationsProps {
     goBack: () => void;
     userId: number;
     userRole: Role;
+    onViewDetails: (property: PropertyDataProps) => void;
 }
 
 export interface MaintenanceRequestsProps {
