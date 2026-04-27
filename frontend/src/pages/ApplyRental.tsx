@@ -106,10 +106,8 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
             ) : (
                 <>
                     <header>
-                        <h1 className="mainTitle">{editMode ? 'UPDATE APPLICATION' : 'APPLY FOR RENTAL'}</h1>
-                        <p className="subTitle">
-                            You're applying for <strong>{property?.property_name ?? 'this Property'}</strong>
-                        </p>
+                        <h2>{editMode ? 'Update Application' : 'Apply For Rental'}</h2>
+                        <p>You're applying for <strong>{property?.property_name ?? 'this Property'}</strong></p>
                     </header>
 
                     {property && (

@@ -96,8 +96,8 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
     return (
         <section id='rentalApplicationsContainer'>
             <header>
-                <h1 className='mainTitle'>{userRole === 'landlord' ? 'MANAGE APPLICATIONS' : 'MY APPLICATIONS'}</h1>
-                <p className='subTitle'>
+                <h2>{userRole === 'landlord' ? 'Manage Applications' : 'My Applications'}</h2>
+                <p>
                     {userRole === 'landlord' 
                         ? 'Review potential tenants for your properties.' 
                         : 'Track the status of your rental requests.'

@@ -34,8 +34,12 @@ function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
     if (loading) return <p>Loading marketplace...</p>;
 
     return (
-        <section className='guestView'>
-            <h2>Marketplace</h2>
+        <section className='marketplaceContainer'>
+            <header>
+                <h2>Marketplace</h2>
+                <p>Explore our wide range of rental properties to find your perfect home.</p>
+            </header>
+
             <div className='propertyGrid'>
                 {availableProperties.length === 0 ?
                     <p>Currently no available properties.</p>

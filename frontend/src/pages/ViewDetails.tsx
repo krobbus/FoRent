@@ -31,7 +31,12 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
     }
 
     return (
-        <section id='viewDetailsContainer'>         
+        <section id='viewDetailsContainer'>
+            <header>
+                <h2>View Property Details</h2>
+                <p></p>
+            </header>
+
             {loading ? (
                 <p>Loading property details...</p>
             ) : (

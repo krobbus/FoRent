@@ -109,7 +109,8 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
     return (
         <section id='addPropertiesContainer'>
             <header>
-                <h1 className='mainTitle'>Add New Property</h1>
+                <h2>Add New Property</h2>
+                <p></p>
             </header>
 
             <main>
