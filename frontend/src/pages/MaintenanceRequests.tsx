@@ -5,8 +5,8 @@ function MaintenanceRequests({ }: MaintenanceRequestsProps) {
     return (
         <section id='maintenanceRequestsContainer'>
             <header>
-                <h1 className='mainTitle'>Maintenance Requests</h1>
-                <p className='subTitle'>View and manage your maintenance requests here.</p>
+                <h2>Maintenance Requests</h2>
+                <p>View and manage your maintenance requests here.</p>
             </header>
 
             <main>

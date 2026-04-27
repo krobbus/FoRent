@@ -85,7 +85,8 @@ function UpdateProperty({ goBack, property, onSuccess }: UpdatePropertyProps) {
     return (
         <section id='addPropertiesContainer'>
             <header>
-                <h1 className='mainTitle'>Update Property</h1>
+                <h2>Update Property</h2>
+                <p></p>
             </header>
 
             <main>

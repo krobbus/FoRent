@@ -47,8 +47,8 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
     return (
         <section id='authContainer'>
             <header>
-                <h1 className='mainTitle'>{isLogin ? 'LOG IN' : 'SIGN UP'}</h1>
-                <p className='subTitle'>Please {isLogin ? 'log in' : 'sign up'} your account to continue</p>
+                <h2>{isLogin ? 'Log In' : 'Sign Up'}</h2>
+                <p>Please {isLogin ? 'log in' : 'sign up'} your account to continue</p>
             </header>
 
             <main>

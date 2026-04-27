@@ -63,8 +63,8 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
     return (
         <section id='propertiesContainer'>
             <header>
-                <h1 className='mainTitle'>{userRole === 'landlord' ? 'MY PROPERTIES' : 'MY RENTALS'}</h1>
-                <p>Explore our wide range of rental properties to find your perfect home.</p>
+                <h2>{userRole === 'landlord' ? 'My Properties' : 'My Current Rentals'}</h2>
+                <p>{userRole === 'landlord' ? '' : ''}</p>
             </header>
 
             <main>
@@ -74,7 +74,6 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
                     <>
                         {userRole === 'landlord' && (
                             <section className='landlordView'>
-                                <h2>Manage Your Listings</h2>
                                 <div className='propertyGrid'>
                                     {landlordProperties.length === 0 ?
                                         <p>You have no properties listed. Start by adding a new property.</p>
@@ -139,8 +138,7 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
                         )}
 
                         {userRole === 'tenant' && (
-                            <section className='tenantView'>
-                                <h2>Your Current Rentals</h2>    
+                            <section className='tenantView'>  
                                 <div className='propertyGrid'>
                                     {tenantRentals.length === 0 ?
                                         <p>You have no current rentals. Start looking for your next home!</p>

@@ -7,19 +7,23 @@ export interface AuthProps {
     setUserId: (id: number) => void;
 }
 
-export interface ProfileProps {
+export interface UserDataProps {
+    id: number;
+    username: string;
+    password_hash: string;
+    pin: string;
+    created_at: string;
+}
+
+export interface ViewProfileProps {
     goBack: () => void;
     userRole: Role;
     userId: number;
-}
-
-export interface MarketplaceProps {
-    property: any;
-    onViewDetails: (property: PropertyDataProps) => void;
-    onViewApplyRental: (property: PropertyDataProps) => void;
+    onUpdateProfile: () => void;
 }
 
 export interface ProfileDataProps{
+    user_id: number;
     first_name: string;
     middle_name: string;
     last_name: string;
@@ -27,6 +31,19 @@ export interface ProfileDataProps{
     email: string;
     contact_num: string;
     role: Role;
+}
+
+export interface UpdateProfileProps {
+    goBack: () => void;
+    userRole: Role;
+    userId: number;
+    onSuccess: () => void;
+}
+
+export interface MarketplaceProps {
+    property: any;
+    onViewDetails: (property: PropertyDataProps) => void;
+    onViewApplyRental: (property: PropertyDataProps) => void;
 }
 
 export interface PropertiesProps {
@@ -66,10 +83,10 @@ export interface PropertyDataProps {
     other_amenities_count: number;
 }
 
-export interface UpdatePropertyProps {
+export interface ViewDetailsProps {
+    onViewApplyRental: () => void;
     goBack: () => void;
     property: PropertyDataProps;
-    onSuccess: () => void;
 }
 
 export interface AddPropertyProps {
@@ -77,10 +94,10 @@ export interface AddPropertyProps {
     userId: number;
 }
 
-export interface ViewDetailsProps {
-    onViewApplyRental: () => void;
+export interface UpdatePropertyProps {
     goBack: () => void;
     property: PropertyDataProps;
+    onSuccess: () => void;
 }
 
 export interface ApplyRentalProps {
