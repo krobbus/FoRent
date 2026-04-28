@@ -10,9 +10,10 @@ function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
             try {
                 const response = await fetch('http://localhost:5000/api/properties');
                 const data = await response.json();
-                setProperties(data);
+                setProperties(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error("Error fetching properties:", error);
+                setProperties([]);
             } finally {
                 setLoading(false);
             }

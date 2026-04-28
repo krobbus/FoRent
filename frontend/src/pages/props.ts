@@ -130,5 +130,10 @@ export interface RentalApplicationsProps {
 }
 
 export interface MaintenanceRequestsProps {
+    goBack: () => void;
     userId: number;
+}
+
+export interface PaymentHistoryProps {
+    goBack: () => void;
 }

@@ -9,9 +9,10 @@ import UpdateProfile from './pages/UpdateProfile'
 import AddProperty from './pages/AddProperty'
 import UpdateProperty from './pages/UpdateProperty'
 import ViewDetails from './pages/ViewDetails'
+import ApplyRental from './pages/ApplyRental'
 import RentalApplications from './pages/RentalApplications'
 import MaintenanceRequests from './pages/MaintenanceRequests'
-import ApplyRental from './pages/ApplyRental'
+import PaymentHistory from './pages/PaymentHistory'
 
 function App() {
   const [userRole, setUserRole] = useState<Role>(null)
@@ -87,6 +88,10 @@ function App() {
               userId={userId || 0}
               onSuccess={() => {
                 setCurrentView('viewProfile');
+
+                if (localStorage.Item('token') === null || '') {
+                  handleLogout();
+                }
               }}
             />
           </>
@@ -304,6 +309,7 @@ function App() {
             </span>
 
             <MaintenanceRequests
+              goBack={() => setCurrentView('home')}
               userId={userId || 0} 
             />
           </>
@@ -311,12 +317,16 @@ function App() {
       
       case 'paymentHistory':
         return (
-          <div>
-            <h2>
-              {currentView === 'paymentHistory' && 'Payment History'}
-            </h2>
-            <p>Content for {currentView} will go here.</p>
-          </div>
+          <>
+            <span>
+              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
+              &gt;<span className='activeCrumb'> Payment History </span>
+            </span>
+
+            <PaymentHistory
+              goBack={() => setCurrentView('home')}
+            />
+          </>
         );
 
       default:

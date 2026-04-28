@@ -36,7 +36,13 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
             const endpoint = userRole === 'landlord' ? `/api/landlords` : `/api/tenants`;
 
             try {
-                const response = await fetch(`http://localhost:5000${endpoint}/${userId}`);
+                const response = await authFetch(
+                    `http://localhost:5000${endpoint}/${userId}`,
+                    {},
+                    onAuthError
+                );
+                if (!response.ok) return;
+
                 const data = await response.json();
                 setProfile(data);
             } catch (error) {
@@ -49,11 +55,22 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
         fetchProfile();
     }, [userId, userRole]);
 
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return 'N/A';
+        return new Date(dateStr).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
     return (
         <section id='viewProfileContainer'>
             <header>
                 <h2>My Profile</h2>
-                <p></p>
+                <p>Review your account details and personal information on file.</p>
             </header>
 
             <main>
@@ -63,15 +80,17 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
                     <>
                         <fieldset>
                             <legend>Account Details</legend>
-                            <p><strong>Created At:</strong> {user?.created_at || ''}</p>
-                            <p><strong>Userame:</strong> {user?.username || 'N/A'}</p>
+
+                            <p><strong>Member Since:</strong> {user?.created_at ? formatDate(user.created_at) : 'N/A'}</p>
+                            <p><strong>Username:</strong> {user?.username || 'N/A'}</p>
                             <p><strong>Role:</strong> {user?.role ? user?.role.charAt(0).toUpperCase() + user?.role.slice(1) : 'N/A'}</p>
                         </fieldset>
 
                         <fieldset>
                             <legend>{userRole === 'landlord' ? 'Landlord' : 'Tenant'} Information</legend>
-                            <p><strong>{userRole === 'landlord' ? 'Landlord' : 'Tenant'} ID:</strong> {profile?.user_id}</p>
-                            <p><strong>Name:</strong> {profile?.first_name || ''} {profile?.middle_name || ''} {profile?.last_name || ''} {profile?.ext_name || ''}</p>
+
+                            <p><strong>{userRole === 'landlord' ? 'Landlord' : 'Tenant'} ID:</strong> {profile?.user_id || 'N/A'}</p>
+                            <p><strong>Full Name:</strong> {profile?.first_name || ''} {profile?.middle_name || ''} {profile?.last_name || ''} {profile?.ext_name || ''}</p>
                             <p><strong>Email:</strong> {profile?.email || 'N/A'}</p>
                             <p><strong>Contact Number:</strong> {profile?.contact_num || 'N/A'}</p>
                         </fieldset>

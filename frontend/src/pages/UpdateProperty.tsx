@@ -86,7 +86,7 @@ function UpdateProperty({ goBack, property, onSuccess }: UpdatePropertyProps) {
         <section id='addPropertiesContainer'>
             <header>
                 <h2>Update Property</h2>
-                <p></p>
+                <p>Modify the details of your listed property. All changes will be reflected immediately upon saving.</p>
             </header>
 
             <main>
