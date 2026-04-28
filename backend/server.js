@@ -17,8 +17,6 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-process.env.JWT_KEY
-
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -32,7 +30,7 @@ app.post('/api/login', async (req, res) => {
         if (!isMatch) return res.status(401).json({ message: 'Invalid Credentials' });
 
         const token = jwt.sign(
-            { id: user.id, role: user.role }, JWT_KEY, { expiresIn: '1h' }
+            { id: user.id, role: user.role }, process.env.JWT_KEY, { expiresIn: '1h' }
         );
 
         res.json({

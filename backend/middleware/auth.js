@@ -6,7 +6,7 @@ const authenticateToken = (req, res, next) => {
 
     if (!token) return res.status(401).json({ error: 'Access token required' });
 
-    jwt.verify(token, JWT_KEY, (err, user) => {
+    jwt.verify(token, process.env.JWT_KEY, (err, user) => {
         if (err) {
             const message = err.name === 'TokenExpiredError' 
                 ? 'Token expired' 

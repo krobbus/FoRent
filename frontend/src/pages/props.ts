@@ -10,8 +10,7 @@ export interface AuthProps {
 export interface UserDataProps {
     id: number;
     username: string;
-    password_hash: string;
-    pin: string;
+    role: Role;
     created_at: string;
 }
 

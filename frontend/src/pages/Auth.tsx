@@ -32,10 +32,16 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
             });
 
             if (response.ok) {
-                const user = await response.json();
-                localStorage.setItem('token', user.token);
-                setUserId(user.id);
-                setUserRole(user.role);
+                const data = await response.json();
+
+                if (isLogin) {
+                    localStorage.setItem('token', data.token);
+                    setUserId(data.user.id);
+                    setUserRole(data.user.role);
+                } else {
+                    alert("Registration successful! Please log in.");
+                    setIsLogin(true);
+                }
             } else {
                 alert("Auth failed!");
             }
