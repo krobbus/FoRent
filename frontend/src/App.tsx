@@ -373,7 +373,7 @@ function App() {
   const handleLogout = () => {
     setUserRole(null); 
     setUserId(null); 
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setCurrentView('home');
     setPreviousView('home');
   }
