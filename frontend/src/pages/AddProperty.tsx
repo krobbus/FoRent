@@ -110,7 +110,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         <section id='addPropertiesContainer'>
             <header>
                 <h2>Add New Property</h2>
-                <p></p>
+                <p>Fill in the details below to list a new property under your account.</p>
             </header>
 
             <main>

@@ -64,7 +64,12 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
         <section id='propertiesContainer'>
             <header>
                 <h2>{userRole === 'landlord' ? 'My Properties' : 'My Current Rentals'}</h2>
-                <p>{userRole === 'landlord' ? '' : ''}</p>
+                <p>
+                    {userRole === 'landlord'
+                        ? 'Oversee and manage all properties listed under your account.'
+                        : 'View and manage the properties you are currently renting.'
+                    }
+                </p>
             </header>
 
             <main>
