@@ -47,12 +47,16 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitting(true);
+        const token = localStorage.getItem('token');
 
         const endpoint = userRole === 'landlord' ? '/api/landlords' : '/api/tenants';
         try {
             const response = await fetch(`http://localhost:5000${endpoint}/${userId}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(formData)
             });
 
