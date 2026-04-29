@@ -22,7 +22,7 @@ function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
         fetchProperties();
     }, []);
 
-    const availableProperties = properties.filter(p => p.status === 'Available');
+    const availableProperties = properties.filter(p => p.status?.toLowerCase() === 'available');
     const getOccupancyLabel = (max: number) => {
         if (max <= 1) return 'Solo-friendly';
         if (max <= 2) return 'Couple-friendly';
@@ -52,7 +52,7 @@ function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
                                     <h3>{p.property_name}</h3>
                                     <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
                                     <p>Price: ₱{p.price}</p>
-                                    <p>Status: <strong>{p.status}</strong></p>
+                                    <p>Status: <strong>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</strong></p>
                                 </div>
 
                                 <div className='propertyDetails'>

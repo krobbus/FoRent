@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { authFetch } from '../utils/api';
 import type { ProfileDataProps, ApplyRentalProps } from './props';
 
 function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingApplication = null }: ApplyRentalProps) {
@@ -14,21 +15,27 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
         tenantEmail: existingApplication?.tenant_email ?? ''
     });
 
-    const full_name = [
-        profile?.first_name, 
-        profile?.middle_name, 
-        profile?.last_name, 
-        profile?.ext_name
-    ].filter(Boolean).join(' ');
+    const full_name = useMemo(() => {
+        return[
+            profile?.first_name, 
+            profile?.middle_name, 
+            profile?.last_name, 
+            profile?.ext_name
+        ].filter(Boolean).join(' ');
+    }, [profile]);
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/tenants/${userId}`);
+                const response = await authFetch(`http://localhost:5000/api/tenants/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setProfile(data);
-                    if (!editMode) {setFormData(prev => ({ ...prev, tenantContact: data.contact_num || '', tenantEmail: data.email || '' }))};
+                    if (!editMode) {
+                        setFormData(prev => ({ 
+                            ...prev, tenantContact: data.contact_num || '', tenantEmail: data.email || '' 
+                        }))
+                    };
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -66,9 +73,8 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                 ...applicationData,
             };
 
-            const response = await fetch(url, {
+            const response = await authFetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             });
 
@@ -178,7 +184,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                             <legend>Lease Information</legend>
 
                             <div className="formGroup">
-                                <label>Preferred Move-in Date</label>
+                                <label>Preferred Move-in Date <span style={{ color: 'red' }}>*</span></label>
                                 <input 
                                     type="date" 
                                     required 
@@ -188,7 +194,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                             </div>
 
                             <div className="formGroup">
-                                <label>Lease Duration (Months)</label>
+                                <label>Lease Duration (Months) <span style={{ color: 'red' }}>*</span></label>
                                 <select 
                                     value={formData.leaseTerm}
                                     onChange={(e) => setFormData({...formData, leaseTerm: e.target.value})}
@@ -210,7 +216,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                             </div>
 
                             <div className="formGroup">
-                                <label>Application Email</label>
+                                <label>Application Email <span style={{ color: 'red' }}>*</span></label>
                                 <input 
                                     type="email" 
                                     placeholder="XXXXXXX@XXXXX.com"

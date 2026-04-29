@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import { authFetch } from '../utils/api'
 import type { PropertyDataProps, PropertiesProps} from './props'
 import AddProperty from './AddProperty'
 
-function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty }: PropertiesProps) {
+function Properties({ goBack, userId, userRole,  onViewDetails, onUpdateProperty }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [loading, setLoading] = useState(true)
     const [showAddProperty, setShowAddProperty] = useState(false)
@@ -14,7 +15,7 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
             try {
                 const response = await fetch('http://localhost:5000/api/properties');
                 const data = await response.json();
-                setProperties(data);
+                setProperties(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error("Error fetching properties:", error);
             } finally {
@@ -30,7 +31,7 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
         
         if (confirmDelete) {
             try {
-                const response = await fetch(`http://localhost:5000/api/properties/${propertyId}`, {
+                const response = await authFetch(`http://localhost:5000/api/properties/${propertyId}`, {
                     method: 'DELETE',
                 });
 
@@ -90,7 +91,13 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
                                                         <h3>{p.property_name}</h3>
                                                         <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
                                                         <p>Price: ₱{p.price}</p>
-                                                        <p>Status: <strong>{p.status}</strong></p>
+                                                        <p>Status: <strong>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</strong></p>
+                                                        {p.status === 'rented' && p.tenant_first_name && (
+                                                            <p>Current Tenant: <strong>
+                                                                {[p.tenant_first_name, p.tenant_last_name, p.tenant_ext_name]
+                                                                    .filter(Boolean).join(' ')}
+                                                            </strong></p>
+                                                        )}
                                                     </div>
 
                                                     <div className='propertyDetails'>
@@ -155,7 +162,7 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
                                                         <h3>{p.property_name}</h3>
                                                         <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
                                                         <p>Price: ₱{p.price}</p>
-                                                        <p>Status: <strong>{p.status}</strong></p>
+                                                        <p>Status: <strong>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</strong></p>
                                                     </div>
 
                                                     <div className='propertyDetails'>
@@ -187,6 +194,12 @@ function Properties({ goBack, userRole, userId, onViewDetails, onUpdateProperty 
                                                     <div className='btnWrapper'>
                                                         <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                                             View Details
+                                                        </button>
+                                                        <button className='paymentBtn'>
+                                                            Check Payment
+                                                        </button>
+                                                        <button className='requestBtn'>
+                                                            Request Maintenance
                                                         </button>
                                                     </div>
                                                 </div>

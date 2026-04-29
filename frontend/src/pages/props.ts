@@ -60,6 +60,9 @@ export interface PropertyDataProps {
     property_name: string;
     landlord_id: number;
     tenant_id: number | null;
+    tenant_first_name: string | null;
+    tenant_last_name: string | null;
+    tenant_ext_name: string | null; 
     address: string,
     status: string;
     price: number;

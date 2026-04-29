@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { authFetch } from '../utils/api';
 import type { RentalApplicationsProps, RentalApplicationDataProps } from './props'
 import ApplyRental from './ApplyRental';
 
@@ -12,9 +13,9 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
         setLoading(true);
 
         try {
-            const response = await fetch(`http://localhost:5000/api/viewapplications?userId=${userId}&role=${userRole}`);
+            const response = await authFetch(`http://localhost:5000/api/applications/view?userId=${userId}&userRole=${userRole}`);
             const data = await response.json();
-            setApplications(data);
+            setApplications(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Failed to load applications", error);
         } finally {
@@ -24,7 +25,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
 
     const handleViewDetails = async (propertyId: number) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/properties/${propertyId}`);
+            const response = await authFetch(`http://localhost:5000/api/properties/${propertyId}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 onViewDetails(propertyData);
@@ -36,7 +37,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
 
     const handleEditApplication = async (app: RentalApplicationDataProps) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/properties/${app.property_id}`);
+            const response = await authFetch(`http://localhost:5000/api/properties/${app.property_id}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 setEditingProperty(propertyData);
@@ -65,10 +66,32 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
         );
     }
 
-    const handleStatusUpdate = (appId: number, newStatus: string) => {
-        setApplications(prev => 
-            prev.map(app => app.id === appId ? { ...app, status: newStatus as any } : app)
+    const handleStatusUpdate = async (appId: number, newStatus: string) => {
+        const confirmed = window.confirm(
+            `Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this application? This cannot be undone.`
         );
+        if (!confirmed) return;
+
+        try {
+            const response = await authFetch(`http://localhost:5000/api/applications/${appId}/status`,
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: newStatus }),
+                }
+            );
+
+            if (response.ok) {
+                setApplications(prev =>
+                    prev.map(app => app.id === appId ? { ...app, status: newStatus as any } : app)
+                );
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to update status'}`);
+            }
+        } catch (error) {
+            console.error("Status update failed", error);
+            alert("An error occurred while updating the application status.");
+        }
     };
 
     const handleDeleteApplication = async (appId: number) => {
@@ -76,7 +99,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
         if (!confirmed) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/applications/${appId}`, {
+            const response = await authFetch(`http://localhost:5000/api/applications/${appId}`, {
                 method: 'DELETE',
             });
 
@@ -128,17 +151,17 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                         <tbody>
                             {applications.map((app) => (
                                 <tr key={app.id}>
-                                    <td>{app.property_id}</td>
-                                    <td>{app.tenant_fullname}</td>
-                                    <td>{app.tenant_contact}</td>
-                                    <td>{app.tenant_email}</td>
-                                    <td>{new Date(app.move_in_date).toLocaleDateString()}</td>
+                                    <td>{app.property_id || 'N/A'}</td>
+                                    <td>{app.tenant_fullname || 'N/A'}</td>
+                                    <td>{app.tenant_contact || 'N/A'}</td>
+                                    <td>{app.tenant_email || 'N/A'}</td>
+                                    <td>{new Date(app.move_in_date || 'N/A').toLocaleDateString()}</td>
                                     <td>
                                         <span className={`statusBadge ${app.status}`}>{app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
                                     </td>
                                     {userRole === 'landlord' && <td>{!app.message ? "No message from applicant." : app.message }</td>}
                                     <td>
-                                        {app.status === 'pending' ?
+                                        {app.status === 'pending' ? (
                                             (userRole === 'landlord' ? (
                                                 <div className="btnWrapper">
                                                     <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>View Property</button>
@@ -152,12 +175,12 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                                                     <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                                 </div>
                                             ))
-                                        :
+                                        ) : (
                                             <div className="btnWrapper">
                                                 <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>View Property</button>
                                                 <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                             </div>
-                                        }
+                                        )}
                                     </td>
                                 </tr>
                             ))}

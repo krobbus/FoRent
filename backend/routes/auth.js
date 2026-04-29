@@ -4,16 +4,23 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { loginId, password } = req.body;
     try {
-        const userResult = await req.pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        if (userResult.rows.length === 0)
-            return res.status(401).json({ message: 'Invalid Credentials' });
+        const userResult = await req.pool.query(
+            `SELECT u.*, 
+            COALESCE(l.email, t.email) AS profile_email
+            FROM users u
+            LEFT JOIN landlords l ON u.id = l.user_id
+            LEFT JOIN tenants t ON u.id = t.user_id
+            WHERE u.username = $1 OR l.email = $1 OR t.email = $1
+            LIMIT 1`,
+            [loginId]
+        );
+        if (userResult.rows.length === 0) return res.status(401).json({ message: 'Invalid Credentials' });
 
         const user = userResult.rows[0];
         const isMatch = await bcrypt.compare(password, user.password_hash);
-        if (!isMatch)
-            return res.status(401).json({ message: 'Invalid Credentials' });
+        if (!isMatch) return res.status(401).json({ message: 'Invalid Credentials' });
 
         const token = jwt.sign(
             { id: user.id, role: user.role },

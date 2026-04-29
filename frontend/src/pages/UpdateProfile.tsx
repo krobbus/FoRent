@@ -81,7 +81,6 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                         method: 'POST',
                         body: JSON.stringify({ currentPassword: password, pin })
                     },
-                    onAuthError
                 );
 
                 if (response.ok) {
@@ -106,7 +105,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         setCredData(updated);
 
         if (e.target.name === 'currentPassword' || e.target.name === 'pin') {
-            setIsVerified(false); // Reset verification on change
+            setIsVerified(false);
             attemptVerify(
                 e.target.name === 'currentPassword' ? e.target.value : credData.currentPassword,
                 e.target.name === 'pin' ? e.target.value : credData.pin
@@ -135,7 +134,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         
         if (showCredForm) {
@@ -152,7 +151,6 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                 return;
             }
         }
-
         setSubmitting(true);
 
         try {
@@ -266,6 +264,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                             value={credData.currentPassword}
                                             autoComplete='current-password'
                                             onChange={handleCredChange}
+                                            required
                                         />
 
                                         <label>PIN: <span style={{ color: 'red' }}>*</span></label>
@@ -275,6 +274,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                             placeholder="Enter your PIN"
                                             value={credData.pin}
                                             onChange={handleCredChange}
+                                            required
                                         />
 
                                         {verifying && <p style={{ color: 'gray' }}><small>Verifying credentials...</small></p>}
@@ -351,6 +351,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                     <button type='submit' className='saveBtn' disabled={submitting}>
                                         {submitting ? 'Saving...' : 'Save Changes'}
                                     </button>
+
                                     <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
                                 </div>
                             ) : (

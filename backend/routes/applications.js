@@ -64,6 +64,83 @@ router.patch('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+router.patch('/:id/status', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['pending', 'approved', 'rejected', 'withdrawn'];
+    if (!validStatuses.includes(status))
+        return res.status(400).json({ error: "Invalid status value" });
+
+    const client = await req.pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const result = await client.query(
+            `UPDATE rental_applications SET status = $1, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $2 RETURNING *`,
+            [status, id]
+        );
+
+        if (result.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: "Application not found" });
+        }
+
+        const application = result.rows[0];
+
+        if (status === 'approved') {
+            const tenantResult = await client.query(
+                'SELECT user_id FROM tenants WHERE id = $1', [application.tenant_id]
+            );
+
+            if (tenantResult.rows.length > 0) {
+                const tenantUserId = tenantResult.rows[0].user_id;
+
+                await client.query(
+                    `UPDATE properties SET tenant_id = $1, status = 'rented'
+                     WHERE id = $2`,
+                    [tenantUserId, application.property_id]
+                );
+
+                await client.query(
+                    `UPDATE rental_applications SET status = 'rejected', updated_at = CURRENT_TIMESTAMP
+                     WHERE property_id = $1 AND id != $2 AND status = 'pending'`,
+                    [application.property_id, id]
+                );
+            }
+        } else if (status === 'rejected' || status === 'withdrawn') {
+            const propertyResult = await client.query(
+                'SELECT tenant_id FROM properties WHERE id = $1', [application.property_id]
+            );
+
+            if (propertyResult.rows.length > 0) {
+                const tenantResult = await client.query(
+                    'SELECT user_id FROM tenants WHERE id = $1', [application.tenant_id]
+                );
+
+                if (tenantResult.rows.length > 0 &&
+                    propertyResult.rows[0].tenant_id === tenantResult.rows[0].user_id) {
+                    await client.query(
+                        `UPDATE properties SET tenant_id = NULL, status = 'available'
+                         WHERE id = $1`,
+                        [application.property_id]
+                    );
+                }
+            }
+        }
+        await client.query('COMMIT');
+        res.json(result.rows[0]);
+        
+    } catch (err) {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: err.message });
+    } finally {
+        client.release();
+    }
+});
+
 router.delete('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
