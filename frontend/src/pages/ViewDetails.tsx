@@ -44,13 +44,13 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
                     {properties.length > 0 &&
                         <>
                             <div className='fullDetailsView'>
-                                <h1>{property.property_name}</h1>
+                                <h3>{property.property_name}</h3>
                                 <p>{property.address ? `Address: ${property.address}` : 'No address available'}</p>
                                 <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
 
                                 <div className='pricing'>
                                     <p>Price: ₱{property.price}</p>
-                                    <p>Status: <strong>{property.status}</strong></p>
+                                    <p>Status: <strong>{property.status.charAt(0).toUpperCase() + property.status.slice(1)}</strong></p>
                                 </div>
                                 
                                 <div className='rooms'>

@@ -4,10 +4,19 @@ const { authenticateToken } = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
     try {
-        const result = await req.pool.query('SELECT * FROM properties ORDER BY created_at DESC');
+        const result = await req.pool.query(`
+            SELECT p.*,
+                t.first_name AS tenant_first_name,
+                t.last_name AS tenant_last_name,
+                t.ext_name AS tenant_ext_name
+            FROM properties p
+            LEFT JOIN tenants t ON p.tenant_id = t.user_id
+            ORDER BY p.created_at DESC
+        `);
         res.json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: "Server Error" });
+        console.error("Properties fetch error:", err.message);
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -34,8 +43,8 @@ router.post('/', authenticateToken, async (req, res) => {
 
     try {
         const result = await req.pool.query(
-            `INSERT INTO properties (property_name, address, price, category, landlord_id, description, bedroom_count, kitchen_count, bathroom_count, other_rooms, other_rooms_count, max_occupants, pets_allowed, pet_count, amenities)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
+            `INSERT INTO properties (property_name, address, price, category, landlord_id, description, bedroom_count, kitchen_count, bathroom_count, other_rooms, other_rooms_count, max_occupants, pets_allowed, pet_count, amenities, status)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'available') RETURNING *`,
             [name, address, price, category, landlord_id, description, bedroom_count, kitchen_count, bathroom_count, otherRoomsString, other_rooms_count, max_occupants, pets_allowed, pet_count, amenityList]
         );
         res.status(201).json(result.rows[0]);

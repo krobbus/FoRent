@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import type { Role } from './pages/props'
 import './App.css'
+
+import Auth from './pages/Auth'
 import Marketplace from './pages/Marketplace'
 import Properties from './pages/Properties'
-import Auth from './pages/Auth'
+import ViewDetails from './pages/ViewDetails'
+
 import ViewProfile from './pages/ViewProfile'
 import UpdateProfile from './pages/UpdateProfile'
+
 import AddProperty from './pages/AddProperty'
 import UpdateProperty from './pages/UpdateProperty'
-import ViewDetails from './pages/ViewDetails'
+
 import ApplyRental from './pages/ApplyRental'
 import RentalApplications from './pages/RentalApplications'
 import MaintenanceRequests from './pages/MaintenanceRequests'
@@ -87,10 +91,10 @@ function App() {
               userRole={userRole} 
               userId={userId || 0}
               onSuccess={() => {
-                setCurrentView('viewProfile');
-
-                if (localStorage.Item('token') === null || '') {
+                if (localStorage.getItem('token') === null) {
                   handleLogout();
+                } else {
+                  setCurrentView('viewProfile');
                 }
               }}
             />
@@ -170,7 +174,9 @@ function App() {
                   navigateTo('availablePropertySection');
                 } else if(previousView === 'myProperties' || previousView === 'myRentals'){
                   setCurrentView(previousView);
-                } else {
+                } else if(previousView === 'rentalApplications'){ 
+                  setCurrentView(previousView);
+                }else {
                   setCurrentView('home');
                 }
               }}

@@ -1,4 +1,5 @@
 import React, { useState, type ChangeEvent } from 'react'
+import { authFetch } from '../utils/api'
 import type { AddPropertyProps } from './props'
 
 function AddProperty({ goBack, userId }: AddPropertyProps){
@@ -59,17 +60,18 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         console.log("Sending Landlord ID:", userId);
         
         try {
-            const response = await fetch('http://localhost:5000/api/addproperties', {
+            const response = await authFetch('http://localhost:5000/api/properties', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     ...formData, 
                     landlord_id: userId,
+                    status: 'available',
                     amenities: {
                         ...formData.amenities,
                         other_amenities: formData.other_amenities.join(', ')
                     }
-                }) 
+                })
             });
 
             if (response.ok) {
@@ -115,26 +117,25 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
 
             <main>
                 <form onSubmit={handleSubmit}>
-                    <label>Property Name:</label>
+                    <label>Property Name: <span style={{ color: 'red' }}>*</span></label>
                     <input name='name' type='text' placeholder={`Type the property name here...`} value={formData.name} onChange={handleCapitalize} required />
                     
-                    <label>Address:</label>
+                    <label>Address: <span style={{ color: 'red' }}>*</span></label>
                     <input name='address' type='text' placeholder={`Type the complete address here...`} value={formData.address} onChange={handleChange} required />
 
-                    <label>Price:</label>
+                    <label>Price: <span style={{ color: 'red' }}>*</span></label>
                     <input name='price' type='number' step='0.01' onChange={handleChange} required />
 
-                    <label>Description:</label>
+                    <label>Description (optional): </label>
                     <input 
                         name='description' 
                         type='text' 
                         placeholder={`e.g. Spacious balcony, quiet neighborhood... [Put "N/A" if you don't want to add details]`} 
                         value={formData.description}
                         onChange={handleChange} 
-                        required 
                     />
 
-                    <label>Category:</label>
+                    <label>Category: <span style={{ color: 'red' }}>*</span></label>
                     <select name='category' onChange={handleChange} required>
                         <option value=''>Select Category</option>
                         <option value='apartment'>Apartment</option>

@@ -59,42 +59,52 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
 
             <main>
                 <form onSubmit={handleSubmit}>
-                    <label>Username:</label>
-                    <input name='username' type='text' placeholder="Enter your username" autoComplete='username' onChange={handleChange} required />
+                    <fieldset>
+                        <legend>Account {isLogin ? 'Log In' : 'Sign Up'} Credentials</legend>
+
+                        <label>{isLogin ? 'Email or Username:' : 'Username:'} <span style={{ color: 'red' }}>*</span></label>
+                        <input name={isLogin ? 'loginId' : 'username'} type='text' placeholder={isLogin ? 'Enter your email or username' : 'Enter your username'} autoComplete={isLogin ? 'loginId' : 'username'} onChange={handleChange} required />
+                        
+                        <label>Password: <span style={{ color: 'red' }}>*</span></label>
+                        <input name='password' type='password' placeholder="Enter your password" autoComplete={isLogin ? 'current-password' : 'new-password'} onChange={handleChange} required />
+
+                        {!isLogin && (
+                            <>
+                                <label>PIN: <span style={{ color: 'red' }}>*</span></label>
+                                <input name='pin' type='password' placeholder="Enter your PIN" autoComplete='pin' onChange={handleChange} required />
+                                
+                                <label>Role: <span style={{ color: 'red' }}>*</span></label>
+                                <select name='role' onChange={handleChange} required>
+                                    <option value=''>Select Role</option>
+                                    <option value='landlord'>Landlord</option>
+                                    <option value='tenant'>Tenant</option>
+                                </select>
+                            </>
+                        )}
+                    </fieldset>
                     
-                    <label>Password:</label>
-                    <input name='password' type='password' placeholder="Enter your password" autoComplete={isLogin ? 'current-password' : 'new-password'} onChange={handleChange} required />
-
                     {!isLogin && (
-                        <>
-                            <label>PIN:</label>
-                            <input name='pin' type='password' placeholder="Enter your PIN" autoComplete='pin' onChange={handleChange} required />
-                            
-                            <label>Role:</label>
-                            <select name='role' onChange={handleChange} required>
-                                <option value=''>Select Role</option>
-                                <option value='landlord'>Landlord</option>
-                                <option value='tenant'>Tenant</option>
-                            </select>
+                        <fieldset>
+                            <legend>Personal Information</legend>
 
-                            <label>First Name:</label>
+                            <label>First Name:<span style={{ color: 'red' }}>*</span></label>
                             <input name='firstName' type='text' placeholder="Enter your first name" autoComplete='firstName' onChange={handleChange} required />
 
-                            <label>Middle Name:</label>
+                            <label>Middle Name: </label>
                             <input name='middleName' type='text' placeholder="Enter your middle name" autoComplete='middleName' onChange={handleChange} />
 
-                            <label>LastName:</label>
+                            <label>LastName: <span style={{ color: 'red' }}>*</span></label>
                             <input name='lastName' type='text' placeholder="Enter your last name" autoComplete='lastName' onChange={handleChange} required />
 
-                            <label>Extension:</label>
+                            <label>Extension: </label>
                             <input name='extension' type='text' placeholder="e.g. jr., sr., III" autoComplete='extenstion' onChange={handleChange} />
 
-                            <label>Email:</label>
+                            <label>Email: <span style={{ color: 'red' }}>*</span></label>
                             <input name='email' type='email' placeholder="e.g. XXXXXXX@XXXXX.com" autoComplete='email' onChange={handleChange} required />
 
-                            <label>Contact Number:</label>
+                            <label>Contact Number: </label>
                             <input name='contactNumber' type='text' placeholder="09XXXXXXXXX" autoComplete='contactNumber' onChange={handleChange} />
-                        </>
+                        </fieldset>
                     )}
 
                     <div className='btnWrapper'>

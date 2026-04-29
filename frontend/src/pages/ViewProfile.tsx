@@ -89,7 +89,7 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
                         <fieldset>
                             <legend>{userRole === 'landlord' ? 'Landlord' : 'Tenant'} Information</legend>
 
-                            <p><strong>{userRole === 'landlord' ? 'Landlord' : 'Tenant'} ID:</strong> {profile?.user_id || 'N/A'}</p>
+                            <p><strong>Account ID:</strong> {profile?.user_id || 'N/A'}</p>
                             <p><strong>Full Name:</strong> {profile?.first_name || ''} {profile?.middle_name || ''} {profile?.last_name || ''} {profile?.ext_name || ''}</p>
                             <p><strong>Email:</strong> {profile?.email || 'N/A'}</p>
                             <p><strong>Contact Number:</strong> {profile?.contact_num || 'N/A'}</p>
