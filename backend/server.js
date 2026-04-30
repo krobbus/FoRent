@@ -25,5 +25,6 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/profile'));
 app.use('/api/properties', require('./routes/properties'));
 app.use('/api/applications', require('./routes/applications'));
+app.use('/api/maintenance', require('./routes/maintenance'))
 
 app.listen(process.env.SERVER_PORT, () => console.log('Server running'));

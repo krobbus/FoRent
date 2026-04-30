@@ -3,7 +3,7 @@ import { authFetch } from '../utils/api'
 import type { PropertyDataProps, PropertiesProps} from './props'
 import AddProperty from './AddProperty'
 
-function Properties({ goBack, userId, userRole,  onViewDetails, onUpdateProperty }: PropertiesProps) {
+function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest, onUpdateProperty }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [loading, setLoading] = useState(true)
     const [showAddProperty, setShowAddProperty] = useState(false)
@@ -198,7 +198,7 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onUpdateProperty
                                                         <button className='paymentBtn'>
                                                             Check Payment
                                                         </button>
-                                                        <button className='requestBtn'>
+                                                        <button className='requestBtn' onClick={() => onCreateRequest(p)}>
                                                             Request Maintenance
                                                         </button>
                                                     </div>
