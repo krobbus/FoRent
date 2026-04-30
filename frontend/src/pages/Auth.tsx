@@ -60,7 +60,7 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
             <main>
                 <form onSubmit={handleSubmit}>
                     <fieldset>
-                        <legend>Account {isLogin ? 'Log In' : 'Sign Up'} Credentials</legend>
+                        <legend>Account {isLogin ? 'Log In' : 'Sign Up Credentials'}</legend>
 
                         <label>{isLogin ? 'Email or Username:' : 'Username:'} <span style={{ color: 'red' }}>*</span></label>
                         <input name={isLogin ? 'loginId' : 'username'} type='text' placeholder={isLogin ? 'Enter your email or username' : 'Enter your username'} autoComplete={isLogin ? 'loginId' : 'username'} onChange={handleChange} required />

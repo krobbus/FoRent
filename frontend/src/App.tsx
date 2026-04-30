@@ -15,7 +15,10 @@ import UpdateProperty from './pages/UpdateProperty'
 
 import ApplyRental from './pages/ApplyRental'
 import RentalApplications from './pages/RentalApplications'
+
+import CreateRequests from './pages/CreateRequests'
 import MaintenanceRequests from './pages/MaintenanceRequests'
+
 import PaymentHistory from './pages/PaymentHistory'
 
 function App() {
@@ -38,16 +41,20 @@ function App() {
 
             <Auth
               goBack ={() => setCurrentView('home')}
+              setUserId={setUserId} 
               setUserRole={(role) => {
                 setUserRole(role);
                 selectedProperty ? setCurrentView('viewDetails') : setCurrentView('home');
               }}
-              setUserId={setUserId} 
             />
           </>
         );
 
       case 'viewAnalytics':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+        
         return (
           <div>
             <h2>
@@ -58,6 +65,10 @@ function App() {
         );
 
       case 'viewProfile':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -67,8 +78,8 @@ function App() {
 
             <ViewProfile
               goBack={() => setCurrentView('home')}
-              userRole={userRole} 
               userId={userId || 0}
+              userRole={userRole} 
               onUpdateProfile={() => { 
                 setPreviousView(currentView);
                 setCurrentView('updateProfile');
@@ -78,6 +89,10 @@ function App() {
         );
 
       case 'updateProfile':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -88,14 +103,10 @@ function App() {
 
             <UpdateProfile
               goBack={() => setCurrentView('viewProfile')}
-              userRole={userRole} 
               userId={userId || 0}
+              userRole={userRole} 
               onSuccess={() => {
-                if (localStorage.getItem('token') === null) {
-                  handleLogout();
-                } else {
-                  setCurrentView('viewProfile');
-                }
+                setCurrentView('viewProfile');
               }}
             />
           </>
@@ -103,6 +114,9 @@ function App() {
       
       case 'myProperties':
       case 'myRentals':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
 
         return (
           <>
@@ -113,14 +127,19 @@ function App() {
 
             <Properties
               goBack={() => setCurrentView('home')}
-              userRole={userRole} 
               userId={userId || 0} 
+              userRole={userRole} 
               setUserId={setUserId} 
               setUserRole={setUserRole}
               onViewDetails={(prop) => { 
                 setSelectedProperty(prop);
                 setPreviousView(currentView);
                 setCurrentView('viewDetails');
+              }}
+              onCreateRequest={(prop) => { 
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('createRequests');
               }}
               onUpdateProperty={(prop) => { 
                 setSelectedProperty(prop);
@@ -132,6 +151,10 @@ function App() {
         );
       
       case 'viewDetails':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         if (!userRole) {
           setCurrentView('auth');
           return null;
@@ -172,9 +195,11 @@ function App() {
 
                 if (previousView === 'home') {
                   navigateTo('availablePropertySection');
-                } else if(previousView === 'myProperties' || previousView === 'myRentals'){
-                  setCurrentView(previousView);
-                } else if(previousView === 'rentalApplications'){ 
+                } else if(previousView === 'myProperties' || 
+                  previousView === 'myRentals' || 
+                  previousView === 'rentalApplications' ||
+                  previousView === 'maintenanceRequests'
+                ){
                   setCurrentView(previousView);
                 }else {
                   setCurrentView('home');
@@ -187,6 +212,10 @@ function App() {
         );
 
       case 'addProperty':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -203,6 +232,10 @@ function App() {
         );
         
       case 'updateProperty':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -223,6 +256,10 @@ function App() {
         );
       
       case 'applyRental':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         if (!userRole) {
           setCurrentView('auth');
           return null;
@@ -286,6 +323,10 @@ function App() {
         );
 
       case 'rentalApplications':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -305,8 +346,63 @@ function App() {
             />
           </>
         );
+
+      case 'createRequests':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
+        return (
+          <>
+            <span>
+              &gt;<a onClick={() => { setCurrentView('home')}}> Home </a>
+
+              {(previousView === 'myProperties' || previousView === 'myRentals' || previousView === 'maintenanceRequests') && (
+                <>
+                  &gt;<a onClick={() => {
+                    setSelectedProperty(null);
+                    setCurrentView(previousView);
+                  }}>
+                    {previousView === 'maintenanceRequests' ? 'Maintenance Requests' : `${propertyLabel}`}
+                  </a>
+                </>
+              )}
+
+              {previousView === 'viewDetails' && (
+                <>
+                  &gt;<a onClick={() => {
+                    setSelectedProperty(null);
+                    setCurrentView('viewDetails');
+                  }}> View Details </a>
+                </>
+              )}
+
+              &gt;<span className='activeCrumb'> Create Requests </span>
+            </span>
+
+            <CreateRequests
+              property={selectedProperty}
+              userId={userId || 0}
+              userRole={userRole}
+              onSuccess={() => setCurrentView('maintenanceRequests')}
+              onCancel={() => {
+                if(previousView === 'myProperties' || previousView === 'myRentals'){
+                  setCurrentView('myProperties');
+                } else if(previousView === 'viewDetails') {
+                  setCurrentView('viewDetails');
+                } else {
+                  setCurrentView('home');
+                }
+              }}
+            />
+          </>
+        );
       
       case 'maintenanceRequests':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -316,12 +412,22 @@ function App() {
 
             <MaintenanceRequests
               goBack={() => setCurrentView('home')}
-              userId={userId || 0} 
+              userId={userId || 0}
+              userRole={userRole}
+              onViewDetails={(prop) => { 
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('viewDetails');
+              }}
             />
           </>
         );
       
       case 'paymentHistory':
+        if (localStorage.getItem('token') === null) {
+          handleLogout();
+        }
+
         return (
           <>
             <span>
@@ -331,6 +437,8 @@ function App() {
 
             <PaymentHistory
               goBack={() => setCurrentView('home')}
+              userId={userId || 0}
+              userRole={userRole}
             />
           </>
         );

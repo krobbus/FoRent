@@ -137,6 +137,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                     <table className="appTable">
                         <thead>
                             <tr>
+                                <th>Application ID</th>
                                 <th>Property ID</th>
                                 <th>Applicant Name</th>
                                 <th>Applicant Contact</th>
@@ -151,7 +152,13 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                         <tbody>
                             {applications.map((app) => (
                                 <tr key={app.id}>
-                                    <td>{app.property_id || 'N/A'}</td>
+                                    <td># {app?.id}</td>
+                                    <td>
+                                        {app.property_id || 'N/A'} 
+                                        <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>
+                                            View Property
+                                        </button>
+                                    </td>
                                     <td>{app.tenant_fullname || 'N/A'}</td>
                                     <td>{app.tenant_contact || 'N/A'}</td>
                                     <td>{app.tenant_email || 'N/A'}</td>
@@ -164,20 +171,17 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                                         {app.status === 'pending' ? (
                                             (userRole === 'landlord' ? (
                                                 <div className="btnWrapper">
-                                                    <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>View Property</button>
                                                     <button className="approveBtn" onClick={() => handleStatusUpdate(app.id, 'approved')}>Approve</button>
                                                     <button className="rejectBtn" onClick={() => handleStatusUpdate(app.id, 'rejected')}>Reject</button>
                                                 </div>
                                             ) : (
                                                 <div className="btnWrapper">
-                                                    <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>View Property</button>
                                                     <button className="updateBtn" onClick={() => handleEditApplication(app)}>Update Details</button>
                                                     <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                                 </div>
                                             ))
                                         ) : (
                                             <div className="btnWrapper">
-                                                <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>View Property</button>
                                                 <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                             </div>
                                         )}

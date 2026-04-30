@@ -1,5 +1,7 @@
 export type Role = 'landlord' | 'tenant' | null;
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
+export type RequestStatus = 'pending' | 'finished';
+export type PriorityLevel = 'low' | 'moderate' | 'high';
 
 export interface AuthProps {
     goBack: () => void;
@@ -52,6 +54,7 @@ export interface PropertiesProps {
     setUserId: (id: number) => void;
     setUserRole: (role: Role) => void;
     onViewDetails: (property: PropertyDataProps) => void;
+    onCreateRequest: (property: PropertyDataProps) => void;
     onUpdateProperty: (property: PropertyDataProps) => void;
 }
 
@@ -132,11 +135,37 @@ export interface RentalApplicationsProps {
     onViewDetails: (property: PropertyDataProps) => void;
 }
 
+export interface CreateRequestsProps {
+    property: any;
+    userId: number;
+    userRole: Role;
+    onSuccess: () => void;
+    onCancel: () => void;
+    editMode?: boolean;
+    existingRequest?: MaintenanceRequestsDataProps | null;
+}
+
+export interface MaintenanceRequestsDataProps {
+    id: number;
+    property_id: number;
+    issue_title: string;
+    issue_field: string;
+    issue_description: string;
+    priority: PriorityLevel;
+    status: RequestStatus;
+    request_date: string;
+    resolved_date: string;
+}
+
 export interface MaintenanceRequestsProps {
     goBack: () => void;
     userId: number;
+    userRole: Role;
+    onViewDetails: (property: PropertyDataProps) => void;
 }
 
 export interface PaymentHistoryProps {
     goBack: () => void;
+    userId: number;
+    userRole: Role;
 }

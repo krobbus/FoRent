@@ -1,18 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { authFetch } from '../utils/api';
-import type { ProfileDataProps, ApplyRentalProps } from './props';
+import type { ProfileDataProps, CreateRequestsProps } from './props';
 
-function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingApplication = null }: ApplyRentalProps) {
+function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingRequest = null }: CreateRequestsProps) {
     const [loading, setLoading] = useState(true)
     const [profile, setProfile] = useState<ProfileDataProps | null>(null)
     const [submitting, setSubmitting] = useState(false)
 
     const [formData, setFormData] = useState({
-        moveInDate: existingApplication?.move_in_date ? existingApplication.move_in_date.slice(0, 10) : '',
-        leaseTerm: existingApplication?.lease_term != null ? String(existingApplication.lease_term) : '',
-        message: existingApplication?.message ?? '',
-        tenantContact: existingApplication?.tenant_contact ?? '',
-        tenantEmail: existingApplication?.tenant_email ?? ''
+        priorityLevel: existingRequest?.priority != null ? String(existingRequest.priority) : '',
+        issueTitle: existingRequest?.issue_title ?? '',
+        issueField: existingRequest?.issue_field != null ? String(existingRequest.issue_field) : '',
+        issueDescription: existingRequest?.issue_description ?? '',
     });
 
     const full_name = useMemo(() => {
@@ -31,11 +30,6 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                 if (response.ok) {
                     const data = await response.json();
                     setProfile(data);
-                    if (!editMode) {
-                        setFormData(prev => ({ 
-                            ...prev, tenantContact: data.contact_num || '', tenantEmail: data.email || '' 
-                        }))
-                    };
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -51,26 +45,24 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
         e.preventDefault();
         setSubmitting(true);
 
-        const applicationData = {
-            move_in_date: formData.moveInDate,
-            tenant_contact: formData.tenantContact,
-            tenant_email: formData.tenantEmail,
-            lease_term: formData.leaseTerm,
-            message: formData.message,
+        const requestsData = {
+            priorityLevel: formData.priorityLevel,
+            issueTitle: formData.issueTitle,
+            issueDescription: formData.issueDescription,
         };
 
         try {
             const url = editMode
-                ? `http://localhost:5000/api/applications/${existingApplication?.id}`
+                ? `http://localhost:5000/api/applications/${existingRequest?.id}`
                 : 'http://localhost:5000/api/applications';
             
             const method = editMode ? 'PATCH' : 'POST';
-            const body = editMode ? applicationData : {
+            const body = editMode ? requestsData : {
                 property_id: property?.id,
                 tenant_id: userId,
                 tenant_fullname: full_name,
                 status: 'pending',
-                ...applicationData,
+                ...requestsData,
             };
 
             const response = await authFetch(url, {
@@ -80,8 +72,8 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
 
             if (response.ok) {
                 alert(editMode 
-                    ? 'Application updated successfully!' 
-                    : `Application for ${property?.property_name} submitted successfully!`
+                    ? 'Request updated successfully!' 
+                    : `Request for ${property?.property_name} submitted successfully!`
                 );
                 onSuccess();
             } else {
@@ -99,21 +91,21 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
     if (userRole !== 'tenant') {
         return (
             <div className="errorContainer">
-                <p>Only verified tenants are allowed to apply for properties.</p>
+                <p>Only verified tenants are allowed to create for requests.</p>
                 <button onClick={onCancel}>Go Back</button>
             </div>
         );
     }
 
     return (
-        <section id="applyRentalContainer">
+        <section id="applyMaintenanceContainer">
             {loading ? (
                 <p>Loading Details...</p>
             ) : (
                 <>
                     <header>
-                        <h2>{editMode ? 'Update Application' : 'Apply For Rental'}</h2>
-                        <p>You're applying for <strong>{property?.property_name ?? 'this Property'}</strong></p>
+                        <h2>{editMode ? 'Update' : 'Create'} Maintenance Request</h2>
+                        <p>You're creating maintenance request for <strong>{property?.property_name ?? 'this Property'}</strong></p>
                     </header>
 
                     {property && (
@@ -181,58 +173,58 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                         </fieldset>
 
                         <fieldset className="applicationDetails">
-                            <legend>Lease Information</legend>
-
+                            <legend>Request Information</legend>
+                            
                             <div className="formGroup">
-                                <label>Preferred Move-in Date <span style={{ color: 'red' }}>*</span></label>
-                                <input 
-                                    type="date" 
-                                    required 
-                                    value={formData.moveInDate}
-                                    onChange={(e) => setFormData({...formData, moveInDate: e.target.value})}
-                                />
-                            </div>
-
-                            <div className="formGroup">
-                                <label>Lease Duration (Months) <span style={{ color: 'red' }}>*</span></label>
+                                <label>Priority Level <span style={{ color: 'red' }}>*</span></label>
                                 <select 
-                                    value={formData.leaseTerm}
-                                    onChange={(e) => setFormData({...formData, leaseTerm: e.target.value})}
+                                    value={formData.priorityLevel}
+                                    onChange={(e) => setFormData({...formData, priorityLevel: e.target.value})}
+                                    required
                                 >
-                                    <option value="6">6 Months</option>
-                                    <option value="12">12 Months</option>
-                                    <option value="24">24 Months</option>
+                                    <option value="low">Low (Routine)</option>
+                                    <option value="moderate">Moderate (Repair Soon)</option>
+                                    <option value="high">High (Urgent)</option>
                                 </select>
                             </div>
 
                             <div className="formGroup">
-                                <label>Application Contact Number (Optional)</label>
+                                <label>Title of Issue</label>
                                 <input 
-                                    type="tel" 
-                                    placeholder="09XXXXXXXXX"
-                                    value={formData.tenantContact}
-                                    onChange={(e) => setFormData({...formData, tenantContact: e.target.value})}
-                                />
-                            </div>
-
-                            <div className="formGroup">
-                                <label>Application Email <span style={{ color: 'red' }}>*</span></label>
-                                <input 
-                                    type="email" 
-                                    placeholder="XXXXXXX@XXXXX.com"
-                                    value={formData.tenantEmail}
-                                    onChange={(e) => setFormData({...formData, tenantEmail: e.target.value})}
+                                    type="text" 
+                                    placeholder="Enter the title of your issue..."
+                                    value={formData.issueTitle}
+                                    onChange={(e) => setFormData({...formData, issueTitle: e.target.value})}
                                     required
                                 />
                             </div>
 
                             <div className="formGroup">
-                                <label>Message to Landlord (Optional)</label>
+                                <label>Category of Issue <span style={{ color: 'red' }}>*</span></label>
+                                <select 
+                                    value={formData.issueField}
+                                    onChange={(e) => setFormData({...formData, issueField: e.target.value})}
+                                    required
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="plumbing">Plumbing</option>
+                                    <option value="electrical">Electrical</option>
+                                    <option value="hvac">Heating/Cooling</option>
+                                    <option value="appliances">Appliances</option>
+                                    <option value="structural">Structural/Carpentry</option>
+                                    <option value="safety">Safety & Security</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div className="formGroup">
+                                <label>Description of the Issue</label>
                                 <textarea 
-                                    placeholder="Tell the landlord a bit about yourself..."
+                                    placeholder="Tell the issue or concern on your property..."
                                     rows={4}
-                                    value={formData.message}
-                                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                                    value={formData.issueDescription}
+                                    onChange={(e) => setFormData({...formData, issueDescription: e.target.value})}
+                                    required
                                 />
                             </div>
                         </fieldset>
@@ -242,7 +234,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                             <button type="submit" className="submitBtn" disabled={submitting}>
                                 {submitting 
                                 ? 'Saving...' : editMode 
-                                ? 'Save Changes' : 'Submit Application'}
+                                ? 'Save Changes' : 'Submit Request'}
                             </button>
                         </div>
                     </form>
@@ -252,4 +244,4 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
     );
 }
 
-export default ApplyRental
+export default CreateRequests
