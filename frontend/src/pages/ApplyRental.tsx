@@ -178,6 +178,27 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                                     className="disabledInput"
                                 />
                             </div>
+
+                            <div className="formGroup">
+                                <label>Application Email <span style={{ color: 'red' }}>*</span></label>
+                                <input 
+                                    type="email" 
+                                    placeholder="XXXXXXX@XXXXX.com"
+                                    value={formData.tenantEmail}
+                                    onChange={(e) => setFormData({...formData, tenantEmail: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="formGroup">
+                                <label>Application Contact Number (Optional)</label>
+                                <input 
+                                    type="tel" 
+                                    placeholder="09XXXXXXXXX"
+                                    value={formData.tenantContact}
+                                    onChange={(e) => setFormData({...formData, tenantContact: e.target.value})}
+                                />
+                            </div>
                         </fieldset>
 
                         <fieldset className="applicationDetails">
@@ -199,31 +220,11 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                                     value={formData.leaseTerm}
                                     onChange={(e) => setFormData({...formData, leaseTerm: e.target.value})}
                                 >
+                                    <option value="">Select Category</option>
                                     <option value="6">6 Months</option>
                                     <option value="12">12 Months</option>
                                     <option value="24">24 Months</option>
                                 </select>
-                            </div>
-
-                            <div className="formGroup">
-                                <label>Application Contact Number (Optional)</label>
-                                <input 
-                                    type="tel" 
-                                    placeholder="09XXXXXXXXX"
-                                    value={formData.tenantContact}
-                                    onChange={(e) => setFormData({...formData, tenantContact: e.target.value})}
-                                />
-                            </div>
-
-                            <div className="formGroup">
-                                <label>Application Email <span style={{ color: 'red' }}>*</span></label>
-                                <input 
-                                    type="email" 
-                                    placeholder="XXXXXXX@XXXXX.com"
-                                    value={formData.tenantEmail}
-                                    onChange={(e) => setFormData({...formData, tenantEmail: e.target.value})}
-                                    required
-                                />
                             </div>
 
                             <div className="formGroup">
