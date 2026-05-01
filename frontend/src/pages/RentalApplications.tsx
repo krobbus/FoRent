@@ -169,22 +169,23 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                                     {userRole === 'landlord' && <td>{!app.message ? "No message from applicant." : app.message }</td>}
                                     <td>
                                         {app.status === 'pending' ? (
-                                            (userRole === 'landlord' ? (
+                                            userRole === 'landlord' ? (
                                                 <div className="btnWrapper">
-                                                    <button className="approveBtn" onClick={() => handleStatusUpdate(app.id, 'approved')}>Approve</button>
-                                                    <button className="rejectBtn" onClick={() => handleStatusUpdate(app.id, 'rejected')}>Reject</button>
+                                                    <button className="approveBtn" onClick={() => handleStatusUpdate(app.id, 'approved')}>Mark Approve</button>
+                                                    <button className="rejectBtn" onClick={() => handleStatusUpdate(app.id, 'rejected')}>Mark Reject</button>
+                                                    <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                                 </div>
                                             ) : (
                                                 <div className="btnWrapper">
                                                     <button className="updateBtn" onClick={() => handleEditApplication(app)}>Update Details</button>
                                                     <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                                 </div>
-                                            ))
-                                        ) : (
+                                            )
+                                        ) : app.status === 'approved' || app.status === 'rejected' || app.status === 'withdrawn' ? (
                                             <div className="btnWrapper">
                                                 <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
                                             </div>
-                                        )}
+                                        ) : null}
                                     </td>
                                 </tr>
                             ))}

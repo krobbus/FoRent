@@ -77,16 +77,37 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
     try {
         await client.query('BEGIN');
 
+        const current = await client.query(
+            'SELECT * FROM rental_applications WHERE id = $1', [id]
+        );
+
+        if (current.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: "Application not found" });
+        }
+
+        const currentStatus = current.rows[0].status;
+
+        if ((status === 'approved' || status === 'rejected') && currentStatus !== 'pending') {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: "Only pending applications can be approved or rejected" });
+        }
+
+        if (status === 'withdrawn' && !['pending', 'approved'].includes(currentStatus)) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: "Only pending or approved applications can be withdrawn" });
+        }
+
+        if (status === 'pending' && currentStatus !== 'pending') {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: "Cannot revert application back to pending" });
+        }
+
         const result = await client.query(
             `UPDATE rental_applications SET status = $1, updated_at = CURRENT_TIMESTAMP
              WHERE id = $2 RETURNING *`,
             [status, id]
         );
-
-        if (result.rows.length === 0) {
-            await client.query('ROLLBACK');
-            return res.status(404).json({ error: "Application not found" });
-        }
 
         const application = result.rows[0];
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { authFetch } from '../utils/api'
-import type { MaintenanceRequestsDataProps, MaintenanceRequestsProps } from './props'
+import type { MaintenanceRequestsDataProps, MaintenanceRequestsProps, PriorityLevel } from './props'
 import CreateRequests from './CreateRequests'
 
 function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: MaintenanceRequestsProps) {
@@ -68,12 +68,15 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
 
     const handleStatusUpdate = async (reqId: number, newStatus: string) => {
         const confirmed = window.confirm(
-            `Are you sure the #${reqId} ID request is ${newStatus === 'finished' ? 'finished' : 'pending'}? This cannot be undone.`
+            `Are you sure you want to mark request #${reqId} as ${
+                newStatus === 'finished' ? 'finished' :
+                newStatus === 'cancelled' ? 'cancelled' : newStatus
+            }? This cannot be undone.`
         );
         if (!confirmed) return;
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/applications/${reqId}/status`,
+            const response = await authFetch(`http://localhost:5000/api/maintenance/${reqId}/status`,
                 {
                     method: 'PATCH',
                     body: JSON.stringify({ status: newStatus }),
@@ -99,7 +102,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
         if (!confirmed) return;
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/applications/${reqId}`, {
+            const response = await authFetch(`http://localhost:5000/api/maintenance/${reqId}`, {
                 method: 'DELETE',
             });
 
@@ -113,6 +116,16 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
         } catch (error) {
             console.error("Delete failed", error);
             alert("An error occurred while deleting the request.");
+        }
+    };
+
+    const getPriorityLabel = (priority: PriorityLevel) => {
+        switch (priority) {
+            case 'low': return 'Low (Routine)';
+            case 'moderate': return 'Moderate (Repair Soon)';
+            case 'high': return 'High (Urgent)';
+            case 'emergency': return 'Emergency (Critical)';
+            default: return 'N/A';
         }
     };
 
@@ -155,31 +168,33 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
                                             View Property
                                         </button>
                                     </td>
-                                    <td>{req.issue_title || 'N/A'}</td>
-                                    <td>{req.issue_field || 'N/A'}</td>
-                                    <td>{req.issue_description || 'No description of the issue available'}</td>
-                                    <td>{req.priority || 'N/A'}</td>
-                                    <td>{req.status || 'N/A'}</td>
-                                    <td>{new Date(req.request_date || 'N/A').toLocaleDateString()}</td>
-                                    <td>{new Date(req.resolved_date || 'N/A').toLocaleDateString()}</td>
+                                    <td>{req.issue_title ? req.issue_title.charAt(0).toUpperCase() + req.issue_title.slice(1) : 'N/A'}</td>
+                                    <td>{req.issue_field ? req.issue_field.charAt(0).toUpperCase() + req.issue_field.slice(1) : 'N/A'}</td>
+                                    <td>{req.issue_description ? req.issue_description.charAt(0).toUpperCase() + req.issue_description.slice(1) : 'No description of the issue available'}</td>
+                                    <td>{getPriorityLabel(req.priority)}</td>
+                                    <td>{req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : 'N/A'}</td>
+                                    <td>{req.request_date ? new Date(req.request_date).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{req.resolved_date || 'Not yet resolved'}</td>
                                     <td>
                                         {req.status === 'pending' ? (
-                                            (userRole === 'landlord' ? (
+                                            userRole === 'landlord' ? (
                                                 <div className="btnWrapper">
-                                                    <button className="approveBtn" onClick={() => handleStatusUpdate(req.id, 'approved')}>Approve</button>
-                                                    <button className="rejectBtn" onClick={() => handleStatusUpdate(req.id, 'rejected')}>Reject</button>
+                                                    <button className="finishedBtn" onClick={() => handleStatusUpdate(req.id, 'finished')}>Mark Finished</button>
+                                                    <button className="cancelledBtn" onClick={() => handleStatusUpdate(req.id, 'cancelled')}>Mark Cancelled</button>
+                                                    <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
                                                 </div>
                                             ) : (
                                                 <div className="btnWrapper">
                                                     <button className="updateBtn" onClick={() => handleEditRequest(req)}>Update Details</button>
+                                                    <button className="cancelRequestBtn" onClick={() => handleStatusUpdate(req.id, 'cancelled')}>Cancel Request</button>
                                                     <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
                                                 </div>
-                                            ))
-                                        ) : (
+                                            )
+                                        ) : req.status === 'finished' || req.status === 'cancelled' ? (
                                             <div className="btnWrapper">
-                                                <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Application</button>
+                                                <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
                                             </div>
-                                        )}
+                                        ) : null}
                                     </td>
                                 </tr>
                             ))}

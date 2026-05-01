@@ -1,7 +1,7 @@
 export type Role = 'landlord' | 'tenant' | null;
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
-export type RequestStatus = 'pending' | 'finished';
-export type PriorityLevel = 'low' | 'moderate' | 'high';
+export type RequestStatus = 'pending' | 'in_progress' | 'finished' | 'cancelled';
+export type PriorityLevel = 'low' | 'moderate' | 'high' | 'emergency';
 
 export interface AuthProps {
     goBack: () => void;
@@ -155,6 +155,9 @@ export interface MaintenanceRequestsDataProps {
     status: RequestStatus;
     request_date: string;
     resolved_date: string;
+    tenant_fullname: string;
+    tenant_contact: string; 
+    tenant_email: string;
 }
 
 export interface MaintenanceRequestsProps {

@@ -12,6 +12,8 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
         issueTitle: existingRequest?.issue_title ?? '',
         issueField: existingRequest?.issue_field != null ? String(existingRequest.issue_field) : '',
         issueDescription: existingRequest?.issue_description ?? '',
+        tenantEmail: existingRequest?.tenant_email ?? '',
+        tenantContact: existingRequest?.tenant_contact ?? '',
     });
 
     const full_name = useMemo(() => {
@@ -30,6 +32,11 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                 if (response.ok) {
                     const data = await response.json();
                     setProfile(data);
+                    if (!editMode) {
+                        setFormData(prev => ({ 
+                            ...prev, tenantContact: data.contact_num || '', tenantEmail: data.email || '' 
+                        }))
+                    };
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -46,15 +53,18 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
         setSubmitting(true);
 
         const requestsData = {
-            priorityLevel: formData.priorityLevel,
-            issueTitle: formData.issueTitle,
-            issueDescription: formData.issueDescription,
+            priority: formData.priorityLevel,
+            issue_title: formData.issueTitle,
+            issue_field: formData.issueField,
+            issue_description: formData.issueDescription,
+            tenant_contact: formData.tenantContact,
+            tenant_email: formData.tenantEmail
         };
 
         try {
             const url = editMode
-                ? `http://localhost:5000/api/applications/${existingRequest?.id}`
-                : 'http://localhost:5000/api/applications';
+                ? `http://localhost:5000/api/maintenance/${existingRequest?.id}`
+                : 'http://localhost:5000/api/maintenance';
             
             const method = editMode ? 'PATCH' : 'POST';
             const body = editMode ? requestsData : {
@@ -170,6 +180,27 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                                     className="disabledInput"
                                 />
                             </div>
+
+                            <div className="formGroup">
+                                <label>Application Email <span style={{ color: 'red' }}>*</span></label>
+                                <input 
+                                    type="email" 
+                                    placeholder="XXXXXXX@XXXXX.com"
+                                    value={formData.tenantEmail}
+                                    onChange={(e) => setFormData({...formData, tenantEmail: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="formGroup">
+                                <label>Application Contact Number (Optional)</label>
+                                <input 
+                                    type="tel" 
+                                    placeholder="09XXXXXXXXX"
+                                    value={formData.tenantContact}
+                                    onChange={(e) => setFormData({...formData, tenantContact: e.target.value})}
+                                />
+                            </div>
                         </fieldset>
 
                         <fieldset className="applicationDetails">
@@ -182,14 +213,16 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                                     onChange={(e) => setFormData({...formData, priorityLevel: e.target.value})}
                                     required
                                 >
+                                    <option value="">Select Category</option>
                                     <option value="low">Low (Routine)</option>
                                     <option value="moderate">Moderate (Repair Soon)</option>
                                     <option value="high">High (Urgent)</option>
+                                    <option value="emergency">Emergency (Safety Risk)</option>
                                 </select>
                             </div>
 
                             <div className="formGroup">
-                                <label>Title of Issue</label>
+                                <label>Title of Issue <span style={{ color: 'red' }}>*</span></label>
                                 <input 
                                     type="text" 
                                     placeholder="Enter the title of your issue..."
@@ -218,7 +251,7 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                             </div>
 
                             <div className="formGroup">
-                                <label>Description of the Issue</label>
+                                <label>Description of the Issue <span style={{ color: 'red' }}>*</span></label>
                                 <textarea 
                                     placeholder="Tell the issue or concern on your property..."
                                     rows={4}
