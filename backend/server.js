@@ -5,6 +5,7 @@ require('dotenv').config();
 const app = express();
 
 app.use(cors());
+app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 
 const pool = new Pool({
@@ -25,6 +26,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/profile'));
 app.use('/api/properties', require('./routes/properties'));
 app.use('/api/applications', require('./routes/applications'));
-app.use('/api/maintenance', require('./routes/maintenance'))
+app.use('/api/maintenance', require('./routes/maintenance'));
+app.use('/api/payment', require('./routes/payment'));
 
 app.listen(process.env.SERVER_PORT, () => console.log('Server running'));

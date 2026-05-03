@@ -2,6 +2,8 @@ export type Role = 'landlord' | 'tenant' | null;
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
 export type RequestStatus = 'pending' | 'in_progress' | 'finished' | 'cancelled';
 export type PriorityLevel = 'low' | 'moderate' | 'high' | 'emergency';
+export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded';
+export type PaymentMethod = 'cash' | 'bank_transfer' | 'gcash' | 'card' | 'other';
 
 export interface AuthProps {
     goBack: () => void;
@@ -165,6 +167,22 @@ export interface MaintenanceRequestsProps {
     userId: number;
     userRole: Role;
     onViewDetails: (property: PropertyDataProps) => void;
+}
+
+export interface PaymentHistoryDataProps {
+    id: number;
+    property_id: number;
+    property_name: string;
+    tenant_id: number;
+    landlord_id: number;
+    amount: number;
+    payment_method: PaymentMethod;
+    period_covered: string;
+    payment_date: string;
+    status: PaymentStatus;
+    notes: string;
+    recorded_by: string;
+    created_at: string;
 }
 
 export interface PaymentHistoryProps {

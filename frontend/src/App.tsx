@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getUserFromToken } from './utils/auth';
 import type { Role } from './pages/props'
 import './App.css'
 
@@ -20,11 +21,24 @@ import CreateRequests from './pages/CreateRequests'
 import MaintenanceRequests from './pages/MaintenanceRequests'
 
 import PaymentHistory from './pages/PaymentHistory'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentCancel from './pages/PaymentCancel'
 
 function App() {
-  const [userRole, setUserRole] = useState<Role>(null)
-  const [userId, setUserId] = useState<number | null>(null)
-  const [currentView, setCurrentView] = useState('home')
+  const [userRole, setUserRole] = useState<Role>(() => {
+    return getUserFromToken()?.userRole || null;
+  });
+  const [userId, setUserId] = useState<number | null>(() => {
+    return getUserFromToken()?.userId || null;
+  });
+  const [currentView, setCurrentView] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get('payment');
+
+    if (payment === 'success') return 'paymentSuccess';
+    if (payment === 'cancel') return 'paymentCancel';
+    return 'home';
+  });
   const [previousView, setPreviousView] = useState('home')
   const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
   const propertyLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
@@ -437,6 +451,44 @@ function App() {
 
             <PaymentHistory
               goBack={() => setCurrentView('home')}
+              userId={userId || 0}
+              userRole={userRole}
+            />
+          </>
+        );
+
+      case 'paymentSuccess':
+        return (
+          <>
+            <span>
+              &gt;<a onClick={() => setCurrentView('home')}> Home </a>
+              &gt;<span className='activeCrumb'> Payment Success </span>
+            </span>
+
+            <PaymentSuccess 
+              goBack={() => {
+                window.history.replaceState({}, '', '/');
+                setCurrentView('paymentHistory');
+              }}
+              userId={userId || 0}
+              userRole={userRole}
+            />
+          </>
+        );
+
+      case 'paymentCancel':
+        return (
+          <>
+            <span>
+              &gt;<a onClick={() => setCurrentView('home')}> Home </a>
+              &gt;<span className='activeCrumb'> Payment Cancelled </span>
+            </span>
+
+            <PaymentCancel
+              goBack={() => {
+                window.history.replaceState({}, '', '/');
+                setCurrentView('paymentHistory');
+              }}
               userId={userId || 0}
               userRole={userRole}
             />

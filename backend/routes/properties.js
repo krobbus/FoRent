@@ -20,6 +20,21 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/rented', authenticateToken, async (req, res) => {
+    const { userId } = req.query;
+    try {
+        const result = await req.pool.query(`
+            SELECT p.id, p.property_name 
+            FROM properties p
+            JOIN tenants t ON p.tenant_id = t.user_id
+            WHERE t.user_id = $1 AND p.status = 'rented'
+        `, [userId]);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
