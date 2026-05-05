@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import type { PropertyDataProps, ViewDetailsProps } from './props'
+import { authFetch } from '../utils/api';
+import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from './props'
 
-function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) {
+function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, onViewRentalApplications }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
+    const [applications, checkApplications] = useState<RentalApplicationDataProps[]>([])
 
     useEffect(() => {
         const fetchProperties = async () => {
@@ -19,6 +21,24 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
         };
 
         fetchProperties();
+    }, []);
+
+    useEffect(() => {
+        const fetchApplications = async () => {
+            setLoading(true);
+
+            try {
+                const response = await authFetch(`http://localhost:5000/api/applications/view?userId=${userId}&userRole=${userRole}`);
+                const data = await response.json();
+                checkApplications(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Failed to load applications", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchApplications();
     }, []);
 
     if (!property) {
@@ -86,7 +106,11 @@ function ViewDetails({ onViewApplyRental, goBack, property }: ViewDetailsProps) 
                             </div>
 
                             <div className='btnWrapper'>
-                                <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
+                                {applications.some(app => app.property_id === property.id) ?
+                                    <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
+                                    :
+                                    <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
+                                }
                                 <button className='detailBtn' onClick={goBack}>Go Back</button>
                             </div>
                         </>

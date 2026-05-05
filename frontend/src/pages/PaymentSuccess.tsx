@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import type { PaymentHistoryProps } from './props';
+import type { PaymentProps } from './props';
 
-function PaymentSuccess({goBack} : PaymentHistoryProps) {
+function PaymentSuccess({goBack} : PaymentProps) {
     useEffect(() => {
         const timer = setTimeout(() => {
             window.history.replaceState({}, '', '/');

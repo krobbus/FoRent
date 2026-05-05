@@ -8,15 +8,16 @@ router.get('/view', authenticateToken, async (req, res) => {
         let result;
         if (userRole === 'landlord') {
             result = await req.pool.query(`
-                SELECT ra.* FROM rental_applications ra
+                SELECT ra.*, p.property_name FROM rental_applications ra
                 JOIN properties p ON ra.property_id = p.id
                 JOIN landlords l ON p.landlord_id = l.id
                 WHERE l.user_id = $1 ORDER BY ra.created_at DESC
             `, [userId]);
         } else {
             result = await req.pool.query(`
-                SELECT ra.* FROM rental_applications ra
+                SELECT ra.*, p.property_name FROM rental_applications ra
                 JOIN tenants t ON ra.tenant_id = t.id
+                JOIN properties p ON ra.property_id = p.id
                 WHERE t.user_id = $1 ORDER BY ra.created_at DESC
             `, [userId]);
         }

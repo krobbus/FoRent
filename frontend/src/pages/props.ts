@@ -1,7 +1,7 @@
 export type Role = 'landlord' | 'tenant' | null;
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
 export type RequestStatus = 'pending' | 'in_progress' | 'finished' | 'cancelled';
-export type PriorityLevel = 'low' | 'moderate' | 'high' | 'emergency';
+export type PriorityLevel = 'low' | 'medium' | 'high' | 'emergency';
 export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded';
 export type PaymentMethod = 'cash' | 'bank_transfer' | 'gcash' | 'card' | 'other';
 
@@ -44,9 +44,11 @@ export interface UpdateProfileProps {
 }
 
 export interface MarketplaceProps {
-    property: any;
+    userId: number;
+    userRole: Role;
     onViewDetails: (property: PropertyDataProps) => void;
     onViewApplyRental: (property: PropertyDataProps) => void;
+    onViewRentalApplications: () => void;
 }
 
 export interface PropertiesProps {
@@ -88,12 +90,16 @@ export interface PropertyDataProps {
     };
     other_amenities: string[];
     other_amenities_count: number;
+    image?: string | null;
 }
 
 export interface ViewDetailsProps {
-    onViewApplyRental: () => void;
     goBack: () => void;
+    userRole: Role;
+    userId: number;
     property: PropertyDataProps;
+    onViewApplyRental: () => void;
+    onViewRentalApplications: () => void;
 }
 
 export interface AddPropertyProps {
@@ -120,6 +126,7 @@ export interface ApplyRentalProps {
 export interface RentalApplicationDataProps {
     id: number;
     property_id: number;
+    property_name: string;
     status: ApplicationStatus;
     applied_at: string;
     message?: string;
@@ -150,6 +157,7 @@ export interface CreateRequestsProps {
 export interface MaintenanceRequestsDataProps {
     id: number;
     property_id: number;
+    property_name: string;
     issue_title: string;
     issue_field: string;
     issue_description: string;
@@ -189,4 +197,9 @@ export interface PaymentHistoryProps {
     goBack: () => void;
     userId: number;
     userRole: Role;
+    onViewDetails: (property: PropertyDataProps) => void;
+}
+
+export interface PaymentProps {
+    goBack: () => void;
 }

@@ -122,7 +122,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
     const getPriorityLabel = (priority: PriorityLevel) => {
         switch (priority) {
             case 'low': return 'Low (Routine)';
-            case 'moderate': return 'Moderate (Repair Soon)';
+            case 'medium': return 'Moderate (Repair Soon)';
             case 'high': return 'High (Urgent)';
             case 'emergency': return 'Emergency (Critical)';
             default: return 'N/A';
@@ -163,7 +163,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
                                 <tr key={req.id}>
                                     <td>{req?.id}</td>
                                     <td>
-                                        {req.property_id || 'N/A'} 
+                                        {req.property_name || 'N/A'} 
                                         <button className="viewDetails" onClick={() => handleViewDetails(req.property_id)}>
                                             View Property
                                         </button>

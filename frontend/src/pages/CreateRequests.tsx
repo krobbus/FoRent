@@ -215,7 +215,7 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                                 >
                                     <option value="">Select Category</option>
                                     <option value="low">Low (Routine)</option>
-                                    <option value="moderate">Moderate (Repair Soon)</option>
+                                    <option value="medium">Moderate (Repair Soon)</option>
                                     <option value="high">High (Urgent)</option>
                                     <option value="emergency">Emergency (Safety Risk)</option>
                                 </select>

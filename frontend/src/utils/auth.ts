@@ -2,7 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 import type { Role } from '../pages/props';
 
 interface TokenPayload {
-    userId: number;
+    id: number;
     role: Role;
 }
 
@@ -12,7 +12,12 @@ export const getUserFromToken = (): { userId: number; userRole: Role } | null =>
 
     try {
         const decoded = jwtDecode<TokenPayload>(token);
-        return { userId: decoded.userId, userRole: decoded.role };
+
+        const userId = decoded.id ?? null;
+        const userRole = decoded.role ?? null;
+
+        if (!userId || !userRole) return null;
+        return { userId, userRole };
     } catch {
         return null;
     }

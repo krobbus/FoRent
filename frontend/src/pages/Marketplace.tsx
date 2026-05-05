@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
-import type { MarketplaceProps, PropertyDataProps } from './props'
+import { useEffect, useState } from 'react';
+import { authFetch } from '../utils/api';
+import type { MarketplaceProps, PropertyDataProps, RentalApplicationDataProps } from './props';
 
-function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
-    const [properties, setProperties] = useState<PropertyDataProps[]>([])
-    const [loading, setLoading] = useState(true)
+function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onViewRentalApplications }: MarketplaceProps) {
+    const [loading, setLoading] = useState(true);
+    const [properties, setProperties] = useState<PropertyDataProps[]>([]);
+    const [applications, checkApplications] = useState<RentalApplicationDataProps[]>([])
 
     useEffect(() => {
         const fetchProperties = async () => {
@@ -20,6 +22,22 @@ function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
         };
 
         fetchProperties();
+    }, []);
+
+    useEffect(() => {
+        const fetchApplications = async () => {
+            try {
+                const response = await authFetch(`http://localhost:5000/api/applications/view?userId=${userId}&userRole=${userRole}`);
+                const data = await response.json();
+                checkApplications(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Failed to load applications", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchApplications();
     }, []);
 
     const availableProperties = properties.filter(p => p.status?.toLowerCase() === 'available');
@@ -82,9 +100,11 @@ function Marketplace({ onViewDetails, onViewApplyRental }: MarketplaceProps) {
                                 </div>
 
                                 <div className='btnWrapper'>
-                                    <button className='applyBtn' onClick={() => onViewApplyRental(p)}>
-                                        Apply Now
-                                    </button>
+                                    {applications.some(app => app.property_id === p.id) ?
+                                        <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
+                                        :
+                                        <button className='applyBtn' onClick={() => onViewApplyRental(p)}>Apply Now</button>
+                                    }
                                     
                                     <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                         View Details

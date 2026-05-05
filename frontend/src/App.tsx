@@ -199,20 +199,13 @@ function App() {
             </span>
 
             <ViewDetails
-              onViewApplyRental={() => { 
-                setSelectedProperty(selectedProperty); 
-                setCurrentView('applyRental'); 
-              }}
-              
               goBack={() => {
                 setSelectedProperty(null);
 
                 if (previousView === 'home') {
                   navigateTo('availablePropertySection');
                 } else if(previousView === 'myProperties' || 
-                  previousView === 'myRentals' || 
-                  previousView === 'rentalApplications' ||
-                  previousView === 'maintenanceRequests'
+                  previousView === 'myRentals' || 'rentalApplications' || 'maintenanceRequests' || 'paymentHistory'
                 ){
                   setCurrentView(previousView);
                 }else {
@@ -220,7 +213,16 @@ function App() {
                 }
               }}
 
+              userRole={userRole}
+              userId={userId || 0}
               property={selectedProperty}
+              onViewApplyRental={() => { 
+                setSelectedProperty(selectedProperty); 
+                setCurrentView('applyRental'); 
+              }}
+              onViewRentalApplications={() => {
+                setCurrentView('rentalApplications'); 
+              }}
             />
           </>
         );
@@ -291,7 +293,11 @@ function App() {
                 }
               }}> Home </a> 
               
-              {(previousView === 'myProperties' || previousView === 'myRentals' || previousView === 'rentalApplications') && (
+              {(
+                previousView === 'myProperties' || 
+                previousView === 'myRentals' || 
+                previousView === 'rentalApplications'
+              ) && (
                 <>
                   &gt;<a onClick={() => {
                     setSelectedProperty(null);
@@ -453,6 +459,11 @@ function App() {
               goBack={() => setCurrentView('home')}
               userId={userId || 0}
               userRole={userRole}
+              onViewDetails={(prop) => { 
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('viewDetails');
+              }}
             />
           </>
         );
@@ -470,8 +481,6 @@ function App() {
                 window.history.replaceState({}, '', '/');
                 setCurrentView('paymentHistory');
               }}
-              userId={userId || 0}
-              userRole={userRole}
             />
           </>
         );
@@ -489,8 +498,6 @@ function App() {
                 window.history.replaceState({}, '', '/');
                 setCurrentView('paymentHistory');
               }}
-              userId={userId || 0}
-              userRole={userRole}
             />
           </>
         );
@@ -514,7 +521,8 @@ function App() {
 
             <section id='availablePropertySection'>
               <Marketplace
-                property={selectedProperty}
+                userId={userId || 0}
+                userRole={userRole}
                 onViewApplyRental={(prop) => {
                   setSelectedProperty(prop);
                   setPreviousView('home');
@@ -524,6 +532,9 @@ function App() {
                   setSelectedProperty(prop);
                   setPreviousView('home');
                   setCurrentView('viewDetails');
+                }}
+                onViewRentalApplications={() => {
+                  setCurrentView('rentalApplications'); 
                 }}
               />
             </section>

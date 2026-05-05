@@ -189,11 +189,11 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
 
         const result = await client.query(
             `UPDATE payment_history 
-             SET status = $1,
-                 payment_date = CASE WHEN $1 = 'paid' THEN CURRENT_TIMESTAMP ELSE payment_date END,
-                 updated_at = CURRENT_TIMESTAMP
-             WHERE id = $2 RETURNING *`,
-            [status, id]
+            SET status = $1,
+                payment_date = CASE WHEN $2 = 'paid' THEN CURRENT_TIMESTAMP ELSE payment_date END,
+                updated_at = CURRENT_TIMESTAMP
+             WHERE id = $3 RETURNING *`,
+            [status, status, id]
         );
 
         await client.query('COMMIT');

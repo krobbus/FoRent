@@ -24,6 +24,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         },
         other_amenities: [] as string[],
         other_amenities_count: 0,
+        image: null as string | null,
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -52,6 +53,17 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
         const updatedAmenities = [...formData.other_amenities];
         updatedAmenities[index] = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, other_amenities: updatedAmenities });
+    }
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setFormData({ ...formData, image: event.target?.result as string });
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     const handleSubmit = async (e: ChangeEvent) => {
@@ -95,7 +107,8 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         parking: false,
                     },
                     other_amenities: [] as string[],
-                    other_amenities_count: 0
+                    other_amenities_count: 0,
+                    image: null
                 });
                 alert("Property added successfully!");
                 goBack();
@@ -142,6 +155,10 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         <option value='house'>House</option>
                         <option value='condo'>Condo</option>
                     </select>
+
+                    <label>Property Image (optional):</label>
+                    <input type='file' accept='image/*' onChange={handleImageChange} />
+                    {formData.image && <img src={formData.image} alt='Property preview' style={{ maxWidth: '200px', marginTop: '10px' }} />}
 
                     <fieldset>
                         <legend>Select Type of Rooms</legend>

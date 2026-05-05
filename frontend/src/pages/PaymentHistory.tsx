@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { authFetch } from '../utils/api';
 import type { PaymentHistoryDataProps, PaymentHistoryProps, PaymentStatus } from './props';
 
-function PaymentHistory({ goBack, userId, userRole }: PaymentHistoryProps) {
+function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHistoryProps) {
     const [payments, setPayments] = useState<PaymentHistoryDataProps[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -54,22 +54,6 @@ function PaymentHistory({ goBack, userId, userRole }: PaymentHistoryProps) {
         if (userId) fetchRentedProperties();
     }, [userId]);
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const payment = params.get('payment');
-
-        if (payment) {
-            let attempts = 0;
-            const interval = setInterval(async () => {
-                await fetchPayments();
-                attempts++;
-                if (attempts >= 5) clearInterval(interval);
-            }, 2000);
-
-            return () => clearInterval(interval);
-        }
-    }, []);
-
     const getStatusLabel = (status: PaymentStatus) => {
         switch (status) {
             case 'paid': return 'Paid';
@@ -88,6 +72,18 @@ function PaymentHistory({ goBack, userId, userRole }: PaymentHistoryProps) {
             case 'card': return 'Card';
             case 'other': return 'Other';
             default: return '';
+        }
+    };
+
+    const handleViewDetails = async (propertyId: number) => {
+        try {
+            const response = await authFetch(`http://localhost:5000/api/properties/${propertyId}`);
+            if (response.ok) {
+                const propertyData = await response.json();
+                onViewDetails(propertyData);
+            }
+        } catch (error) {
+            console.error("Failed to fetch property", error);
         }
     };
 
@@ -322,7 +318,7 @@ function PaymentHistory({ goBack, userId, userRole }: PaymentHistoryProps) {
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>#</th>
                                 <th>Property</th>
                                 <th>Amount</th>
                                 <th>Method</th>
@@ -335,14 +331,19 @@ function PaymentHistory({ goBack, userId, userRole }: PaymentHistoryProps) {
                             </tr>
                         </thead>
                         <tbody>
-                            {payments.map((payment) => (
+                            {payments.map((payment, index) => (
                                 <tr key={payment.id}>
-                                    <td>#{payment.id}</td>
-                                    <td>{payment.property_name || payment.property_id}</td>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                        {payment.property_name || payment.property_id}
+                                        <button className="viewDetails" onClick={() => handleViewDetails(payment.property_id)}>
+                                            View Property
+                                        </button>
+                                    </td>
                                     <td>₱{Number(payment.amount).toLocaleString()}</td>
                                     <td>{getMethodLabel(payment.payment_method)}</td>
                                     <td>{payment.period_covered || 'N/A'}</td>
-                                    <td>{new Date(payment.payment_date || 'N/A').toLocaleDateString()}</td>
+                                    <td>{payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'Cancelled'}</td>
                                     <td>
                                         <span className={`statusBadge ${payment.status}`}>
                                             {getStatusLabel(payment.status)}
@@ -371,7 +372,11 @@ function PaymentHistory({ goBack, userId, userRole }: PaymentHistoryProps) {
                                             </div>
                                         )}
 
-                                        {(payment.status === 'failed' || payment.status === 'refunded') && (
+                                        {(
+                                            (payment.status === 'paid' && userRole === 'tenant') || 
+                                            payment.status === 'failed' || 
+                                            payment.status === 'refunded'
+                                        ) && ( 
                                             <div className="btnWrapper">
                                                 <button className="deleteBtn" onClick={() => handleDelete(payment.id)}>
                                                     Delete

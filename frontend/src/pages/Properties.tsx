@@ -87,6 +87,7 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                         <>
                                             {landlordProperties.map(p => (
                                                 <div key={p.id} className='propertyCard'>
+                                                    {p.image && <img src={p.image} alt={p.property_name} style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />}
                                                     <div className='propertyInfo'>
                                                         <h3>{p.property_name}</h3>
                                                         <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>

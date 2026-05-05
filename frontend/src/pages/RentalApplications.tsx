@@ -137,8 +137,8 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                     <table className="appTable">
                         <thead>
                             <tr>
-                                <th>Application ID</th>
-                                <th>Property ID</th>
+                                <th>#</th>
+                                <th>Property Name</th>
                                 <th>Applicant Name</th>
                                 <th>Applicant Contact</th>
                                 <th>Applicant Email</th>
@@ -150,11 +150,11 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                         </thead>
 
                         <tbody>
-                            {applications.map((app) => (
+                            {applications.map((app, index) => (
                                 <tr key={app.id}>
-                                    <td># {app?.id}</td>
+                                    <td>{index + 1}</td>
                                     <td>
-                                        {app.property_id || 'N/A'} 
+                                        {app.property_name || 'N/A'} 
                                         <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>
                                             View Property
                                         </button>
