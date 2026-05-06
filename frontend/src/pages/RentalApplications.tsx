@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { authFetch } from '../utils/api';
-import type { RentalApplicationsProps, RentalApplicationDataProps } from './props'
+import type { RentalApplicationsProps, RentalApplicationDataProps } from '../utils/props'
 import ApplyRental from './ApplyRental';
 
 function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalApplicationsProps) {

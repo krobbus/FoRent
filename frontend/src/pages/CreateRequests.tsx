@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { authFetch } from '../utils/api';
-import type { ProfileDataProps, CreateRequestsProps } from './props';
+import type { ProfileDataProps, CreateRequestsProps } from '../utils/props';
 
 function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingRequest = null }: CreateRequestsProps) {
     const [loading, setLoading] = useState(true)

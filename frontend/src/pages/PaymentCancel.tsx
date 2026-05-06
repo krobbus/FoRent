@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { PaymentProps } from './props';
+import type { PaymentProps } from '../utils/props';
 
 function PaymentCancel({goBack} : PaymentProps) {
     useEffect(() => {

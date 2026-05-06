@@ -1,28 +1,28 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { getUserFromToken } from './utils/auth';
-import type { Role } from './pages/props'
-import './App.css'
+import type { Role } from './utils/props';
+import './App.css';
 
-import Auth from './pages/Auth'
-import Marketplace from './pages/Marketplace'
-import Properties from './pages/Properties'
-import ViewDetails from './pages/ViewDetails'
+import Auth from './pages/Auth';
+import Marketplace from './pages/Marketplace';
+import Properties from './pages/Properties';
+import ViewDetails from './pages/ViewDetails';
 
-import ViewProfile from './pages/ViewProfile'
-import UpdateProfile from './pages/UpdateProfile'
+import ViewProfile from './pages/ViewProfile';
+import UpdateProfile from './pages/UpdateProfile';
 
-import AddProperty from './pages/AddProperty'
-import UpdateProperty from './pages/UpdateProperty'
+import AddProperty from './pages/AddProperty';
+import UpdateProperty from './pages/UpdateProperty';
 
-import ApplyRental from './pages/ApplyRental'
-import RentalApplications from './pages/RentalApplications'
+import ApplyRental from './pages/ApplyRental';
+import RentalApplications from './pages/RentalApplications';
 
-import CreateRequests from './pages/CreateRequests'
-import MaintenanceRequests from './pages/MaintenanceRequests'
+import CreateRequests from './pages/CreateRequests';
+import MaintenanceRequests from './pages/MaintenanceRequests';
 
-import PaymentHistory from './pages/PaymentHistory'
-import PaymentSuccess from './pages/PaymentSuccess'
-import PaymentCancel from './pages/PaymentCancel'
+import PaymentHistory from './pages/PaymentHistory';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 
 function App() {
   const [userRole, setUserRole] = useState<Role>(() => {
@@ -62,20 +62,6 @@ function App() {
               }}
             />
           </>
-        );
-
-      case 'viewAnalytics':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
-        
-        return (
-          <div>
-            <h2>
-              {currentView === 'viewAnalytics' && 'Analytics'}
-            </h2>
-            <p>Content for {currentView} will go here.</p>
-          </div>
         );
 
       case 'viewProfile':
@@ -579,7 +565,6 @@ function App() {
 
               { userRole === 'landlord' && 
                 <>
-                  <li><a onClick={() => setCurrentView('viewAnalytics')}>Analytics</a></li>
                   <li><a onClick={() => setCurrentView('myProperties')}>My Properties</a></li>
                   <ul>
                     <li><a onClick={() => setCurrentView('addProperty')}>Add New Property</a></li>

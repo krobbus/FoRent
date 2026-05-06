@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { authFetch } from '../utils/api'
-import type { UpdateProfileProps } from './props'
+import type { UpdateProfileProps } from '../utils/props'
 
 function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfileProps) {
     const [loading, setLoading] = useState(true);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { UpdatePropertyProps } from "./props";
+import type { UpdatePropertyProps } from "../utils/props";
 
 function UpdateProperty({ goBack, property, onSuccess }: UpdatePropertyProps) {
     const existingAmenities = Array.isArray(property.amenities) ? (property.amenities as string[]) : [];
@@ -26,6 +26,7 @@ function UpdateProperty({ goBack, property, onSuccess }: UpdatePropertyProps) {
         },
         other_amenities: existingAmenities.filter(a => !knownAmenities.includes(a)),
         other_amenities_count: existingAmenities.filter(a => !knownAmenities.includes(a)).length,
+        image: property.image || null,
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -53,6 +54,17 @@ function UpdateProperty({ goBack, property, onSuccess }: UpdatePropertyProps) {
         const updated = [...formData.other_amenities];
         updated[index] = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, other_amenities: updated });
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setFormData({ ...formData, image: event.target?.result as string });
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
@@ -110,6 +122,10 @@ function UpdateProperty({ goBack, property, onSuccess }: UpdatePropertyProps) {
                         <option value='house'>House</option>
                         <option value='condo'>Condo</option>
                     </select>
+
+                    <label>Property Image (optional):</label>
+                    <input type='file' accept='image/*' onChange={handleImageChange} />
+                    {formData.image && <img src={formData.image} alt='Property preview' style={{ maxWidth: '200px', marginTop: '10px' }} />}
 
                     <fieldset>
                         <legend>Select Type of Rooms</legend>

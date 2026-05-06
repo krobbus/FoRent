@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/api';
-import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from './props'
+import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from '../utils/props';
+import PropertyGallery from '../component/PropertyGallery';
 
 function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, onViewRentalApplications }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
@@ -41,6 +42,16 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
         fetchApplications();
     }, []);
 
+    useEffect(() => {
+        if (!property?.id) return;
+
+        fetch(`http://localhost:5000/api/analytics/properties/${property.id}/view`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ viewer_user_id: userId || null }),
+        }).catch(() => {});
+    }, [property?.id]);
+
     if (!property) {
         return (
             <section id='viewDetailsContainer'>
@@ -64,6 +75,13 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
                     {properties.length > 0 &&
                         <>
                             <div className='fullDetailsView'>
+                                <PropertyGallery
+                                    images={Array.isArray(property.images) 
+                                        ? property.images 
+                                        : JSON.parse(property.images || '[]'
+                                    )}
+                                />
+
                                 <h3>{property.property_name}</h3>
                                 <p>{property.address ? `Address: ${property.address}` : 'No address available'}</p>
                                 <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>

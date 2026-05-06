@@ -1,8 +1,10 @@
 import React, { useState, type ChangeEvent } from 'react'
 import { authFetch } from '../utils/api'
-import type { AddPropertyProps } from './props'
+import type { AddPropertyProps } from '../utils/props'
 
 function AddProperty({ goBack, userId }: AddPropertyProps){
+    const [images, setImages] = useState<string[]>([]);
+    
     const [formData, setFormData] = useState({
         name: '',
         address: '',
@@ -23,48 +25,59 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
             parking: false,
         },
         other_amenities: [] as string[],
-        other_amenities_count: 0,
-        image: null as string | null,
-    })
+        other_amenities_count: 0
+
+    });
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64 = event.target?.result as string;
+                setImages(prev => {
+                    if (prev.includes(base64)) {
+                        alert(`"${file.name}" is already selected.`);
+                        return prev;
+                    }
+                    return [...prev, base64];
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        e.target.value = '';
+    };
+    const removeImage = (index: number) => {setImages(prev => prev.filter((_, i) => i !== index))};
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    }
+    };
 
     const handleCapitalize = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, [e.target.name]: capitalized });
-    }
+    };
 
     const adjustCount = (field: string, delta: number) => {
         setFormData(prev => ({
             ...prev, [field]: Math.max(0, (prev[field as keyof typeof prev] as number) + delta)
         }));
-    }
+    };
 
     const handleOtherRoomCountChange = (index: number, value: string) => {
         const updatedRooms = [...formData.other_rooms];
         updatedRooms[index] = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, other_rooms: updatedRooms });
-    }
+    };
 
     const handleOtherAmenityChange = (index: number, value: string) => {
         const updatedAmenities = [...formData.other_amenities];
         updatedAmenities[index] = value.charAt(0).toUpperCase() + value.slice(1);
         setFormData({ ...formData, other_amenities: updatedAmenities });
-    }
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setFormData({ ...formData, image: event.target?.result as string });
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+    };
 
     const handleSubmit = async (e: ChangeEvent) => {
         e.preventDefault();
@@ -77,6 +90,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     ...formData, 
+                    images,
                     landlord_id: userId,
                     status: 'available',
                     amenities: {
@@ -107,8 +121,7 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         parking: false,
                     },
                     other_amenities: [] as string[],
-                    other_amenities_count: 0,
-                    image: null
+                    other_amenities_count: 0
                 });
                 alert("Property added successfully!");
                 goBack();
@@ -130,6 +143,19 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
 
             <main>
                 <form onSubmit={handleSubmit}>
+                    <label>Property Images (optional):</label>
+                    <input type='file' accept='image/*' onChange={handleImageChange} multiple />
+                    <div className='imgPreviewGrid'>
+                        {images.map((img, i) => (
+                            <div key={i} className='imgPreviewItem'>
+                                <img src={img} alt={`Preview ${i + 1}`} style={{ maxWidth:'200px' }}/>
+                                <button type='button' className='removeImg' onClick={() => removeImage(i)}>
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
                     <label>Property Name: <span style={{ color: 'red' }}>*</span></label>
                     <input name='name' type='text' placeholder={`Type the property name here...`} value={formData.name} onChange={handleCapitalize} required />
                     
@@ -155,10 +181,6 @@ function AddProperty({ goBack, userId }: AddPropertyProps){
                         <option value='house'>House</option>
                         <option value='condo'>Condo</option>
                     </select>
-
-                    <label>Property Image (optional):</label>
-                    <input type='file' accept='image/*' onChange={handleImageChange} />
-                    {formData.image && <img src={formData.image} alt='Property preview' style={{ maxWidth: '200px', marginTop: '10px' }} />}
 
                     <fieldset>
                         <legend>Select Type of Rooms</legend>

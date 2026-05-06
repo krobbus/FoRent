@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { authFetch } from '../utils/api'
-import type { PropertyDataProps, PropertiesProps} from './props'
+import type { PropertyDataProps, PropertiesProps } from '../utils/props'
 import AddProperty from './AddProperty'
+import PropertyGallery from '../component/PropertyGallery'
 
 function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest, onUpdateProperty }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
@@ -87,7 +88,13 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                         <>
                                             {landlordProperties.map(p => (
                                                 <div key={p.id} className='propertyCard'>
-                                                    {p.image && <img src={p.image} alt={p.property_name} style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />}
+                                                    <PropertyGallery
+                                                        images={Array.isArray(p.images) 
+                                                            ? p.images 
+                                                            : JSON.parse(p.images || '[]'
+                                                        )}
+                                                    />
+
                                                     <div className='propertyInfo'>
                                                         <h3>{p.property_name}</h3>
                                                         <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
@@ -159,6 +166,13 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                         <>
                                             {tenantRentals.map(p => (
                                                 <div key={p.id} className='propertyCard rented'>
+                                                    <PropertyGallery
+                                                        images={Array.isArray(p.images) 
+                                                            ? p.images 
+                                                            : JSON.parse(p.images || '[]'
+                                                        )}
+                                                    />
+                                                    
                                                     <div className='propertyInfo'>
                                                         <h3>{p.property_name}</h3>
                                                         <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>

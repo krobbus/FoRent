@@ -67,6 +67,7 @@ export interface PropertyDataProps {
     property_name: string;
     landlord_id: number;
     tenant_id: number | null;
+    images?: string | null;
     tenant_first_name: string | null;
     tenant_last_name: string | null;
     tenant_ext_name: string | null; 
@@ -90,7 +91,33 @@ export interface PropertyDataProps {
     };
     other_amenities: string[];
     other_amenities_count: number;
-    image?: string | null;
+}
+
+export interface FilterState {
+    priceMin: string;
+    priceMax: string;
+    category: string;
+    hasWifi: boolean;
+    hasAircon: boolean;
+    hasParking: boolean;
+    hasBedroom: boolean;
+    hasKitchen: boolean;
+    hasBathroom: boolean;
+    occupancy: string;
+    hasPets: boolean;
+}
+
+export interface PropertySearchProps {
+    query: string;
+    onQueryChange: (q: string) => void;
+    filters: FilterState;
+    onFiltersChange: (f: FilterState) => void;
+}
+
+export interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
 }
 
 export interface ViewDetailsProps {

@@ -1,5 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
-import type { Role } from '../pages/props';
+import type { Role } from './props';
 
 interface TokenPayload {
     id: number;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { authFetch } from '../utils/api';
-import type { ProfileDataProps, ApplyRentalProps } from './props';
+import type { ProfileDataProps, ApplyRentalProps } from '../utils/props';
 
 function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingApplication = null }: ApplyRentalProps) {
     const [loading, setLoading] = useState(true)

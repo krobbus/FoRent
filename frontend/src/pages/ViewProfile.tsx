@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { authFetch } from '../utils/api'
-import type { UserDataProps, ProfileDataProps, ViewProfileProps } from './props'
+import type { UserDataProps, ProfileDataProps, ViewProfileProps } from '../utils/props'
 
 function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileProps){
     const [user, setUser] = useState<UserDataProps | null>(null);

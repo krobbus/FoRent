@@ -1,5 +1,5 @@
 import React, { useState, type ChangeEvent } from 'react'
-import type { AuthProps } from './props'
+import type { AuthProps } from '../utils/props'
 
 function Auth({ goBack, setUserRole, setUserId }: AuthProps){
     const [isLogin, setIsLogin] = useState(true)

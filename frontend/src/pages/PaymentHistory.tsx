@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { authFetch } from '../utils/api';
-import type { PaymentHistoryDataProps, PaymentHistoryProps, PaymentStatus } from './props';
+import type { PaymentHistoryDataProps, PaymentHistoryProps, PaymentStatus } from '../utils/props';
 
 function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHistoryProps) {
     const [payments, setPayments] = useState<PaymentHistoryDataProps[]>([]);

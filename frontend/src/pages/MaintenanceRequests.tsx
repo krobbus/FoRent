@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { authFetch } from '../utils/api'
-import type { MaintenanceRequestsDataProps, MaintenanceRequestsProps, PriorityLevel } from './props'
+import type { MaintenanceRequestsDataProps, MaintenanceRequestsProps, PriorityLevel } from '../utils/props'
 import CreateRequests from './CreateRequests'
 
 function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: MaintenanceRequestsProps) {
