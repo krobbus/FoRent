@@ -24,7 +24,6 @@ app.use((req, _res, next) => {
 
 app.use('/api', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
-app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api', require('./routes/profile'));
 app.use('/api/properties', require('./routes/properties'));
 app.use('/api/applications', require('./routes/applications'));

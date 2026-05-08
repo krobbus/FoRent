@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "dev": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
+    "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
     "start-frontend": "cd frontend && npm run dev",
-    "start-backend": "cd backend && npm run dev"
+    "start-backend": "cd backend && nodemon server.js"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.3.0",
@@ -19,5 +19,8 @@
     "stripe": "^22.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "sass-embedded": "^1.99.0"
   }
 }

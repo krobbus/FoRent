@@ -1,0 +1,187 @@
+*{
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body{
+    font-family: $font;
+
+    .headerWrapper{
+        background-image: 
+            linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
+            url('Background.png');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: $gap;
+        color: $colorOrange;
+        height: 100vh;
+        width: 100%;
+        box-sizing: border-box;  
+
+        h1{ font-size: $titleSize; }
+        h2{ font-size: $headerSize; }
+
+        .btnWrapper{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: $gap;
+            
+            button{
+                border: none;
+                font-size: $normalSize;
+                font-weight: bold;
+                color: $bgColorOrange;
+                background-color: $bgColorWhite;
+                cursor: pointer;
+                height: auto;
+                width: auto;
+                padding: $padding;
+                margin: $margin;
+                border-radius: $borderRadius;
+
+                &:hover, &.active{
+                    color: $bgColorWhite;
+                    background-color: $bgColorOrange;
+                }
+            }
+        }
+    }
+
+    nav{
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background: transparent;
+        z-index: 3000;
+
+        .fa-bars{
+            position: relative;
+            font-size: 3vmin;
+            color: $bgColorOrange;
+            background-color: $bgColorWhite;
+            border-bottom-right-radius: 50%;
+            padding: $padding;
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 3002;
+            transition: $transition;
+
+            &.show{
+                color: $bgColorWhite; 
+                background-color: transparent; 
+            }
+        }
+
+        .navTitle{
+            position: relative;
+            display: none;
+            align-items: center;
+            gap: $gap;
+            margin-left: 2vmin;
+            z-index: 3002;
+
+            img{
+                position: relative;
+                -webkit-user-drag: none;
+                height: auto;
+                width: 5vmin;
+                box-sizing: border-box;
+            }
+
+            h2{
+                position: relative;
+                font-size: $subheaderSize;
+                color: $colorWhite;
+                margin: 0;
+            }
+
+            &.show{
+                display: flex;
+            }
+        }
+
+        ul{
+            display: none;
+            flex-direction: column;
+            list-style: none;
+            background: $bgColorOrange;
+            position: fixed;
+            top: 0;
+            padding: 15vmin 4vmin;
+            height: 100vh;
+            width: 40vmin;
+            border-top-right-radius: $borderRadius;
+            box-shadow: $boxShadow;
+            transition: $transition;
+            pointer-events: auto;
+            overflow-x: hidden;
+            z-index: 2000;
+            box-sizing: border-box;
+
+            &.show {
+                display: flex !important;
+            }
+
+            li {              
+                width: 100%;
+                box-sizing: border-box;
+                
+                a {
+                    display: flex;
+                    padding: $padding;
+                    text-decoration: none;
+                    font-size: $normalSize;
+                    color: $colorWhite;
+                    cursor: pointer;
+                    border-top-left-radius: $borderRadius;
+                    border-bottom-left-radius: $borderRadius;
+                    transition: $transition;
+                    white-space: nowrap;
+                    width: 100%;
+                    box-sizing: border-box;
+
+                    &:hover, &:focus {
+                        position: relative;
+                        transform: translateX(2vmin);
+                        background-color: $bgColorWhite;
+                        color: $colorOrange;
+                    }
+                }
+            }
+        }
+    }
+
+    header{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: $gap;
+        color: $colorOrange;
+        padding: $padding;
+
+        h2{ font-size: $headerSize; }
+        p{ font-size: $normalSize; }
+    }
+
+    main{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: $gap;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

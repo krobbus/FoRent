@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getUserFromToken } from './utils/auth';
 import type { Role } from './utils/props';
-import './App.css';
+import '../src/styles/App.scss';
 
 import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
@@ -28,9 +28,11 @@ function App() {
   const [userRole, setUserRole] = useState<Role>(() => {
     return getUserFromToken()?.userRole || null;
   });
+
   const [userId, setUserId] = useState<number | null>(() => {
     return getUserFromToken()?.userId || null;
   });
+
   const [currentView, setCurrentView] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const payment = params.get('payment');
@@ -39,9 +41,16 @@ function App() {
     if (payment === 'cancel') return 'paymentCancel';
     return 'home';
   });
+
   const [previousView, setPreviousView] = useState('home')
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
   const propertyLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
+
+  const handleNavClick = (view: string) => {
+    setCurrentView(view);
+    setIsNavOpen(false);
+  };
 
   const renderMainContent = () => {
     switch (currentView) {
@@ -490,40 +499,37 @@ function App() {
 
       default:
         return (
-          <>     
-            <header id='homeSection'>
-              <div className='headerWrapper'>
-                <h1 className='mainTitle'>FoRent</h1>
-                <p className='subTitle'>Unlock the Door to Better Living</p>
-              </div>
+          <>
+            <div className='headerWrapper'>
+              <h1>FoRent</h1>
+              <h2>Unlock the Door to Better Living</h2>
 
               <div className='btnWrapper'>
                 {!userRole && (
                   <button onClick={() => setCurrentView('auth')}>Log In/Sign Up</button>
                 )}
-                <button onClick={() => navigateTo('availablePropertySection')}>See Available Properties</button>
-              </div>
-            </header>
 
-            <section id='availablePropertySection'>
-              <Marketplace
-                userId={userId || 0}
-                userRole={userRole}
-                onViewApplyRental={(prop) => {
-                  setSelectedProperty(prop);
-                  setPreviousView('home');
-                  setCurrentView('applyRental');
-                }}
-                onViewDetails={(prop) => {
-                  setSelectedProperty(prop);
-                  setPreviousView('home');
-                  setCurrentView('viewDetails');
-                }}
-                onViewRentalApplications={() => {
-                  setCurrentView('rentalApplications'); 
-                }}
-              />
-            </section>
+                <button onClick={() => navigateTo('marketplaceSection')}>See Available Properties</button>
+              </div>
+            </div>
+
+            <Marketplace
+              userId={userId || 0}
+              userRole={userRole}
+              onViewApplyRental={(prop) => {
+                setSelectedProperty(prop);
+                setPreviousView('home');
+                setCurrentView('applyRental');
+              }}
+              onViewDetails={(prop) => {
+                setSelectedProperty(prop);
+                setPreviousView('home');
+                setCurrentView('viewDetails');
+              }}
+              onViewRentalApplications={() => {
+                setCurrentView('rentalApplications'); 
+              }}
+            />
           </>
         );
     }
@@ -545,38 +551,52 @@ function App() {
 
   const handleLogout = () => {
     setUserRole(null); 
-    setUserId(null); 
-    localStorage.removeItem('token');
+    setUserId(null);
+    localStorage.clear();
     setCurrentView('home');
     setPreviousView('home');
   }
 
   return (
-    <section id='landpageContainer'>
-      <nav>
-        <ul>
+    <>
+      <nav className={`navbar ${isNavOpen ? 'nav-active' : ''}`}>
+        {userRole &&
+          <>
+            <i className={`fa-solid fa-bars ${isNavOpen ? 'show' : ''}`} onClick={() => setIsNavOpen(!isNavOpen)} />
+
+            <div className={`navTitle ${isNavOpen ? 'show' : ''}`}>
+              <img src='/Logo.png' />
+              <h2>FoRent</h2>
+            </div>
+          </>
+        }
+
+        <ul className={isNavOpen ? 'show' : ''}>
           {userRole && (
             <>
-              <li><a onClick={() => navigateTo('homeSection')}>Home</a></li>
-              <li><a onClick={() => setCurrentView('viewProfile')}>View Profile</a></li>
-              <ul>
-                <li><a onClick={() => setCurrentView('updateProfile')}>Update Profile</a></li>
-              </ul>
+              <li><a onClick={() => { 
+                navigateTo('homeSection'); 
+                setIsNavOpen(false); 
+              }}>Home</a></li>
+
+              <li><a onClick={() => handleNavClick('viewProfile')}>View Profile</a></li>
+              <li><a onClick={() => handleNavClick('updateProfile')}>Update Profile</a></li>
 
               { userRole === 'landlord' && 
                 <>
-                  <li><a onClick={() => setCurrentView('myProperties')}>My Properties</a></li>
-                  <ul>
-                    <li><a onClick={() => setCurrentView('addProperty')}>Add New Property</a></li>
-                  </ul>
+                  <li><a onClick={() => handleNavClick('myProperties')}>My Properties</a></li>
+                  <li><a onClick={() => handleNavClick('addProperty')}>Add New Property</a></li>
                 </>
               }
-              { userRole === 'tenant' && <li><a onClick={() => setCurrentView('myRentals')}>My Rentals</a></li> }
+              { userRole === 'tenant' && <li><a onClick={() => handleNavClick('myRentals')}>My Rentals</a></li> }
               
-              <li><a onClick={() => setCurrentView('rentalApplications')}>Rental Applications</a></li>
-              <li><a onClick={() => setCurrentView('maintenanceRequests')}>Maintenance Requests</a></li>
-              <li><a onClick={() => setCurrentView('paymentHistory')}>Payment History</a></li>
-              <li><a onClick={handleLogout}>Logout</a></li>
+              <li><a onClick={() => handleNavClick('rentalApplications')}>Rental Applications</a></li>
+              <li><a onClick={() => handleNavClick('maintenanceRequests')}>Maintenance Requests</a></li>
+              <li><a onClick={() => handleNavClick('paymentHistory')}>Payment History</a></li>
+              <li><a onClick={() => {
+                handleLogout(); 
+                setIsNavOpen(false);
+              }}>Logout</a></li>
             </>
           )}
         </ul>
@@ -585,7 +605,7 @@ function App() {
       <main>
         {renderMainContent()}
       </main>
-    </section>  
+    </>  
   )
 }
 
