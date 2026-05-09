@@ -7,6 +7,27 @@
 body{
     font-family: $font;
 
+    .navCrumb{
+        position: absolute;
+        top: 3vmin;
+        right: 5vmin;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        a, .activeCrumb{
+            color: $colorOrange;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        em{
+            color: $colorOrange;
+            padding: 0 $padding;
+        }
+    }
+
     .headerWrapper{
         background-image: 
             linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
@@ -125,7 +146,7 @@ body{
             box-shadow: $boxShadow;
             transition: $transition;
             pointer-events: auto;
-            overflow-x: hidden;
+            overflow: hidden;
             z-index: 2000;
             box-sizing: border-box;
 

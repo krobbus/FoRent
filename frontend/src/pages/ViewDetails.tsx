@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/api';
+import '../styles/ViewDetails.scss'
 import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from '../utils/props';
 import PropertyGallery from '../component/PropertyGallery';
 
@@ -75,24 +76,31 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
                     {properties.length > 0 &&
                         <>
                             <div className='fullDetailsView'>
-                                <PropertyGallery
-                                    images={Array.isArray(property.images) 
-                                        ? property.images 
-                                        : JSON.parse(property.images || '[]'
-                                    )}
-                                />
+                                <div className='propertyInfo'>
+                                    <div className='fullGalleryWrapper'>
+                                        <PropertyGallery
+                                            images={Array.isArray(property.images) 
+                                                ? property.images 
+                                                : JSON.parse(property.images || '[]'
+                                            )}
+                                        />
+                                    </div>
 
-                                <h3>{property.property_name}</h3>
-                                <p>{property.address ? `Address: ${property.address}` : 'No address available'}</p>
-                                <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
-
-                                <div className='pricing'>
-                                    <p>Price: ₱{property.price}</p>
+                                    <h3>{property.property_name}</h3>
+                                    <p>{property.address ? `Address: ${property.address}` : 'No address available'}</p>
+                                    <p>Category: {property.category.charAt(0).toUpperCase() + property.category.slice(1)}</p>
+                                    <p>Price: ₱{Number(property.price).toLocaleString()}</p>
                                     <p>Status: <strong>{property.status.charAt(0).toUpperCase() + property.status.slice(1)}</strong></p>
+                                    {property.status === 'rented' && property.tenant_first_name && (
+                                        <p>Current Tenant: <strong>
+                                            {[property.tenant_first_name, property.tenant_last_name, property.tenant_ext_name]
+                                                .filter(Boolean).join(' ')}
+                                        </strong></p>
+                                    )}   
                                 </div>
                                 
-                                <div className='rooms'>
-                                    <p>Category: {property.category.charAt(0).toUpperCase() + property.category.slice(1)}</p>
+                                <div className='propertyDetails'>
+                                    <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
                                     <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
                                     <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
                                     <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
@@ -107,19 +115,19 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
                                             <p>Other Rooms: No other rooms listed</p>
                                         )}
                                     </div>
-                                </div>
-                                
-                                <div className='occupants'>
-                                    <p>Max Occupants: {property.max_occupants}</p>
-                                    <p>{property.pets_allowed ? `Pets Allowed: ${property.pet_count}` : 'Pets not allowed'}</p>
-                                </div>
 
-                                <div className='amenities'>
-                                    {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
-                                        <p>Amenities: {property.amenities.join(', ')}</p>
-                                    ) : (
-                                        <p>Amenities: No amenities listed</p>
-                                    )}
+                                    <div className='occupants'>
+                                        <p>Max Occupants: {property.max_occupants}</p>
+                                        <p>{property.pets_allowed ? `Pets Allowed: ${property.pet_count}` : 'Pets not allowed'}</p>
+                                    </div>
+
+                                    <div className='amenities'>
+                                        {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
+                                            <p>Amenities: {property.amenities.join(', ')}</p>
+                                        ) : (
+                                            <p>Amenities: No amenities listed</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 

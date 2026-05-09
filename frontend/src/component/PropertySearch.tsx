@@ -81,7 +81,7 @@ function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: Prop
                                 value={filters.category}
                                 onChange={e => onFiltersChange({ ...filters, category: e.target.value })}
                             >
-                                <option value=''>All Categories</option>
+                                <option value='' className='default'>All Categories</option>
                                 <option value='apartment'>Apartment</option>
                                 <option value='house'>House</option>
                                 <option value='condo'>Condo</option>
@@ -94,7 +94,7 @@ function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: Prop
                                 value={filters.occupancy}
                                 onChange={e => onFiltersChange({ ...filters, occupancy: e.target.value })}
                             >
-                                <option value=''>Any</option>
+                                <option value='' className='default'>Any</option>
                                 <option value='solo'>Solo (1 person)</option>
                                 <option value='couple'>Couple (2 persons)</option>
                                 <option value='small'>Small Group (3–4)</option>

@@ -63,7 +63,7 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
     };
 
     return (
-        <section id='propertiesContainer'>
+        <>
             <header>
                 <h2>{userRole === 'landlord' ? 'My Properties' : 'My Current Rentals'}</h2>
                 <p>
@@ -73,7 +73,14 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                     }
                 </p>
             </header>
-
+            
+            <div className="actionBtnWrapper">
+                {userRole === 'landlord' && 
+                    <button type="button" className='addBtn' onClick={addProperty}>+ Add New Property</button>
+                }
+                <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
+            </div>
+            
             <main>
                 {loading ? (
                     <p>Loading properties...</p>
@@ -88,63 +95,95 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                         <>
                                             {landlordProperties.map(p => (
                                                 <div key={p.id} className='propertyCard'>
-                                                    <PropertyGallery
-                                                        images={Array.isArray(p.images) 
-                                                            ? p.images 
-                                                            : JSON.parse(p.images || '[]'
-                                                        )}
-                                                    />
+                                                    <h5 id="statusLabel">{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</h5>
+                                                    <h5 id="priceLabel">₱ {Number(p.price).toLocaleString()}</h5>
+
+                                                    <div className='galleryWrapper'>
+                                                        <PropertyGallery
+                                                            images={Array.isArray(p.images) 
+                                                                ? p.images 
+                                                                : JSON.parse(p.images || '[]'
+                                                            )}
+                                                        />
+                                                    </div>
 
                                                     <div className='propertyInfo'>
-                                                        <h3>{p.property_name}</h3>
-                                                        <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
-                                                        <p>Price: ₱{p.price}</p>
-                                                        <p>Status: <strong>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</strong></p>
-                                                        {p.status === 'rented' && p.tenant_first_name && (
-                                                            <p>Current Tenant: <strong>
-                                                                {[p.tenant_first_name, p.tenant_last_name, p.tenant_ext_name]
-                                                                    .filter(Boolean).join(' ')}
-                                                            </strong></p>
-                                                        )}
+                                                        <h2>{p.property_name}</h2>
+                                                        <p>{p.address ? `${p.address}` : 'No address available'}</p>
+                                                        <p>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
                                                     </div>
 
                                                     <div className='propertyDetails'>
-                                                        <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Available Rooms</p>
 
-                                                        <p>Available Rooms: 
-                                                            {[ 
-                                                                p.bedroom_count > 0 ? 'Bedroom' : '',
-                                                                p.kitchen_count > 0 ? 'Kitchen' : '',
-                                                                p.bathroom_count > 0 ? 'Bathroom' : '',
-                                                                p.other_rooms ? p.other_rooms : ''
-                                                            ].filter(Boolean).join(', ') || 'No rooms listed'}
-                                                        </p>
+                                                            <div className='pillRow'>
+                                                                {[ 
+                                                                    p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                    p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                    p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                    p.other_rooms ? p.other_rooms : ''
+                                                                ].filter(Boolean).map((room, i) => (
+                                                                    <span key={i} className='pill'>{room}</span>
+                                                                ))}
+                                                                {[ 
+                                                                    p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                    p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                    p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                    p.other_rooms ? p.other_rooms : ''
+                                                                ].filter(Boolean).length === 0 && (
+                                                                    <span className='pill'>No rooms listed</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
 
-                                                        <p>Occupancy: 
-                                                            {[ p.pets_allowed ? 'Pet-friendly' : '',
-                                                                getOccupancyLabel(p.max_occupants)
-                                                            ].filter(Boolean).join(' and ')}
-                                                        </p>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Occupancy</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {p.pets_allowed && <span className='pill'>Pet-friendly</span>}
+                                                                <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
+                                                            </div>
+                                                        </div>
 
-                                                        <p>Amenities: 
-                                                            { Array.isArray(p.amenities) && p.amenities.length > 0
-                                                                ? p.amenities.join(', ')
-                                                                : 'No amenities listed'
-                                                            }
-                                                        </p>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Amenities</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {(() => {
+                                                                    if (!Array.isArray(p.amenities) || p.amenities.length === 0)
+                                                                        return <span className='pill'>No amenities listed</span>;
+
+                                                                    const all = p.amenities
+                                                                        .flatMap(a => a.split(','))
+                                                                        .map(a => a.trim())
+                                                                        .filter(Boolean);
+
+                                                                    const visible = all.slice(0, 3);
+                                                                    const remaining = all.length - 3;
+
+                                                                    return (
+                                                                        <>
+                                                                            {visible.map((a, i) => <span key={i} className='pill'>{a}</span>)}
+                                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                                        </>
+                                                                    );
+                                                                })()}
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                     <div className='btnWrapper'>
                                                         <button className='detailBtn' onClick={() => onViewDetails(p)}>
-                                                            View Details
+                                                            View<br />Details
                                                         </button>
 
                                                         <button className='updateBtn' onClick={() => onUpdateProperty(p)}>
-                                                            Update Details
+                                                            Update<br />Details
                                                         </button>
 
                                                         <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>
-                                                            Delete Property
+                                                            Delete<br />Property
                                                         </button>
                                                     </div>
                                                 </div>
@@ -152,8 +191,6 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                         </>
                                     }
                                 </div>
-                                
-                                <button className='addBtn' onClick={addProperty}>+ Add New Property</button>
                             </section>
                         )}
 
@@ -166,44 +203,81 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                         <>
                                             {tenantRentals.map(p => (
                                                 <div key={p.id} className='propertyCard rented'>
-                                                    <PropertyGallery
-                                                        images={Array.isArray(p.images) 
-                                                            ? p.images 
-                                                            : JSON.parse(p.images || '[]'
-                                                        )}
-                                                    />
+                                                    <h5 id="statusLabel">{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</h5>
+                                                    <h5 id="priceLabel">₱ {Number(p.price).toLocaleString()}</h5>
+
+                                                    <div className='galleryWrapper'>
+                                                        <PropertyGallery
+                                                            images={Array.isArray(p.images) 
+                                                                ? p.images 
+                                                                : JSON.parse(p.images || '[]'
+                                                            )}
+                                                        />
+                                                    </div>
                                                     
                                                     <div className='propertyInfo'>
                                                         <h3>{p.property_name}</h3>
                                                         <p>{p.address ? `Address: ${p.address}` : 'No address available'}</p>
-                                                        <p>Price: ₱{p.price}</p>
-                                                        <p>Status: <strong>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</strong></p>
                                                     </div>
 
                                                     <div className='propertyDetails'>
-                                                        <p>Category: {p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Available Rooms</p>
 
-                                                        <p>Available Rooms: 
-                                                            {[ 
-                                                                p.bedroom_count > 0 ? 'Bedroom' : '',
-                                                                p.kitchen_count > 0 ? 'Kitchen' : '',
-                                                                p.bathroom_count > 0 ? 'Bathroom' : '',
-                                                                p.other_rooms ? p.other_rooms : ''
-                                                            ].filter(Boolean).join(', ') || 'No rooms listed'}
-                                                        </p>
+                                                            <div className='pillRow'>
+                                                                {[ 
+                                                                    p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                    p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                    p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                    p.other_rooms ? p.other_rooms : ''
+                                                                ].filter(Boolean).map((room, i) => (
+                                                                    <span key={i} className='pill'>{room}</span>
+                                                                ))}
+                                                                {[ 
+                                                                    p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                    p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                    p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                    p.other_rooms ? p.other_rooms : ''
+                                                                ].filter(Boolean).length === 0 && (
+                                                                    <span className='pill'>No rooms listed</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
 
-                                                        <p>Occupancy: 
-                                                            {[ p.pets_allowed ? 'Pet-friendly' : '',
-                                                                getOccupancyLabel(p.max_occupants)
-                                                            ].filter(Boolean).join(' and ')}
-                                                        </p>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Occupancy</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {p.pets_allowed && <span className='pill'>Pet-friendly</span>}
+                                                                <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
+                                                            </div>
+                                                        </div>
 
-                                                        <p>Amenities: 
-                                                            { Array.isArray(p.amenities) && p.amenities.length > 0
-                                                                ? p.amenities.join(', ')
-                                                                : 'No amenities listed'
-                                                            }
-                                                        </p>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Amenities</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {(() => {
+                                                                    if (!Array.isArray(p.amenities) || p.amenities.length === 0)
+                                                                        return <span className='pill'>No amenities listed</span>;
+
+                                                                    const all = p.amenities
+                                                                        .flatMap(a => a.split(','))
+                                                                        .map(a => a.trim())
+                                                                        .filter(Boolean);
+
+                                                                    const visible = all.slice(0, 3);
+                                                                    const remaining = all.length - 3;
+
+                                                                    return (
+                                                                        <>
+                                                                            {visible.map((a, i) => <span key={i} className='pill'>{a}</span>)}
+                                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                                        </>
+                                                                    );
+                                                                })()}
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                     <div className='btnWrapper'>
@@ -226,12 +300,8 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                         )}
                     </>
                 )}
-
-                <div className="btnWrapper">
-                    <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
-                </div>
             </main>
-        </section>
+        </>
     )
 }
 

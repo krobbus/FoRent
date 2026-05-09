@@ -1,0 +1,25 @@
+.fullDetailsView{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: $gap;
+
+    .propertyInfo{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: $gap;
+        width: 100%;
+        box-sizing: border-box;
+        
+        .fullGalleryView{
+            height: 100vmin;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+    }
+}

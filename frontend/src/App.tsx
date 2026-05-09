@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { getUserFromToken } from './utils/auth';
 import type { Role } from './utils/props';
+
 import '../src/styles/App.scss';
+import '../src/styles/PropertyGrid.scss'
 
 import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
@@ -57,10 +59,11 @@ function App() {
       case 'auth':
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<span className='activeCrumb'> Log In/Sign Up </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>Log In/Sign Up</span>
+            </div>
 
             <Auth
               goBack ={() => setCurrentView('home')}
@@ -80,10 +83,11 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<span className='activeCrumb'> View Profile </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>View Profile</span>
+            </div>
 
             <ViewProfile
               goBack={() => setCurrentView('home')}
@@ -104,11 +108,13 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<a onClick={() => setCurrentView('viewProfile')}> View Profile </a>
-              &gt;<span className='activeCrumb'> Update Profile </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <a onClick={() => setCurrentView('viewProfile')}>View Profile</a>
+              <em>&gt;</em>
+              <span className='activeCrumb'>Update Profile</span>
+            </div>
 
             <UpdateProfile
               goBack={() => setCurrentView('viewProfile')}
@@ -129,10 +135,11 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<span className='activeCrumb'> {propertyLabel} </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>{propertyLabel}</span>
+            </div>
 
             <Properties
               goBack={() => setCurrentView('home')}
@@ -171,27 +178,31 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => {
+            <div className='navCrumb'>
+              <a onClick={() => {
                 setSelectedProperty(null);
                 if (previousView === 'home') {
                   navigateTo('availablePropertySection');
                 } else {
                   setCurrentView('home');
                 }
-              }}> Home </a> 
+              }}>Home</a>
+
+              <em>&gt;</em>
               
               {(previousView === 'myProperties' || previousView === 'myRentals') && (
                 <>
-                  &gt;<a onClick={() => {
+                  <a onClick={() => {
                     setSelectedProperty(null);
                     setCurrentView(previousView);
-                  }}> {propertyLabel} </a>
+                  }}>{propertyLabel}</a>
+
+                  <em>&gt;</em>
                 </>
               )}
 
-              &gt;<span className='activeCrumb'> View Details </span>
-            </span>
+              <span className='activeCrumb'>View Details</span>
+            </div>
 
             <ViewDetails
               goBack={() => {
@@ -229,11 +240,13 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<a onClick={() => setCurrentView('myProperties')}> {propertyLabel} </a>
-              &gt;<span className='activeCrumb'> Add New Property </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <a onClick={() => setCurrentView('myProperties')}>{propertyLabel}</a>
+              <em>&gt;</em>
+              <span className='activeCrumb'>Add New Property</span>
+            </div>
 
             <AddProperty 
               goBack={() => setCurrentView('myProperties')}
@@ -249,11 +262,13 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<a onClick={() => setCurrentView('myProperties')}> {propertyLabel} </a>
-              &gt;<span className='activeCrumb'> Update Property </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <a onClick={() => setCurrentView('myProperties')}>{propertyLabel}</a>
+              <em>&gt;</em>
+              <span className='activeCrumb'>Update Property</span>
+            </div>
 
             <UpdateProperty 
               goBack={() => setCurrentView('myProperties')}
@@ -278,7 +293,7 @@ function App() {
 
         return (
           <>
-            <span>
+            <div className='navCrumb'>
               &gt;<a onClick={() => {
                 setSelectedProperty(null);
                 if (previousView === 'home') {
@@ -286,8 +301,10 @@ function App() {
                 } else {
                   setCurrentView('home');
                 }
-              }}> Home </a> 
-              
+              }}>Home</a>
+
+              <em>&gt;</em>
+
               {(
                 previousView === 'myProperties' || 
                 previousView === 'myRentals' || 
@@ -303,17 +320,21 @@ function App() {
                 </>
               )}
 
+              <em>&gt;</em>
+
               {previousView === 'viewDetails' && (
                 <>
                   &gt;<a onClick={() => {
                     setSelectedProperty(null);
                     setCurrentView('viewDetails');
-                  }}> View Details </a>
+                  }}>View Details</a>
                 </>
               )}
 
-              &gt;<span className='activeCrumb'> Apply for Rental </span>
-            </span>
+              <em>&gt;</em>
+
+              <span className='activeCrumb'>Apply for Rental</span>
+            </div>
 
             <ApplyRental
               property={selectedProperty}
@@ -344,10 +365,11 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<span className='activeCrumb'> Rental Applications </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>Rental Applications</span>
+            </div>
 
             <RentalApplications
               goBack={() => setCurrentView('home')}
@@ -369,12 +391,14 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => { setCurrentView('home')}}> Home </a>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+
+              <em>&gt;</em>
 
               {(previousView === 'myProperties' || previousView === 'myRentals' || previousView === 'maintenanceRequests') && (
                 <>
-                  &gt;<a onClick={() => {
+                  <a onClick={() => {
                     setSelectedProperty(null);
                     setCurrentView(previousView);
                   }}>
@@ -383,17 +407,21 @@ function App() {
                 </>
               )}
 
+              <em>&gt;</em>
+
               {previousView === 'viewDetails' && (
                 <>
-                  &gt;<a onClick={() => {
+                  <a onClick={() => {
                     setSelectedProperty(null);
                     setCurrentView('viewDetails');
-                  }}> View Details </a>
+                  }}>View Details</a>
                 </>
               )}
 
-              &gt;<span className='activeCrumb'> Create Requests </span>
-            </span>
+              <em>&gt;</em>
+
+              <span className='activeCrumb'>Create Requests</span>
+            </div>
 
             <CreateRequests
               property={selectedProperty}
@@ -420,10 +448,11 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<span className='activeCrumb'> Maintenance Requests </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em> 
+              <span className='activeCrumb'>Maintenance Requests</span>
+            </div>
 
             <MaintenanceRequests
               goBack={() => setCurrentView('home')}
@@ -445,10 +474,11 @@ function App() {
 
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a> 
-              &gt;<span className='activeCrumb'> Payment History </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>Payment History</span>
+            </div>
 
             <PaymentHistory
               goBack={() => setCurrentView('home')}
@@ -466,10 +496,11 @@ function App() {
       case 'paymentSuccess':
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a>
-              &gt;<span className='activeCrumb'> Payment Success </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>Payment Success</span>
+            </div>
 
             <PaymentSuccess 
               goBack={() => {
@@ -483,10 +514,11 @@ function App() {
       case 'paymentCancel':
         return (
           <>
-            <span>
-              &gt;<a onClick={() => setCurrentView('home')}> Home </a>
-              &gt;<span className='activeCrumb'> Payment Cancelled </span>
-            </span>
+            <div className='navCrumb'>
+              <a onClick={() => setCurrentView('home')}>Home</a> 
+              <em>&gt;</em>
+              <span className='activeCrumb'>Payment Cancelled</span>
+            </div>
 
             <PaymentCancel
               goBack={() => {
@@ -506,7 +538,7 @@ function App() {
 
               <div className='btnWrapper'>
                 {!userRole && (
-                  <button onClick={() => setCurrentView('auth')}>Log In/Sign Up</button>
+                  <button onClick={() => setCurrentView('auth')}>Log In / Sign Up</button>
                 )}
 
                 <button onClick={() => navigateTo('marketplaceSection')}>See Available Properties</button>
