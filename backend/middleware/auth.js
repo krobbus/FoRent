@@ -4,14 +4,18 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
 
-    if (!token) return res.status(401).json({ error: 'Access token required' });
+    if (!token) return res.status(401).json({
+        error: 'Access token required',
+        code: 'NO_TOKEN'
+    });
 
     jwt.verify(token, process.env.JWT_KEY, (err, user) => {
         if (err) {
-            const message = err.name === 'TokenExpiredError' 
-                ? 'Token expired' 
-                : 'Invalid token';
-            return res.status(403).json({ error: message });
+            const isExpired = err.name === 'TokenExpiredError';
+            return res.status(403).json({ 
+                error: isExpired ? 'Token expired' : 'Invalid token',
+                code: isExpired ? 'TOKEN_EXPIRED' : 'INVALID_TOKEN'
+            });
         }
         req.user = user;
         next();

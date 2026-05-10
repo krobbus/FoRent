@@ -1,161 +1,174 @@
-.actionBtnWrapper{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: $gap;
-    height: fit-content;
-    width: 50vmin;
-    box-sizing: border-box;
-
-    button{
-        flex: 1;
-        padding: 2vmin;
-        border-radius: $borderRadius;
-        font-size: $smallSize;
-        font-weight: bold;
-        cursor: pointer;
-        border: 0.3vmin solid $colorWhite;
-        transition: $transition;
-    }
-
-    .addBtn{
-        background-color: rgba(255, 162, 0);
-        color: $colorWhite;
-
-        &:hover{
-            background-color: rgba(255, 162, 0, 0.2);
-            color: $colorOrange;
-        }
-    }
-
-    .backBtn{
-        background-color: rgba(214, 48, 48);
-        color: $colorWhite;
-
-        &:hover{
-            background-color: rgba(214, 48, 48, 0.2);
-            color: rgba(214, 48, 48, 0.6);
-        }
-    }
-}
-
-.propertyGrid{
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    margin: $margin;
-    gap: $gap;
-
-    .propertyCard{
-        position: relative;
+#marketplaceContainer, #propertyContainer{
+    main{
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background: linear-gradient(#ffa20098, #ffa200);
-        color: $colorWhite;
-        border-radius: $borderRadius; 
-        overflow: hidden; 
-        width: 100%;
-        box-sizing: border-box;
-
-        .galleryWrapper{
-            height: 25vmin;
-            width: 100%;
-            box-sizing: border-box;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        #statusLabel, #priceLabel{
-            position: absolute;
-            color: $colorOrange;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 2vmin;
-            z-index: 999;
-        }
-
-        #statusLabel{
-            top: 0;
-            left: 0;
-            border-bottom-right-radius: $borderRadius;
-        }
-
-        #priceLabel{
-            top: 0;
-            right: 0;
-            border-bottom-left-radius: $borderRadius;
-        }
-
-        .propertyInfo{
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: $margin;
-            width: 100%;
-            box-sizing: border-box;
-
-            h2{ font-size: $headerSize; }
-            p{ 
-                font-size: $normalSize;
-                font-style: italic; 
-            }
-        }
-
-        .propertyDetails{
-            display: flex;
-            flex-direction: column;
-            gap: $gap;
+        
+        .propertyGrid{
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            margin: $margin;
             padding: $padding;
-            width: 100%;
-            box-sizing: border-box;
+            gap: $gap;
 
-            .detailSection{
+            .propertyCard{
+                position: relative;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                background: linear-gradient(#ffa20098, #ffa200);
+                color: $colorWhite;
+                border-radius: $borderRadius; 
+                overflow: hidden; 
                 width: 100%;
-                box-sizing: border-box;
 
-                .detailSectionLabel{
-                    font-size: $normalSize;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                    letter-spacing: 0.1em;
-                    opacity: 0.8;
-                    margin-bottom: 1vmin;
+                .galleryWrapper{
+                    height: 25vmin;
+                    width: 100%;
+                    overflow: hidden;
+                    flex-shrink: 0;
                 }
 
-                .pillRow{
+                #statusLabel, #priceLabel{
+                    position: absolute;
+                    color: $colorOrange;
+                    background-color: rgba(255, 255, 255, 0.8);
+                    padding: 2vmin;
+                    z-index: 999;
+                }
+
+                #statusLabel{
+                    top: 0;
+                    left: 0;
+                    border-bottom-right-radius: $borderRadius;
+                }
+
+                #priceLabel{
+                    top: 0;
+                    right: 0;
+                    border-bottom-left-radius: $borderRadius;
+                }
+
+                .propertyInfo{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: center;
+                    margin-top: $margin;
+                    width: 100%;
+
+                    h2{ font-size: $headerSize; }
+                    p{ 
+                        font-size: $normalSize;
+                        font-style: italic; 
+                    }
+                }
+
+                .propertyDetails{
+                    display: flex;
+                    flex-direction: column;
+                    gap: $gap;
+                    padding: $padding;
+                    width: 100%;
+
+                    .detailSection{
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+
+                        .detailSectionLabel{
+                            font-size: $normalSize;
+                            font-weight: bold;
+                            text-transform: uppercase;
+                            letter-spacing: 0.1em;
+                            opacity: 0.8;
+                            margin-bottom: 1vmin;
+                        }
+
+                        .pillRow{
+                            display: flex;
+                            flex-direction: row;
+                            flex-wrap: wrap;
+                            gap: 1vmin;
+
+                            .pill{
+                                font-size: $smallSize;
+                                background-color: $bgColorWhite;
+                                color: $colorOrange;
+                                padding: 0.8vmin 1.5vmin;
+                                border-radius: 999px;
+                                white-space: nowrap;
+                            }
+                        }
+                    }
+                }
+
+                .btnWrapper{
                     display: flex;
                     flex-direction: row;
-                    flex-wrap: wrap;
-                    gap: 1vmin;
+                    justify-content: center;
+                    align-items: center;
+                    gap: $gap;
+                    padding: $padding;
+                    height: fit-content;
+                    width: 100%;
 
-                    .pill{
+                    button{
+                        flex: 1;
+                        padding: 2vmin;
+                        border-radius: $borderRadius;
                         font-size: $smallSize;
-                        background-color: $bgColorWhite;
+                        font-weight: bold;
+                        cursor: pointer;
+                        border: 0.3vmin solid $colorWhite;
+                        transition: $transition;
+                    }
+
+                    .applyBtn, .updateBtn, .paymentBtn, .requestBtn{
+                        background-color: $colorWhite;
                         color: $colorOrange;
-                        padding: 0.8vmin 1.5vmin;
-                        border-radius: 999px;
-                        white-space: nowrap;
+
+                        &:hover{
+                            background-color: transparent;
+                            color: $colorWhite;
+                        }
+                    }
+
+                    .detailBtn{
+                        background-color: transparent;
+                        color: $colorWhite;
+
+                        &:hover{
+                            background-color: $colorWhite;
+                            color: $colorOrange;
+                        }
+                    }
+
+                    .deleteBtn{
+                        background-color: #d63030;
+                        color: $colorWhite;
+
+                        &:hover{
+                            background-color: transparent;
+                            color: $colorWhite;
+                        }
                     }
                 }
             }
         }
 
-        .btnWrapper{
+        .actionBtnWrapper{
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
             gap: $gap;
-            padding: $padding;
             height: fit-content;
-            width: 100%;
-            box-sizing: border-box;
+            width: 50vmin;
 
             button{
                 flex: 1;
@@ -168,33 +181,23 @@
                 transition: $transition;
             }
 
-            .applyBtn, .updateBtn, .paymentBtn, .requestBtn{
-                background-color: $colorWhite;
-                color: $colorOrange;
-
-                &:hover{
-                    background-color: transparent;
-                    color: $colorWhite;
-                }
-            }
-
-            .detailBtn{
-                background-color: transparent;
+            .addBtn{
+                background-color: rgba(255, 162, 0);
                 color: $colorWhite;
 
                 &:hover{
-                    background-color: $colorWhite;
+                    background-color: rgba(255, 162, 0, 0.2);
                     color: $colorOrange;
                 }
             }
 
-            .deleteBtn{
-                background-color: #d63030;
+            .backBtn{
+                background-color: rgba(214, 48, 48);
                 color: $colorWhite;
 
                 &:hover{
-                    background-color: transparent;
-                    color: $colorWhite;
+                    background-color: rgba(214, 48, 48, 0.2);
+                    color: rgba(214, 48, 48, 0.6);
                 }
             }
         }

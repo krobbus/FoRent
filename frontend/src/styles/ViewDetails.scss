@@ -12,12 +12,11 @@
         align-items: center;
         gap: $gap;
         width: 100%;
-        box-sizing: border-box;
+        min-width: 100vmin;
         
         .fullGalleryView{
             height: 100vmin;
             width: 100%;
-            box-sizing: border-box;
             overflow: hidden;
             flex-shrink: 0;
         }

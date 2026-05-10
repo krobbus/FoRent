@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import '../styles/PropertyGallery.scss'
 
 function PropertyGallery({ images }: { images: string[] }) {
     const [lightboxOpen, setLightboxOpen] = useState(false);

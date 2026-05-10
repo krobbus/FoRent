@@ -1,33 +1,23 @@
+::-webkit-scrollbar {
+    width: 2vmin;
+    
+    &-track { background: $bgDefault; }
+    &-thumb { background: $colorOrange; }
+}
+
 *{
     margin: 0;
     padding: 0;
     user-select: none;
+    font-family: $font;
+    box-sizing: border-box;
 }
 
 body{
-    font-family: $font;
-
-    .navCrumb{
-        position: absolute;
-        top: 3vmin;
-        right: 5vmin;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-
-        a, .activeCrumb{
-            color: $colorOrange;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        em{
-            color: $colorOrange;
-            padding: 0 $padding;
-        }
-    }
-
+    height: 100%;
+    width: 100%;
+    background: #f4f4f4;
+    
     .headerWrapper{
         background-image: 
             linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
@@ -45,7 +35,6 @@ body{
         color: $colorOrange;
         height: 100vh;
         width: 100%;
-        box-sizing: border-box;  
 
         h1{ font-size: $titleSize; }
         h2{ font-size: $headerSize; }
@@ -75,6 +64,32 @@ body{
                     background-color: $bgColorOrange;
                 }
             }
+        }
+    }
+
+    .navCrumb{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: $padding;
+        background: $bgColorOrange;
+        font-weight: bold;
+        font-size: $normalSize;
+        color: $colorWhite;
+
+        .backCrumb{
+            text-decoration: underline;
+            cursor: pointer;
+
+            &:hover{
+                transform: scale(1.02);
+            }
+        }
+
+        em{
+            color: $colorWhite;
+            padding: 0 2vmin;
         }
     }
 
@@ -117,7 +132,6 @@ body{
                 -webkit-user-drag: none;
                 height: auto;
                 width: 5vmin;
-                box-sizing: border-box;
             }
 
             h2{
@@ -148,7 +162,6 @@ body{
             pointer-events: auto;
             overflow: hidden;
             z-index: 2000;
-            box-sizing: border-box;
 
             &.show {
                 display: flex !important;
@@ -156,7 +169,6 @@ body{
 
             li {              
                 width: 100%;
-                box-sizing: border-box;
                 
                 a {
                     display: flex;
@@ -170,7 +182,6 @@ body{
                     transition: $transition;
                     white-space: nowrap;
                     width: 100%;
-                    box-sizing: border-box;
 
                     &:hover, &:focus {
                         position: relative;
@@ -194,15 +205,5 @@ body{
 
         h2{ font-size: $headerSize; }
         p{ font-size: $normalSize; }
-    }
-
-    main{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: $gap;
-        width: 100%;
-        box-sizing: border-box;
     }
 }

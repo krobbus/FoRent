@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { FilterState, PropertySearchProps } from '../utils/props';
 import { defaultFilters } from '../utils/filter';
-import '../styles/PropertySearch.scss'
 
 function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: PropertySearchProps) {
     const [showFilters, setShowFilters] = useState(false);

@@ -1,22 +1,21 @@
-export const authFetch = async (
-    url: string,
-    options: RequestInit = {},
-    onAuthError?: () => void
-): Promise<Response> => {
+export const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
     const token = localStorage.getItem('token');
-    const response = await fetch(url, {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-            ...options.headers,
-        }
+
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...options.headers,
+      }
     });
 
-    if ((response.status === 401 || response.status === 403) && onAuthError) {
-        localStorage.removeItem('token');
-        onAuthError();
+    if (res.status === 401 || res.status === 403) {
+    const data = await res.clone().json();
+    if (['NO_TOKEN', 'TOKEN_EXPIRED', 'INVALID_TOKEN'].includes(data.code)) {
+      window.dispatchEvent(new Event('unauthorized'));
     }
+  }
 
-    return response;
+  return res;
 };

@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getUserFromToken } from './utils/auth';
-import type { Role } from './utils/props';
+import type { Role, Crumb } from './utils/props';
 
 import '../src/styles/App.scss';
-import '../src/styles/PropertyGrid.scss'
+import '../src/styles/Auth.scss';
+import '../src/styles/PropertySearch.scss';
+import '../src/styles/PropertyGallery.scss';
+import '../src/styles/PropertyGrid.scss';
+import '../src/styles/ViewDetails.scss';
 
 import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
@@ -26,15 +30,27 @@ import PaymentHistory from './pages/PaymentHistory';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 
+function NavCrumb({ crumbs }: { crumbs: Crumb[] }) {
+  if (crumbs.length === 0) return null;
+
+  return (
+    <div className='navCrumb'>
+      {crumbs.map((crumb, i) => (
+        <span key={i}>
+          {i > 0 && <em>&gt;</em>}
+          {crumb.onClick
+            ? <a className='backCrumb' onClick={crumb.onClick}>{crumb.label}</a>
+            : <span className='activeCrumb'>{crumb.label}</span>
+          }
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function App() {
-  const [userRole, setUserRole] = useState<Role>(() => {
-    return getUserFromToken()?.userRole || null;
-  });
-
-  const [userId, setUserId] = useState<number | null>(() => {
-    return getUserFromToken()?.userId || null;
-  });
-
+  const [userRole, setUserRole] = useState<Role>(() => { return getUserFromToken()?.userRole || null; });
+  const [userId, setUserId] = useState<number | null>(() => { return getUserFromToken()?.userId || null; });
   const [currentView, setCurrentView] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const payment = params.get('payment');
@@ -43,27 +59,127 @@ function App() {
     if (payment === 'cancel') return 'paymentCancel';
     return 'home';
   });
-
-  const [previousView, setPreviousView] = useState('home')
+  const [previousView, setPreviousView] = useState('home');
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
   const propertyLabel = userRole === 'landlord' ? 'My Properties' : 'My Rentals';
+  const propertyView  = userRole === 'landlord' ? 'myProperties'  : 'myRentals';
+
+  const navigateTo = (id: string) => {
+    if (currentView !== 'home') {
+      setCurrentView('home');
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 
   const handleNavClick = (view: string) => {
     setCurrentView(view);
     setIsNavOpen(false);
   };
 
+  const handleLogout = () => {
+    setUserRole(null); 
+    setUserId(null);
+    localStorage.clear();
+    setCurrentView('home');
+    setPreviousView('home');
+  }
+
+  const requireAuth = () => {
+    if (!localStorage.getItem('token')) {
+      setCurrentView('auth');
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    const handleUnauthorized = () => handleLogout();
+    window.addEventListener('unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('unauthorized', handleUnauthorized);
+  }, []);
+
+  const getBreadcrumbs = (): Crumb[] => {
+    const home: Crumb = { label: 'Home', onClick: () => setCurrentView('home') };
+    const propertyParent: Crumb = {
+      label: propertyLabel,
+      onClick: () => { setSelectedProperty(null); setCurrentView(propertyView); }
+    };
+    const viewDetailsCrumb: Crumb = {
+      label: 'View Details',
+      onClick: () => setCurrentView('viewDetails')
+    };
+    const maintenanceCrumb: Crumb = {
+      label: 'Maintenance Requests',
+      onClick: () => { setSelectedProperty(null); setCurrentView('maintenanceRequests'); }
+    };
+    const rentalAppCrumb: Crumb = {
+      label: 'Rental Applications',
+      onClick: () => { setSelectedProperty(null); setCurrentView('rentalApplications'); }
+    };
+
+    switch (currentView) {
+      case 'auth': return [home, { label: 'Log In / Sign Up' }];
+      case 'viewProfile': return [home, { label: 'View Profile' }];
+      case 'updateProfile': return [home, { label: 'View Profile', onClick: () => setCurrentView('viewProfile') }, { label: 'Update Profile' }];
+      case 'myProperties':
+      case 'myRentals': return [home, { label: propertyLabel }];
+
+      case 'addProperty': return [home, propertyParent, { label: 'Add New Property' }];
+      case 'updateProperty': return [home, propertyParent, { label: 'Update Property' }];
+
+      case 'viewDetails': {
+        const fromProperty = previousView === 'myProperties' || previousView === 'myRentals';
+        return [home, ...(fromProperty ? [propertyParent] : []), { label: 'View Details' }];
+      }
+
+      case 'applyRental': {
+        const fromProperty    = previousView === 'myProperties' || previousView === 'myRentals';
+        const fromRentalApps  = previousView === 'rentalApplications';
+        const fromViewDetails = previousView === 'viewDetails';
+        return [
+          home,
+          ...(fromProperty    ? [propertyParent]   : []),
+          ...(fromRentalApps  ? [rentalAppCrumb]   : []),
+          ...(fromViewDetails ? [viewDetailsCrumb] : []),
+          { label: 'Apply for Rental' }
+        ];
+      }
+
+      case 'rentalApplications': return [home, { label: 'Rental Applications' }];
+      case 'createRequests': {
+        const fromProperty    = previousView === 'myProperties' || previousView === 'myRentals';
+        const fromMaintenance = previousView === 'maintenanceRequests';
+        const fromViewDetails = previousView === 'viewDetails';
+
+        return [
+          home,
+          ...(fromProperty    ? [propertyParent]   : []),
+          ...(fromMaintenance ? [maintenanceCrumb] : []),
+          ...(fromViewDetails ? [viewDetailsCrumb] : []),
+          { label: 'Create Request' }
+        ];
+      }
+
+      case 'maintenanceRequests': return [home, { label: 'Maintenance Requests' }];
+      case 'paymentHistory': return [home, { label: 'Payment History' }];
+      case 'paymentSuccess': return [home, { label: 'Payment Success' }];
+      case 'paymentCancel': return [home, { label: 'Payment Cancelled' }];
+
+      default: return [];
+    }
+  };
+
   const renderMainContent = () => {
+    const crumbs = <NavCrumb crumbs={getBreadcrumbs()} />;
+
     switch (currentView) {
       case 'auth':
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>Log In/Sign Up</span>
-            </div>
+            {crumbs}
 
             <Auth
               goBack ={() => setCurrentView('home')}
@@ -77,17 +193,11 @@ function App() {
         );
 
       case 'viewProfile':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;   
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>View Profile</span>
-            </div>
+            {crumbs}
 
             <ViewProfile
               goBack={() => setCurrentView('home')}
@@ -102,19 +212,11 @@ function App() {
         );
 
       case 'updateProfile':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <a onClick={() => setCurrentView('viewProfile')}>View Profile</a>
-              <em>&gt;</em>
-              <span className='activeCrumb'>Update Profile</span>
-            </div>
+            {crumbs}
 
             <UpdateProfile
               goBack={() => setCurrentView('viewProfile')}
@@ -129,17 +231,11 @@ function App() {
       
       case 'myProperties':
       case 'myRentals':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>{propertyLabel}</span>
-            </div>
+            {crumbs}
 
             <Properties
               goBack={() => setCurrentView('home')}
@@ -167,42 +263,11 @@ function App() {
         );
       
       case 'viewDetails':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
-
-        if (!userRole) {
-          setCurrentView('auth');
-          return null;
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => {
-                setSelectedProperty(null);
-                if (previousView === 'home') {
-                  navigateTo('availablePropertySection');
-                } else {
-                  setCurrentView('home');
-                }
-              }}>Home</a>
-
-              <em>&gt;</em>
-              
-              {(previousView === 'myProperties' || previousView === 'myRentals') && (
-                <>
-                  <a onClick={() => {
-                    setSelectedProperty(null);
-                    setCurrentView(previousView);
-                  }}>{propertyLabel}</a>
-
-                  <em>&gt;</em>
-                </>
-              )}
-
-              <span className='activeCrumb'>View Details</span>
-            </div>
+            {crumbs}
 
             <ViewDetails
               goBack={() => {
@@ -234,19 +299,11 @@ function App() {
         );
 
       case 'addProperty':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <a onClick={() => setCurrentView('myProperties')}>{propertyLabel}</a>
-              <em>&gt;</em>
-              <span className='activeCrumb'>Add New Property</span>
-            </div>
+            {crumbs}
 
             <AddProperty 
               goBack={() => setCurrentView('myProperties')}
@@ -256,19 +313,11 @@ function App() {
         );
         
       case 'updateProperty':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <a onClick={() => setCurrentView('myProperties')}>{propertyLabel}</a>
-              <em>&gt;</em>
-              <span className='activeCrumb'>Update Property</span>
-            </div>
+            {crumbs}
 
             <UpdateProperty 
               goBack={() => setCurrentView('myProperties')}
@@ -282,59 +331,11 @@ function App() {
         );
       
       case 'applyRental':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
-
-        if (!userRole) {
-          setCurrentView('auth');
-          return null;
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              &gt;<a onClick={() => {
-                setSelectedProperty(null);
-                if (previousView === 'home') {
-                  navigateTo('availablePropertySection');
-                } else {
-                  setCurrentView('home');
-                }
-              }}>Home</a>
-
-              <em>&gt;</em>
-
-              {(
-                previousView === 'myProperties' || 
-                previousView === 'myRentals' || 
-                previousView === 'rentalApplications'
-              ) && (
-                <>
-                  &gt;<a onClick={() => {
-                    setSelectedProperty(null);
-                    setCurrentView(previousView);
-                  }}>
-                    {previousView === 'rentalApplications' ? 'Rental Applications' : `${propertyLabel}`}
-                  </a>
-                </>
-              )}
-
-              <em>&gt;</em>
-
-              {previousView === 'viewDetails' && (
-                <>
-                  &gt;<a onClick={() => {
-                    setSelectedProperty(null);
-                    setCurrentView('viewDetails');
-                  }}>View Details</a>
-                </>
-              )}
-
-              <em>&gt;</em>
-
-              <span className='activeCrumb'>Apply for Rental</span>
-            </div>
+            {crumbs}
 
             <ApplyRental
               property={selectedProperty}
@@ -359,17 +360,11 @@ function App() {
         );
 
       case 'rentalApplications':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>Rental Applications</span>
-            </div>
+            {crumbs}
 
             <RentalApplications
               goBack={() => setCurrentView('home')}
@@ -385,43 +380,11 @@ function App() {
         );
 
       case 'createRequests':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-
-              <em>&gt;</em>
-
-              {(previousView === 'myProperties' || previousView === 'myRentals' || previousView === 'maintenanceRequests') && (
-                <>
-                  <a onClick={() => {
-                    setSelectedProperty(null);
-                    setCurrentView(previousView);
-                  }}>
-                    {previousView === 'maintenanceRequests' ? 'Maintenance Requests' : `${propertyLabel}`}
-                  </a>
-                </>
-              )}
-
-              <em>&gt;</em>
-
-              {previousView === 'viewDetails' && (
-                <>
-                  <a onClick={() => {
-                    setSelectedProperty(null);
-                    setCurrentView('viewDetails');
-                  }}>View Details</a>
-                </>
-              )}
-
-              <em>&gt;</em>
-
-              <span className='activeCrumb'>Create Requests</span>
-            </div>
+            {crumbs}
 
             <CreateRequests
               property={selectedProperty}
@@ -442,17 +405,11 @@ function App() {
         );
       
       case 'maintenanceRequests':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em> 
-              <span className='activeCrumb'>Maintenance Requests</span>
-            </div>
+            {crumbs}
 
             <MaintenanceRequests
               goBack={() => setCurrentView('home')}
@@ -468,17 +425,11 @@ function App() {
         );
       
       case 'paymentHistory':
-        if (localStorage.getItem('token') === null) {
-          handleLogout();
-        }
+        if (!requireAuth()) return null;
 
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>Payment History</span>
-            </div>
+            {crumbs}
 
             <PaymentHistory
               goBack={() => setCurrentView('home')}
@@ -494,13 +445,11 @@ function App() {
         );
 
       case 'paymentSuccess':
+        if (!requireAuth()) return null;
+
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>Payment Success</span>
-            </div>
+            {crumbs}
 
             <PaymentSuccess 
               goBack={() => {
@@ -512,13 +461,11 @@ function App() {
         );
 
       case 'paymentCancel':
+        if (!requireAuth()) return null;
+        
         return (
           <>
-            <div className='navCrumb'>
-              <a onClick={() => setCurrentView('home')}>Home</a> 
-              <em>&gt;</em>
-              <span className='activeCrumb'>Payment Cancelled</span>
-            </div>
+            {crumbs}
 
             <PaymentCancel
               goBack={() => {
@@ -541,7 +488,7 @@ function App() {
                   <button onClick={() => setCurrentView('auth')}>Log In / Sign Up</button>
                 )}
 
-                <button onClick={() => navigateTo('marketplaceSection')}>See Available Properties</button>
+                <button onClick={() => navigateTo('marketplaceContainer')}>See Available Properties</button>
               </div>
             </div>
 
@@ -565,28 +512,6 @@ function App() {
           </>
         );
     }
-  }
-
-  const navigateTo = (id: string) => {
-    if (currentView !== 'home') {
-      setCurrentView('home');
-    
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        element?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      const element = document.getElementById(id);
-      element?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  const handleLogout = () => {
-    setUserRole(null); 
-    setUserId(null);
-    localStorage.clear();
-    setCurrentView('home');
-    setPreviousView('home');
   }
 
   return (

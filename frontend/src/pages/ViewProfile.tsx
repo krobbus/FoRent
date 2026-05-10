@@ -7,16 +7,10 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
     const [profile, setProfile] = useState<ProfileDataProps | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const onAuthError = () => { goBack(); };
-
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await authFetch(
-                    `http://localhost:5000/api/users/${userId}`,
-                    {},
-                    onAuthError
-                );
+                const response = await authFetch(`http://localhost:5000/api/users/${userId}`);
                 if (!response.ok) return;
 
                 const data = await response.json();
@@ -36,11 +30,7 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
             const endpoint = userRole === 'landlord' ? `/api/landlords` : `/api/tenants`;
 
             try {
-                const response = await authFetch(
-                    `http://localhost:5000${endpoint}/${userId}`,
-                    {},
-                    onAuthError
-                );
+                const response = await authFetch(`http://localhost:5000${endpoint}/${userId}`);
                 if (!response.ok) return;
 
                 const data = await response.json();

@@ -63,7 +63,7 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
     };
 
     return (
-        <>
+        <section id='propertyContainer'>
             <header>
                 <h2>{userRole === 'landlord' ? 'My Properties' : 'My Current Rentals'}</h2>
                 <p>
@@ -73,13 +73,6 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                     }
                 </p>
             </header>
-            
-            <div className="actionBtnWrapper">
-                {userRole === 'landlord' && 
-                    <button type="button" className='addBtn' onClick={addProperty}>+ Add New Property</button>
-                }
-                <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
-            </div>
             
             <main>
                 {loading ? (
@@ -300,8 +293,15 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                         )}
                     </>
                 )}
+
+                <div className="actionBtnWrapper">
+                    {userRole === 'landlord' && 
+                        <button type="button" className='addBtn' onClick={addProperty}>+ Add New Property</button>
+                    }
+                    <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
+                </div>
             </main>
-        </>
+        </section>
     )
 }
 

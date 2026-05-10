@@ -105,7 +105,7 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
     };
 
     return (
-        <div id='marketplaceSection'>
+        <section id='marketplaceContainer'>
             <header>
                 <h2>Marketplace</h2>
                 <p>Explore our wide range of rental properties to find your perfect home.</p>
@@ -211,13 +211,13 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
 
                                     <div className='btnWrapper'>
                                         {applications.some(app => app.property_id === p.id) ?
-                                            <button className='applyBtn' onClick={onViewRentalApplications}>Check<br />Application</button>
+                                            <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
                                             :
-                                            <button className='applyBtn' onClick={() => onViewApplyRental(p)}>Apply<br />Now</button>
+                                            <button className='applyBtn' onClick={() => onViewApplyRental(p)}>Apply Now</button>
                                         }
                                         
                                         <button className='detailBtn' onClick={() => onViewDetails(p)}>
-                                            View<br />Details
+                                            View Details
                                         </button>
                                     </div>
                                 </div>
@@ -234,7 +234,7 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                     </>
                 )}
             </main>
-        </div>
+        </section>
     )
 }
 

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/api';
-import '../styles/ViewDetails.scss'
 import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from '../utils/props';
 import PropertyGallery from '../component/PropertyGallery';
 

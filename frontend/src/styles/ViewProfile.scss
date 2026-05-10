@@ -1,0 +1,30 @@
+#profileContainer{
+    nav{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        font-size: $normalSize;
+
+        a{
+            color: $colorOrange;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: $transition;
+
+            &:hover{
+                transform: scale(1.2);
+            }
+        }
+
+        em{
+            color: $colorOrange;
+            padding: 0 2vmin;
+        }
+
+        .activeCrumb {
+            font-weight: bold;
+            color: $colorOrange;
+        }
+    }
+}
