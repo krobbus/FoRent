@@ -78,65 +78,140 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
                                 <div className='propertyInfo'>
                                     <div className='fullGalleryWrapper'>
                                         <PropertyGallery
+                                            variant='details'
                                             images={Array.isArray(property.images) 
                                                 ? property.images 
                                                 : JSON.parse(property.images || '[]'
                                             )}
                                         />
                                     </div>
+                                    
+                                    <div className='columnGroup'>
+                                        <h1>{property.property_name}</h1>
+                                        <h3>{property.address ? `${property.address}` : 'No address available'}</h3>
+                                        <h3>{property.category.charAt(0).toUpperCase() + property.category.slice(1)}</h3>
+                                    </div>
 
-                                    <h3>{property.property_name}</h3>
-                                    <p>{property.address ? `Address: ${property.address}` : 'No address available'}</p>
-                                    <p>Category: {property.category.charAt(0).toUpperCase() + property.category.slice(1)}</p>
-                                    <p>Price: ₱{Number(property.price).toLocaleString()}</p>
-                                    <p>Status: <strong>{property.status.charAt(0).toUpperCase() + property.status.slice(1)}</strong></p>
-                                    {property.status === 'rented' && property.tenant_first_name && (
-                                        <p>Current Tenant: <strong>
-                                            {[property.tenant_first_name, property.tenant_last_name, property.tenant_ext_name]
-                                                .filter(Boolean).join(' ')}
-                                        </strong></p>
-                                    )}   
+                                    <div className='rowGroup'>
+                                        <div className='priceLabel'>
+                                            <i className='fa-solid fa-tag' />
+                                            <p>₱ {Number(property.price).toLocaleString()}</p>
+                                        </div>
+
+                                        <div className='statusLabel'>
+                                            <i className='fa-solid fa-bullhorn' />
+                                            <p>{property.status.charAt(0).toUpperCase() + property.status.slice(1)}</p>
+                                        </div>
+
+                                        {property.status === 'rented' && property.tenant_first_name && (
+                                        <div className='tenantLabel'>
+                                            <i className='fa-solid fa-user' />
+                                            <p><strong>
+                                                {[property.tenant_first_name, property.tenant_last_name, property.tenant_ext_name]
+                                                    .filter(Boolean).join(' ')}
+                                            </strong></p>
+                                        </div>
+                                        )}  
+                                    </div> 
                                 </div>
                                 
                                 <div className='propertyDetails'>
-                                    <p>{property.description ? `Description: ${property.description}` : 'No description available'}</p>
-                                    <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
-                                    <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
-                                    <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
-                                    <div className='otherRooms'>
-                                        {property.other_rooms && property.other_rooms.length > 0 ? (
-                                            <p>Other Rooms: {
-                                                Array.isArray(property.other_rooms) 
-                                                    ? property.other_rooms.join(', ')
-                                                    : property.other_rooms
-                                            }</p>
-                                        ) : (
-                                            <p>Other Rooms: No other rooms listed</p>
-                                        )}
+                                    <div className='description'>
+                                        <h3>Description</h3>
+                                        <p>{property.description ? `${property.description}` : 'No description available'}</p>
                                     </div>
 
+                                    <div className='rooms'>
+                                        <h3>Available Rooms</h3>
+
+                                        <div className='pillRow'>
+                                            <div className='bedroom'>
+                                                <i className='fa-solid fa-bed' />
+                                                <p>{property.bedroom_count > 0 ? `${property.bedroom_count}` : 'No available bedrooms'}</p>
+                                            </div>
+                                            
+                                            <div className='kitchen'>
+                                                <i className='fa-solid fa-cutlery' />
+                                                <p>{property.kitchen_count > 0 ? `${property.kitchen_count}` : 'No available kitchens'}</p>
+                                            </div>
+                                            
+                                            <div className='bathroom'>
+                                                <i className='fa-solid fa-bath' />
+                                                <p>{property.bathroom_count > 0 ? `${property.bathroom_count}` : 'No available bathrooms'}</p>
+                                            </div>
+
+                                            {property.other_rooms && property.other_rooms.length > 0 ? (
+                                                <>
+                                                    {(Array.isArray(property.other_rooms)
+                                                        ? property.other_rooms
+                                                        : property.other_rooms.split(',')
+                                                    ).map((room: string, i: number) => (
+                                                        <div key={i} className='otherRooms'>
+                                                            <i className='fa-solid fa-door-open' />
+                                                            <p>{room.trim()}</p>
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            ) : (
+                                                <div className='otherRooms'>
+                                                    <i className='fa-solid fa-door-open' />
+                                                    <p>No other rooms listed</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
                                     <div className='occupants'>
-                                        <p>Max Occupants: {property.max_occupants}</p>
-                                        <p>{property.pets_allowed ? `Pets Allowed: ${property.pet_count}` : 'Pets not allowed'}</p>
-                                    </div>
+                                        <div className='columnGroup'>
+                                            <h3>Number of Max Occupants</h3>
 
+                                            <div className='pill'>
+                                                <i className='fa-solid fa-users' />
+                                                <p>{property.max_occupants}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className='columnGroup'>
+                                            <h3>Number of Allowed Pets</h3>
+
+                                            <div className='pill'>
+                                                <i className='fa-solid fa-paw' />
+                                                <p>{property.pets_allowed ? `${property.pet_count}` : 'Pets not allowed'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                                
                                     <div className='amenities'>
-                                        {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
-                                            <p>Amenities: {property.amenities.join(', ')}</p>
-                                        ) : (
-                                            <p>Amenities: No amenities listed</p>
-                                        )}
+                                        <h3>Amenities</h3>
+                                        
+                                        <div className='pillRow'>
+                                            {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
+                                                property.amenities
+                                                    .flatMap((a: string) => a.split(','))
+                                                    .map((a: string, i: number) => (
+                                                        <div key={i} className='amenities'>
+                                                            <i className='fa-solid fa-star' />
+                                                            <p>{a.trim()}</p>
+                                                        </div>
+                                                    ))
+                                            ) : (
+                                                <div className='amenities'>
+                                                    <i className='fa-solid fa-star' />
+                                                    <p>No amenities listed</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className='btnWrapper'>
+                            <div className='actionBtnWrapper'>
                                 {applications.some(app => app.property_id === property.id) ?
                                     <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
                                     :
                                     <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
                                 }
-                                <button className='detailBtn' onClick={goBack}>Go Back</button>
+                                <button className='backBtn' onClick={goBack}>Go Back</button>
                             </div>
                         </>
                     }

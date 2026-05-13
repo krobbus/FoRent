@@ -4,7 +4,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: $normalSize;
     gap: $gap;
     width: 100%;
 
@@ -16,11 +15,12 @@
         gap: $gap;
 
         input{
+            font-size: $normalSize;
             border-style: solid;
-            width: 80vmin;
             border-width: 0.4vmin;
             border-color: $colorOrange;
             padding: $padding;
+            width: 100vmin;
         }
 
         .btnWrapper{
@@ -34,6 +34,7 @@
                 border-style: solid;
                 border-width: 0.4vmin;
                 border-color: $bgColorOrange;
+                font-size: $normalSize;
                 font-weight: bold;
                 color: $bgColorWhite;
                 background-color: $bgColorOrange;
