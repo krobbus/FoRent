@@ -1,6 +1,4 @@
 .propertyGallery{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     height: 100%;
     width: 100%; 
 
@@ -8,8 +6,6 @@
         position: relative;
         height: 100%;
         width: 100%;
-
-        &:nth-child(2){ position: relative; }
 
         img{
             position: block;
@@ -20,18 +16,19 @@
             transition: $transition;
         }
 
-        .moreOverlay{
+        .moreBadge {
             position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: $colorWhite;
-            background: rgba(0, 0, 0, 0.5);
-            cursor: pointer;
+            bottom: 1vmin;
+            right: 1vmin;
+            background: $colorWhite;
+            color: $colorOrange;
+            font-weight: bold;
+            font-size: $smallSize;
+            padding: 0.5vmin 1vmin;
+            border-radius: 99px;
+            pointer-events: none;
+            backdrop-filter: blur(2px);
+            line-height: 1.4;
         }
     }
 }
@@ -68,8 +65,7 @@
         }
 
         img{
-            max-width: 70vmin;
-            max-height: 55vmin;
+            width: 80vmin;
             object-fit: contain;
             border-radius: $borderRadius;
         }
@@ -131,17 +127,17 @@
     align-items: center;
     gap: 1vmin;
     background-color: rgba(0, 0, 0, 0.2);
-    color: rgba(255,255,255,0.6);
+    color: rgba(255, 255, 255, 0.6);
     height: 100%;
     width: 100%;
 
     i{
         font-size: 5vmin;
-        opacity: 0.5;
+        opacity: 0.7;
     }
 
     span{
         font-size: $smallSize;
-        opacity: 0.6;
+        opacity: 0.8;
     }
 }

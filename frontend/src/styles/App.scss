@@ -37,7 +37,10 @@ body{
         width: 100%;
 
         h1{ font-size: $titleSize; }
-        h2{ font-size: $headerSize; }
+        h2{ 
+            font-weight: normal;
+            font-size: $headerSize; 
+        }
 
         .btnWrapper{
             display: flex;
@@ -55,7 +58,7 @@ body{
                 cursor: pointer;
                 height: auto;
                 width: auto;
-                padding: $padding;
+                padding: $padding 4vmin;
                 margin: $margin;
                 border-radius: $borderRadius;
 

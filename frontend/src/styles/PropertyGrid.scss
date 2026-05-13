@@ -1,4 +1,5 @@
 #marketplaceContainer, #propertyContainer{
+    padding: $padding;
     main{
         display: flex;
         flex-direction: column;
@@ -7,7 +8,7 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(3, auto);
+            grid-template-columns: repeat(3, 1fr);
             margin: $margin;
             padding: $padding;
             gap: $gap;
@@ -20,35 +21,57 @@
                 align-items: center;
                 background: linear-gradient(#ffa20098, #ffa200);
                 color: $colorWhite;
-                border-radius: $borderRadius; 
-                overflow: hidden; 
+                border-radius: $borderRadius 0 $borderRadius $borderRadius; 
                 width: 100%;
+                min-width: 0;
+
+                #priceLabel {
+                    position: absolute;
+                    top: -2vmin;
+                    right: -1vmin;
+                    display: flex;
+                    align-items: center;
+                    color: $colorWhite;
+                    background-color: $colorOrange;
+                    font-size: $normalSize;
+                    font-weight: bold;
+                    padding: 0.8vmin 1.5vmin;
+                    border-radius: $borderRadius 0 0 $borderRadius;
+                    z-index: 999;
+                    box-shadow: -0.3vmin 0.3vmin 0.8vmin rgba(0, 0, 0, 0.15);
+
+                    &::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -0.5vmin;
+                        right: 0;
+                        border-left: 1vmin solid darken($colorOrange, 15%);
+                        border-bottom: 0.5vmin solid transparent;
+                    }
+                }
 
                 .galleryWrapper{
+                    position: relative;
                     height: 25vmin;
                     width: 100%;
+                    border-top-left-radius: $borderRadius;
                     overflow: hidden;
                     flex-shrink: 0;
-                }
 
-                #statusLabel, #priceLabel{
-                    position: absolute;
-                    color: $colorOrange;
-                    background-color: rgba(255, 255, 255, 0.8);
-                    padding: 2vmin;
-                    z-index: 999;
-                }
-
-                #statusLabel{
-                    top: 0;
-                    left: 0;
-                    border-bottom-right-radius: $borderRadius;
-                }
-
-                #priceLabel{
-                    top: 0;
-                    right: 0;
-                    border-bottom-left-radius: $borderRadius;
+                    #statusLabel{              
+                        position: absolute;
+                        bottom: 1vmin;
+                        left: 1vmin;
+                        background: $colorWhite;
+                        color: $colorOrange;
+                        font-weight: bold;
+                        font-size: $smallSize;
+                        padding: 0.5vmin 0.9vmin;
+                        border-radius: 99px;
+                        pointer-events: none;
+                        backdrop-filter: blur(2px);
+                        line-height: 1.4;
+                    }
                 }
 
                 .propertyInfo{
@@ -56,10 +79,13 @@
                     flex-direction: column;
                     justify-content: flex-start;
                     align-items: center;
-                    margin-top: $margin;
                     width: 100%;
 
-                    h2{ font-size: $headerSize; }
+                    h2{
+                        margin-top: $margin;
+                        font-size: $headerSize; 
+                    }
+
                     p{ 
                         font-size: $normalSize;
                         font-style: italic; 
@@ -71,6 +97,7 @@
                     flex-direction: column;
                     gap: $gap;
                     padding: $padding;
+                    font-size: $smallSize;
                     width: 100%;
 
                     .detailSection{
@@ -81,7 +108,6 @@
                         width: 100%;
 
                         .detailSectionLabel{
-                            font-size: $normalSize;
                             font-weight: bold;
                             text-transform: uppercase;
                             letter-spacing: 0.1em;
@@ -96,7 +122,6 @@
                             gap: 1vmin;
 
                             .pill{
-                                font-size: $smallSize;
                                 background-color: $bgColorWhite;
                                 color: $colorOrange;
                                 padding: 0.8vmin 1.5vmin;
@@ -110,22 +135,23 @@
                 .btnWrapper{
                     display: flex;
                     flex-direction: row;
+                    flex-wrap: wrap;
                     justify-content: center;
                     align-items: center;
                     gap: $gap;
-                    padding: $padding;
-                    height: fit-content;
-                    width: 100%;
+                    padding: $padding;;
 
                     button{
-                        flex: 1;
-                        padding: 2vmin;
+                        flex: 1 1 40%;
+                        padding: 2vmin 3vmin;
                         border-radius: $borderRadius;
+                        white-space: nowrap;
                         font-size: $smallSize;
                         font-weight: bold;
                         cursor: pointer;
                         border: 0.3vmin solid $colorWhite;
                         transition: $transition;
+                        min-width: fit-content;
                     }
 
                     .applyBtn, .updateBtn, .paymentBtn, .requestBtn{

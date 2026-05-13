@@ -27,21 +27,13 @@ function PropertyGallery({ images }: { images: string[] }) {
     return (
         <>
             <div className='propertyGallery'>
-                {images.slice(0, 2).map((img, i) => (
-                    <div
-                        key={i}
-                        className={`galleryItem ${i === 1 && images.length > 2 ? 'hasMore' : ''}`}
-                        onClick={() => openLightbox(i)}
-                    >
-                        <img src={img} alt={`Property ${i + 1}`} />
-                        
-                        {i === 1 && images.length > 2 && (
-                            <div className='moreOverlay'>
-                                <span>+{images.length - 2}</span>
-                            </div>
-                        )}
-                    </div>
-                ))}
+                <div className='galleryItem' onClick={() => openLightbox(0)}>
+                    <img src={images[0]} alt='Property 1' />
+
+                    {images.length > 1 && (
+                        <div className='moreBadge'>+{images.length - 1}</div>
+                    )}
+                </div>
             </div>
 
             {lightboxOpen && (
@@ -65,7 +57,6 @@ function PropertyGallery({ images }: { images: string[] }) {
                                     alt={`Thumb ${i + 1}`}
                                     className={`lightboxThumb ${i === activeIndex ? 'active' : ''}`}
                                     onClick={() => setActiveIndex(i)}
-                                    style={{ maxWidth:'200px' }}
                                 />
                             ))}
                         </div>

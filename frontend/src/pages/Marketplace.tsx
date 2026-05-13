@@ -131,8 +131,7 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                 <p>No properties match your search or filters.</p>
                             ) : ( paginated.map((p: PropertyDataProps) => (
                                 <div key={p.id} className='propertyCard'>
-                                    <h5 id="statusLabel">{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</h5>
-                                    <h5 id="priceLabel">₱ {Number(p.price).toLocaleString()}</h5>
+                                    <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
 
                                     <div className='galleryWrapper'>
                                         <PropertyGallery
@@ -141,6 +140,8 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                                 : JSON.parse(p.images || '[]'
                                             )}
                                         />
+
+                                        <p id='statusLabel'>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</p>
                                     </div>
                                     
                                     <div className='propertyInfo'>
@@ -154,22 +155,28 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                             <p className='detailSectionLabel'>Available Rooms</p>
 
                                             <div className='pillRow'>
-                                                {[ 
-                                                    p.bedroom_count > 0 ? 'Bedroom' : '',
-                                                    p.kitchen_count > 0 ? 'Kitchen' : '',
-                                                    p.bathroom_count > 0 ? 'Bathroom' : '',
-                                                    p.other_rooms ? p.other_rooms : ''
-                                                ].filter(Boolean).map((room, i) => (
-                                                    <span key={i} className='pill'>{room}</span>
-                                                ))}
-                                                {[ 
-                                                    p.bedroom_count > 0 ? 'Bedroom' : '',
-                                                    p.kitchen_count > 0 ? 'Kitchen' : '',
-                                                    p.bathroom_count > 0 ? 'Bathroom' : '',
-                                                    p.other_rooms ? p.other_rooms : ''
-                                                ].filter(Boolean).length === 0 && (
-                                                    <span className='pill'>No rooms listed</span>
-                                                )}
+                                                {(() => {
+                                                    const rooms = [
+                                                        p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                        p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                        p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                        ...(p.other_rooms 
+                                                            ? p.other_rooms.split(',').map((r: string) => r.trim()).filter(Boolean)
+                                                            : []
+                                                        )
+                                                    ].filter(Boolean);
+
+                                                    const visible = rooms.slice(0, 2);
+                                                    const remaining = rooms.length - 2;
+
+                                                    return rooms.length > 0
+                                                        ?
+                                                        <>
+                                                            {visible.map((room, i) => <span key={i} className='pill'>{room}</span>)}
+                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                        </>
+                                                        : <span className='pill'>No rooms listed</span>;
+                                                })()}
                                             </div>
                                         </div>
 
@@ -195,8 +202,8 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                                         .map(a => a.trim())
                                                         .filter(Boolean);
 
-                                                    const visible = all.slice(0, 3);
-                                                    const remaining = all.length - 3;
+                                                    const visible = all.slice(0, 2);
+                                                    const remaining = all.length - 2;
 
                                                     return (
                                                         <>
