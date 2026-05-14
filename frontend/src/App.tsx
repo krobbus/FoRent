@@ -8,6 +8,8 @@ import '../src/styles/PropertySearch.scss';
 import '../src/styles/PropertyGallery.scss';
 import '../src/styles/PropertyGrid.scss';
 import '../src/styles/ViewDetails.scss';
+import '../src/styles/ViewProfile.scss';
+import '../src/styles/UpdateProfile.scss';
 
 import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
@@ -102,7 +104,10 @@ function App() {
   }, []);
 
   const getBreadcrumbs = (): Crumb[] => {
-    const home: Crumb = { label: 'Home', onClick: () => setCurrentView('home') };
+    const home: Crumb = { 
+      label: 'Home', 
+      onClick: () => setCurrentView('home') 
+    };
     const propertyParent: Crumb = {
       label: propertyLabel,
       onClick: () => { setSelectedProperty(null); setCurrentView(propertyView); }
@@ -531,26 +536,62 @@ function App() {
         <ul className={isNavOpen ? 'show' : ''}>
           {userRole && (
             <>
-              <li><a onClick={() => { 
-                navigateTo('homeSection'); 
-                setIsNavOpen(false); 
-              }}>Home</a></li>
+              <li>
+                <i className='fa-solid fa-home' />
+                <a onClick={() => { 
+                  navigateTo('homeSection'); 
+                  setIsNavOpen(false); 
+                }}>Home</a>
+              </li>
 
-              <li><a onClick={() => handleNavClick('viewProfile')}>View Profile</a></li>
-              <li><a onClick={() => handleNavClick('updateProfile')}>Update Profile</a></li>
+              <li>
+                <i className='fa-solid fa-user' />
+                <a onClick={() => handleNavClick('viewProfile')}>View Profile</a>
+              </li>
+
+              <li>
+                <i className='fa-solid fa-users' />
+                <a onClick={() => handleNavClick('updateProfile')}>Update Profile</a>
+              </li>
 
               { userRole === 'landlord' && 
                 <>
-                  <li><a onClick={() => handleNavClick('myProperties')}>My Properties</a></li>
-                  <li><a onClick={() => handleNavClick('addProperty')}>Add New Property</a></li>
+                  <li>
+                    <i className='fa-solid fa-tree-city' />
+                    <a onClick={() => handleNavClick('myProperties')}>My Properties</a>
+                  </li>
+
+                  <li>
+                    <i className='fa-solid fa-tree-city' />
+                    <a onClick={() => handleNavClick('addProperty')}>Add New Property</a>
+                  </li>
                 </>
               }
-              { userRole === 'tenant' && <li><a onClick={() => handleNavClick('myRentals')}>My Rentals</a></li> }
+
+              { userRole === 'tenant' && 
+                <li>
+                  <i className='fa-solid fa-tree-city' />
+                  <a onClick={() => handleNavClick('myRentals')}>My Rentals</a>
+                </li> }
               
-              <li><a onClick={() => handleNavClick('rentalApplications')}>Rental Applications</a></li>
-              <li><a onClick={() => handleNavClick('maintenanceRequests')}>Maintenance Requests</a></li>
-              <li><a onClick={() => handleNavClick('paymentHistory')}>Payment History</a></li>
-              <li><a onClick={() => {
+              <li>
+                <i className='fa-solid fa-file-circle-check' />
+                <a onClick={() => handleNavClick('rentalApplications')}>Rental Applications</a>
+              </li>
+
+              <li>
+                <i className='fa-solid fa-file-contract' />
+                <a onClick={() => handleNavClick('maintenanceRequests')}>Maintenance Requests</a>
+              </li>
+
+              <li>
+                <i className='fa-solid fa-comment-dollar' />
+                <a onClick={() => handleNavClick('paymentHistory')}>Payment History</a>
+              </li>
+
+              <li>
+                <i className='fa-solid fa-arrow-right-from-bracket' />
+                <a onClick={() => {
                 handleLogout(); 
                 setIsNavOpen(false);
               }}>Logout</a></li>

@@ -28,7 +28,6 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         confirmNewPassword: '',
     });
 
-    const onAuthError = () => { goBack(); };
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
@@ -36,11 +35,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
             const endpoint = userRole === 'landlord' ? '/api/landlords' : '/api/tenants';
             
             try {
-                const response = await authFetch(
-                    `http://localhost:5000${endpoint}/${userId}`,
-                    {},
-                    onAuthError
-                );
+                const response = await authFetch(`http://localhost:5000${endpoint}/${userId}`);
                 if (!response.ok) return;
 
                 const data = await response.json();
@@ -168,8 +163,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                 newUsername: credData.newUsername || undefined,
                                 newPassword: credData.newPassword || undefined,
                             })
-                        },
-                        onAuthError
+                        }
                     )
                 );
             }
@@ -180,7 +174,6 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                     authFetch(
                         `http://localhost:5000${endpoint}/${userId}`,
                         { method: 'PATCH', body: JSON.stringify(infoData) },
-                        onAuthError
                     )
                 );
             }
@@ -223,142 +216,173 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
             ) : (
                 <>
                     <main>
-                        <fieldset className='toggleFieldset'>
-                            <legend>Select What You Would Like to Update</legend>
-                            <p><small>You may update one or both sections simultaneously. Select the applicable option(s) below to proceed.</small></p>
+                        <div className='toggleField'>
+                            <h3>Select What You Would Like to Update</h3>
+                            <small>You may update one or both sections simultaneously. Select the applicable option(s) below to proceed.</small>
                             
-                            <label className='toggleLabel'>
-                                <input
-                                    type='checkbox'
-                                    checked={showCredForm}
-                                    onChange={handleCredToggle}
-                                />
-                                &nbsp;I would like to update my account credentials (username or password)
-                            </label>
+                            <div className='toggleWrapper'>
+                                <label className='toggleCheckbox'>
+                                    <input
+                                        type='checkbox'
+                                        checked={showCredForm}
+                                        onChange={handleCredToggle}
+                                    />
+                                    <p>I would like to update my account credentials <span>(username or password)</span></p>
+                                </label>
 
-                            <label className='toggleLabel'>
-                                <input
-                                    type='checkbox'
-                                    checked={showInfoForm}
-                                    onChange={handleInfoToggle}
-                                />
-                                &nbsp;I would like to update my personal information
-                            </label>
-                        </fieldset>
+                                <label className='toggleCheckbox'>
+                                    <input
+                                        type='checkbox'
+                                        checked={showInfoForm}
+                                        onChange={handleInfoToggle}
+                                    />
+                                    <p>I would like to update my personal information</p>
+                                </label>
+                            </div>
+                        </div>
 
                         <form onSubmit={handleSubmit}>
                             {showCredForm && (
-                                <fieldset>
+                                <fieldset className='authField'>
                                     <legend>Change Account Credentials</legend>
-                                    <p><small>For security purposes, please verify your identity before making any changes to your account credentials.</small></p>
+                                    <small>For security purposes, please verify your identity before making any changes to your account credentials.</small>
 
-                                    <fieldset>
+                                    <fieldset className='accountIdentityField'>
                                         <legend>Identity Verification</legend>
-                                        <p><small>Enter your current password and PIN exactly as registered. Verification occurs automatically.</small></p>
+                                        <small>Enter your current password and PIN exactly as registered. Verification occurs automatically.</small>
 
-                                        <label>Current Password: <span style={{ color: 'red' }}>*</span></label>
-                                        <input
-                                            name='currentPassword'
-                                            type='password'
-                                            placeholder="Enter your current password"
-                                            value={credData.currentPassword}
-                                            autoComplete='current-password'
-                                            onChange={handleCredChange}
-                                            required
-                                        />
+                                        <div className="accountIdentityWrapper">
+                                            <div className='currentPass'>
+                                                <label>Current Password: <span>*</span></label>
+                                                <input
+                                                    name='currentPassword'
+                                                    type='password'
+                                                    placeholder="Enter your current password"
+                                                    value={credData.currentPassword}
+                                                    autoComplete='current-password'
+                                                    onChange={handleCredChange}
+                                                    required
+                                                />
+                                            </div>
+                                            
+                                            <div className="pin">
+                                                <label>PIN: <span>*</span></label>
+                                                <input
+                                                    name='pin'
+                                                    type='password'
+                                                    placeholder="Enter your PIN"
+                                                    value={credData.pin}
+                                                    onChange={handleCredChange}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
 
-                                        <label>PIN: <span style={{ color: 'red' }}>*</span></label>
-                                        <input
-                                            name='pin'
-                                            type='password'
-                                            placeholder="Enter your PIN"
-                                            value={credData.pin}
-                                            onChange={handleCredChange}
-                                            required
-                                        />
-
-                                        {verifying && <p style={{ color: 'gray' }}><small>Verifying credentials...</small></p>}
-                                        {!verifying && isVerified && <p style={{ color: 'green' }}><small>Identity verified. You may now update your credentials below.</small></p>}
-                                        {!verifying && verifyError && <p style={{ color: 'red' }}><small>{verifyError}</small></p>}
+                                        <div className="verificationWrapper">
+                                            {verifying && <p className='verifying'><small>Verifying credentials...</small></p>}
+                                            {!verifying && isVerified && <p className='verified'><small>Identity verified. You may now update your credentials below.</small></p>}
+                                            {!verifying && verifyError && <p className='error'><small>{verifyError}</small></p>}
+                                        </div>
                                     </fieldset>
                                         
                                     { isVerified && (
-                                        <fieldset>
+                                        <fieldset className='accountDetailsField'>
                                             <legend>Account Details</legend>
                                             <p><small>Leave any field blank to retain its current value.</small></p>
+                                            
+                                            <div className="accountDetailsWrapper">
+                                                <div className="username">
+                                                    <label>New Username:</label>
+                                                    <input
+                                                        name='newUsername'
+                                                        type='text'
+                                                        placeholder="Enter a new username (optional)"
+                                                        value={credData.newUsername}
+                                                        autoComplete='username'
+                                                        onChange={handleCredChange}
+                                                    />
+                                                </div>
+                                                
+                                                <div className="newPassword">
+                                                    <label>New Password:</label>
+                                                    <input
+                                                        name='newPassword'
+                                                        type='password'
+                                                        placeholder="Enter a new password (optional)"
+                                                        value={credData.newPassword}
+                                                        autoComplete='new-password'
+                                                        onChange={handleCredChange}
+                                                    />
+                                                </div>
 
-                                            <label>New Username:</label>
-                                            <input
-                                                name='newUsername'
-                                                type='text'
-                                                placeholder="Enter a new username (optional)"
-                                                value={credData.newUsername}
-                                                autoComplete='username'
-                                                onChange={handleCredChange}
-                                            />
-
-                                            <label>New Password:</label>
-                                            <input
-                                                name='newPassword'
-                                                type='password'
-                                                placeholder="Enter a new password (optional)"
-                                                value={credData.newPassword}
-                                                autoComplete='new-password'
-                                                onChange={handleCredChange}
-                                            />
-
-                                            <label>Confirm New Password:</label>
-                                            <input
-                                                name='confirmNewPassword'
-                                                type='password'
-                                                placeholder="Re-enter your new password"
-                                                value={credData.confirmNewPassword}
-                                                autoComplete='new-password'
-                                                onChange={handleCredChange}
-                                            />
+                                                <div className="confirmPassword">
+                                                    <label>Confirm New Password:</label>
+                                                    <input
+                                                        name='confirmNewPassword'
+                                                        type='password'
+                                                        placeholder="Re-enter your new password"
+                                                        value={credData.confirmNewPassword}
+                                                        autoComplete='new-password'
+                                                        onChange={handleCredChange}
+                                                    />
+                                                </div>
+                                            </div>
                                         </fieldset>
                                     )}
                                 </fieldset>
                             )}
 
                             {showInfoForm && (
-                                <fieldset>
+                                <fieldset className='infoField'>
                                     <legend>Personal Information</legend>
-                                    <p><small>Ensure all required fields are accurately filled in before submitting your changes.</small></p>
+                                    <small>Ensure all required fields are accurately filled in before submitting your changes.</small>
 
-                                    <label>First Name: <span style={{ color: 'red' }}>*</span></label>
-                                    <input name='first_name' type='text' placeholder="Enter your first name" value={infoData.first_name} autoComplete='firstName' onChange={handleInfoChange} required />
+                                    <div className="infoWrapper">
+                                        <div id="firstName">
+                                            <label>First Name: <span style={{ color: 'red' }}>*</span></label>
+                                            <input name='first_name' type='text' placeholder="Enter your first name" value={infoData.first_name} autoComplete='firstName' onChange={handleInfoChange} required />
+                                        </div>
 
-                                    <label>Middle Name:</label>
-                                    <input name='middle_name' type='text' placeholder="Enter your middle name" value={infoData.middle_name} autoComplete='middleName' onChange={handleInfoChange} />
+                                        <div id="middleName">
+                                            <label>Middle Name:</label>
+                                            <input name='middle_name' type='text' placeholder="Enter your middle name" value={infoData.middle_name} autoComplete='middleName' onChange={handleInfoChange} />
+                                        </div>
 
-                                    <label>LastName: <span style={{ color: 'red' }}>*</span></label>
-                                    <input name='last_name' type='text' placeholder="Enter your last name" value={infoData.last_name} autoComplete='lastName' onChange={handleInfoChange} required />
+                                        <div id="lastName">
+                                            <label>LastName: <span style={{ color: 'red' }}>*</span></label>
+                                            <input name='last_name' type='text' placeholder="Enter your last name" value={infoData.last_name} autoComplete='lastName' onChange={handleInfoChange} required />
+                                        </div>
 
-                                    <label>Extension:</label>
-                                    <input name='ext_name' type='text' placeholder="e.g. jr., sr., III" value={infoData.ext_name} autoComplete='extenstion' onChange={handleInfoChange} />
+                                        <div id="extName">
+                                            <label>Extension:</label>
+                                            <input name='ext_name' type='text' placeholder="e.g. jr., sr., III" value={infoData.ext_name} autoComplete='extenstion' onChange={handleInfoChange} />
+                                        </div>
 
-                                    <label>Email: <span style={{ color: 'red' }}>*</span></label>
-                                    <input name='email' type='email' placeholder="e.g. XXXXXXX@XXXXX.com" value={infoData.email} autoComplete='email' onChange={handleInfoChange} required />
+                                        <div id="email">
+                                            <label>Email: <span style={{ color: 'red' }}>*</span></label>
+                                            <input name='email' type='email' placeholder="e.g. XXXXXXX@XXXXX.com" value={infoData.email} autoComplete='email' onChange={handleInfoChange} required />
+                                        </div>
 
-                                    <label>Contact Number:</label>
-                                    <input name='contact_num' type='text' placeholder="09XXXXXXXXX" value={infoData.contact_num} autoComplete='contactNumber' onChange={handleInfoChange} />
+                                        <div id="contactNumber">
+                                            <label>Contact Number:</label>
+                                            <input name='contact_num' type='text' placeholder="09XXXXXXXXX" value={infoData.contact_num} autoComplete='contactNumber' onChange={handleInfoChange} />
+                                        </div>
+                                    </div>
                                 </fieldset>
                             )}
 
-                            {anySelected ? (
-                                <div className='btnWrapper'>
-                                    <button type='submit' className='saveBtn' disabled={submitting}>
-                                        {submitting ? 'Saving...' : 'Save Changes'}
-                                    </button>
-
+                            <div className='actionBtnWrapper'>
+                                {anySelected ? (
+                                    <>
+                                        <button type='submit' className='saveBtn' disabled={submitting}>
+                                            {submitting ? 'Saving...' : 'Save Changes'}
+                                        </button>
+                                        <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
+                                    </>
+                                ) : (
                                     <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
-                                </div>
-                            ) : (
-                                <div className='btnWrapper'>
-                                    <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </form>
                     </main>
                 </>

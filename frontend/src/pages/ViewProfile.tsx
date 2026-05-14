@@ -71,23 +71,53 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
                         <fieldset>
                             <legend>Account Details</legend>
 
-                            <p><strong>Member Since:</strong> {user?.created_at ? formatDate(user.created_at) : 'N/A'}</p>
-                            <p><strong>Username:</strong> {user?.username || 'N/A'}</p>
-                            <p><strong>Role:</strong> {user?.role ? user?.role.charAt(0).toUpperCase() + user?.role.slice(1) : 'N/A'}</p>
+                            <div className='columnGroup'>
+                                <div className='rowGroup'>
+                                    <strong>Member Since:</strong>
+                                    <p>{user?.created_at ? formatDate(user.created_at) : 'N/A'}</p>
+                                </div>
+
+                                <div className='rowGroup'>
+                                    <strong>Username:</strong>
+                                    <p>{user?.username || 'N/A'}</p>
+                                </div>
+
+                                <div className='rowGroup'>
+                                    <strong>Role:</strong>
+                                    <p>{user?.role ? user?.role.charAt(0).toUpperCase() + user?.role.slice(1) : 'N/A'}</p>
+                                </div>
+                            </div>
                         </fieldset>
 
                         <fieldset>
                             <legend>{userRole === 'landlord' ? 'Landlord' : 'Tenant'} Information</legend>
 
-                            <p><strong>Account ID:</strong> {profile?.user_id || 'N/A'}</p>
-                            <p><strong>Full Name:</strong> {profile?.first_name || ''} {profile?.middle_name || ''} {profile?.last_name || ''} {profile?.ext_name || ''}</p>
-                            <p><strong>Email:</strong> {profile?.email || 'N/A'}</p>
-                            <p><strong>Contact Number:</strong> {profile?.contact_num || 'N/A'}</p>
+                            <div className='columnGroup'>
+                                <div className='rowGroup'>
+                                    <strong>Account ID:</strong>
+                                    <p>{profile?.user_id || 'N/A'}</p>
+                                </div>
+                                
+                                <div className='rowGroup'>
+                                    <strong>Full Name:</strong>
+                                    <p>{profile?.first_name || ''} {profile?.middle_name || ''} {profile?.last_name || ''} {profile?.ext_name || ''}</p>
+                                </div>
+
+                                <div className='rowGroup'>
+                                    <strong>Email:</strong>
+                                    <p>{profile?.email || 'N/A'}</p>
+                                </div>
+
+                                <div className='rowGroup'>
+                                    <strong>Contact Number:</strong>
+                                    <p>{profile?.contact_num || 'N/A'}</p>
+                                </div>
+                            </div>
                         </fieldset>
 
-                        <div className="btnWrapper">
-                            <button type="button" className="updateBtn" onClick={() => onUpdateProfile()}>Modify Details</button>
-                            <button type="button" className="cancelBtn" onClick={goBack}>Go Back</button>
+                        <div className="actionBtnWrapper">
+                            <button type="button" className="modifyBtn" onClick={() => onUpdateProfile()}>Modify Details</button>
+                            <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
                         </div>
                     </>
                 )}
