@@ -40,7 +40,9 @@
                 justify-content: flex-start;
                 align-items: center;
                 gap: $gap;
+                margin: $margin;
                 padding: 4vmin;
+                border: 0.5vmin dashed $colorWhite;
 
                 .toggleCheckbox{
                     display: flex;
@@ -107,6 +109,81 @@
                 }
 
                 small{ font-style: italic; }
+
+                .progressWrapper {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    margin: 2vmin 0;
+
+                    .progressStep {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 1vmin;
+
+                        .progressNode {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            width: 4vmin;
+                            height: 4vmin;
+                            border-radius: 50%;
+                            font-size: $smallSize;
+                            font-weight: bold;
+                            flex-shrink: 0;
+                            transition: $transition;
+                            border: 0.3vmin solid transparent;
+
+                            &.pending {
+                                background-color: rgba(0, 0, 0, 0.1);
+                                color: rgba(0, 0, 0, 0.3);
+                                border-color: rgba(0, 0, 0, 0.15);
+                            }
+
+                            &.active {
+                                background-color: $colorWhite;
+                                color: $colorOrange;
+                                border-color: $colorOrange;
+                                box-shadow: 0 0 0 0.4vmin rgba(255, 162, 0, 0.2);
+                                animation: pulse 1.5s infinite;
+                            }
+
+                            &.done {
+                                background-color: $colorOrange;
+                                color: $colorWhite;
+                                border-color: $colorOrange;
+                            }
+                        }
+
+                        .progressLabel {
+                            font-size: $smallSize;
+                            white-space: nowrap;
+                            transition: $transition;
+
+                            &.pending { opacity: 0.35; }
+                            &.active  { color: $colorOrange; font-weight: bold; }
+                            &.done    { opacity: 0.6; }
+                        }
+
+                        .progressLine {
+                            width: 5vmin;
+                            height: 0.3vmin;
+                            background-color: rgba(0, 0, 0, 0.15);
+                            transition: background-color 0.4s ease;
+                            flex-shrink: 0;
+
+                            &.done { background-color: $colorOrange; }
+                        }
+                    }
+                }
+
+                @keyframes pulse {
+                    0%, 100% { box-shadow: 0 0 0 0.4vmin rgba(255, 162, 0, 0.2); }
+                    50%       { box-shadow: 0 0 0 0.8vmin rgba(255, 162, 0, 0.05); }
+                }
 
                 .accountIdentityField, .accountDetailsField{
                     display: flex;

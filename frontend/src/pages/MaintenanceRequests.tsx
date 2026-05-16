@@ -142,68 +142,74 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
                 ) : requests.length === 0 ? (
                     <p>No requests found.</p>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Request ID</th>
-                                <th>Property</th>
-                                <th>Title of Issue</th>
-                                <th>Field of Issue</th>
-                                <th>Description</th>
-                                <th>Priority Level</th>
-                                <th>Status</th>
-                                <th>Date of Request</th>
-                                <th>Date of Accomplish</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {requests.map((req) => (
-                                <tr key={req.id}>
-                                    <td>{req?.id}</td>
-                                    <td>
-                                        {req.property_name || 'N/A'} 
-                                        <button className="viewDetails" onClick={() => handleViewDetails(req.property_id)}>
-                                            View Property
-                                        </button>
-                                    </td>
-                                    <td>{req.issue_title ? req.issue_title.charAt(0).toUpperCase() + req.issue_title.slice(1) : 'N/A'}</td>
-                                    <td>{req.issue_field ? req.issue_field.charAt(0).toUpperCase() + req.issue_field.slice(1) : 'N/A'}</td>
-                                    <td>{req.issue_description ? req.issue_description.charAt(0).toUpperCase() + req.issue_description.slice(1) : 'No description of the issue available'}</td>
-                                    <td>{getPriorityLabel(req.priority)}</td>
-                                    <td>{req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : 'N/A'}</td>
-                                    <td>{req.request_date ? new Date(req.request_date).toLocaleDateString() : 'N/A'}</td>
-                                    <td>{req.resolved_date || 'Not yet resolved'}</td>
-                                    <td>
-                                        {req.status === 'pending' ? (
-                                            userRole === 'landlord' ? (
-                                                <div className="btnWrapper">
-                                                    <button className="finishedBtn" onClick={() => handleStatusUpdate(req.id, 'finished')}>Mark Finished</button>
-                                                    <button className="cancelledBtn" onClick={() => handleStatusUpdate(req.id, 'cancelled')}>Mark Cancelled</button>
-                                                    <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
-                                                </div>
-                                            ) : (
-                                                <div className="btnWrapper">
-                                                    <button className="updateBtn" onClick={() => handleEditRequest(req)}>Update Details</button>
-                                                    <button className="cancelRequestBtn" onClick={() => handleStatusUpdate(req.id, 'cancelled')}>Cancel Request</button>
-                                                    <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
-                                                </div>
-                                            )
-                                        ) : req.status === 'finished' || req.status === 'cancelled' ? (
-                                            <div className="btnWrapper">
-                                                <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
-                                            </div>
-                                        ) : null}
-                                    </td>
+                    <div className='tableWrapper'>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Property Name</th>
+                                    <th>Title of Issue</th>
+                                    <th>Field of Issue</th>
+                                    <th>Description</th>
+                                    <th>Priority Level</th>
+                                    <th>Status</th>
+                                    <th>Date of Request</th>
+                                    <th>Date of Accomplish</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                {requests.map((req, index) => (
+                                    <tr key={req.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{req.property_name || '—'}</td>
+                                        <td>{req.issue_title ? req.issue_title.charAt(0).toUpperCase() + req.issue_title.slice(1) : '—'}</td>
+                                        <td>{req.issue_field ? req.issue_field.charAt(0).toUpperCase() + req.issue_field.slice(1) : '—'}</td>
+                                        <td>{req.issue_description ? req.issue_description.charAt(0).toUpperCase() + req.issue_description.slice(1) : 'No description of the issue available'}</td>
+                                        <td><span className={`statusBadge ${req.status}`}>{getPriorityLabel(req.priority) || '—'}</span></td>
+                                        <td><span className={`statusBadge ${req.status}`}>{req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : '—'}</span></td>
+                                        <td>{req.request_date ? new Date(req.request_date).toLocaleDateString() : '—'}</td>
+                                        <td>{req.resolved_date || 'Not yet resolved'}</td>
+                                        <td>
+                                            {req.status === 'pending' ? (
+                                                userRole === 'landlord' ? (
+                                                    <div className="actionBtnWrapper">
+                                                        <button className="viewBtn" onClick={() => handleViewDetails(req.property_id)}>View Property</button>
+                                                        <button className="finishedBtn" onClick={() => handleStatusUpdate(req.id, 'finished')}>
+                                                            <i className='fa-solid fa-thumb-tack' />
+                                                            Mark Finished
+                                                        </button>
+                                                        <button className="cancelledBtn" onClick={() => handleStatusUpdate(req.id, 'cancelled')}>
+                                                            <i className='fa-solid fa-thumb-tack' />
+                                                            Mark Cancelled
+                                                        </button>
+                                                        <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="actionBtnWrapper">
+                                                        <button className="viewBtn" onClick={() => handleViewDetails(req.property_id)}>View Property</button>
+                                                        <button className="updateBtn" onClick={() => handleEditRequest(req)}>Update Details</button>
+                                                        <button className="cancelRequestBtn" onClick={() => handleStatusUpdate(req.id, 'cancelled')}>Cancel Request</button>
+                                                        <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
+                                                    </div>
+                                                )
+                                            ) : req.status === 'finished' || req.status === 'cancelled' ? (
+                                                <div className="actionBtnWrapper">
+                                                    <button className="viewBtn" onClick={() => handleViewDetails(req.property_id)}>View Property</button>
+                                                    <button className="deleteBtn" onClick={() => handleDeleteRequest(req.id)}>Delete Request</button>
+                                                </div>
+                                            ) : null}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 <div className="btnWrapper">
-                    <button type="button" className="cancelBtn" onClick={goBack}>Go Back</button>
+                    <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
                 </div>
             </main>
         </section>

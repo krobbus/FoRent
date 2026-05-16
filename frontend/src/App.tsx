@@ -10,6 +10,7 @@ import '../src/styles/PropertyGrid.scss';
 import '../src/styles/ViewDetails.scss';
 import '../src/styles/ViewProfile.scss';
 import '../src/styles/UpdateProfile.scss';
+import '../src/styles/TableView.scss';
 
 import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
@@ -224,7 +225,15 @@ function App() {
             {crumbs}
 
             <UpdateProfile
-              goBack={() => setCurrentView('viewProfile')}
+              goBack={() => {
+                setSelectedProperty(null);
+
+                if (previousView === 'viewProfile'){
+                  setCurrentView(previousView);
+                } else {
+                  setCurrentView('home');
+                }
+              }}
               userId={userId || 0}
               userRole={userRole} 
               onSuccess={() => {
@@ -280,11 +289,9 @@ function App() {
 
                 if (previousView === 'home') {
                   navigateTo('availablePropertySection');
-                } else if(previousView === 'myProperties' || 
-                  previousView === 'myRentals' || 'rentalApplications' || 'maintenanceRequests' || 'paymentHistory'
-                ){
+                } else if (previousView === 'myProperties' || 'myRentals' || 'rentalApplications' || 'maintenanceRequests' || 'paymentHistory'){
                   setCurrentView(previousView);
-                }else {
+                } else {
                   setCurrentView('home');
                 }
               }}

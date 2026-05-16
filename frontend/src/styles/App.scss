@@ -1,5 +1,6 @@
 ::-webkit-scrollbar {
     width: 2vmin;
+    cursor: grab;
     
     &-track { background: $bgDefault; }
     &-thumb { background: $colorOrange; }
@@ -190,10 +191,13 @@ body{
                 align-items: center;
                 gap: $gap;             
                 width: 100%;
+                border-top-left-radius: $borderRadius;
+                border-bottom-left-radius: $borderRadius;
 
                 i {
                     font-size: $subheaderSize;
                     color: $colorWhite;
+                    transition: $transition;
                 }
                 
                 a {
@@ -203,16 +207,17 @@ body{
                     font-size: $normalSize;
                     color: $colorWhite;
                     cursor: pointer;
-                    border-top-left-radius: $borderRadius;
-                    border-bottom-left-radius: $borderRadius;
-                    transition: $transition;
                     white-space: nowrap;
                     width: 100%;
+                    transition: $transition;
+                }
 
-                    &:hover, &:focus {
-                        position: relative;
+                &:hover, &:focus {
+                    position: relative;
+                    background-color: $bgColorWhite;
+
+                    i, a{ 
                         transform: translateX(2vmin);
-                        background-color: $bgColorWhite;
                         color: $colorOrange;
                     }
                 }

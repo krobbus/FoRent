@@ -1,0 +1,190 @@
+#rentalApplicationsContainer, #maintenanceRequestsContainer, #paymentHistoryContainer{
+    margin: $margin;
+
+    main{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .tableWrapper{
+            width: 100%;
+            overflow-x: auto;
+            border-radius: $borderRadius;
+            cursor: grab;
+
+            &:active { cursor: grabbing; }
+            &::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 999px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: $colorOrange;
+                border-radius: 999px;
+                &:hover { background: darken($colorOrange, 10%); }
+            }
+
+            table{
+                width: 100%;
+                border-collapse: collapse;
+                font-size: $smallSize;
+                text-align: center;
+
+                thead {
+                    background-color: $colorOrange;
+                    color: $colorWhite;
+
+                    tr th {
+                        padding: 1.5vmin 2vmin;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                        white-space: nowrap;
+
+                        &:first-child { border-radius: $borderRadius 0 0 0; }
+                        &:last-child { border-radius: 0 $borderRadius 0 0; }
+                    }
+                }
+
+                tbody {
+                    tr {
+                        transition: $transition;
+
+                        &:nth-child(odd) { background-color: rgba(78, 78, 78, 0.05); }
+                        &:nth-child(odd):hover { background-color: rgba(78, 78, 78, 0.2); }
+                        
+                        &:nth-child(even) { background-color: rgba(78, 78, 78, 0.02); }
+                        &:nth-child(even):hover { background-color: rgba(78, 78, 78, 0.1); }
+
+                        td {
+                            border: 0.2vmin solid rgba(0, 0, 0, 0.2);
+                            padding: 1.5vmin 2vmin;
+                            vertical-align: middle;
+                            color: inherit;
+                            white-space: nowrap;
+
+                            .statusBadge {
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 0.5vmin;
+                                padding: 0.4vmin 1.2vmin;
+                                border-radius: 999px;
+                                font-size: $smallSize;
+                                font-weight: bold;
+                                white-space: nowrap;
+
+                                &.low { background-color: rgba(34, 197, 94, 0.15);  color: #16a34a; }
+                                &.medium { background-color: rgba(255, 238, 0, 0.15);  color: #ffee00; }
+                                &.high { background-color: rgba(255, 136, 0, 0.15);  color: #ff8800; }
+                                &.emergency{ background-color: rgba(255, 0, 0 , 0.15);  color: #ff0000; }
+
+                                &.approved, &.finished, &.paid { background-color: rgba(34, 197, 94, 0.15);  color: #16a34a; }
+                                &.pending, &.in_progress { background-color: #ffa20026;  color: $colorOrange; }
+                                &.rejected, &.cancelled, &.failed { background-color: rgba(99, 102, 241, 0.15); color: #4f46e5; }
+                                &.withdrawn, &.refunded { background-color: rgba(239, 68, 68, 0.15);  color: #dc2626; }
+                            }
+
+                            .actionBtnWrapper {
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: center;
+                                align-items: center;
+                                gap: 1vmin;
+
+                                button {
+                                    display: flex;
+                                    flex-direction: row;
+                                    justify-content: center;
+                                    align-items: center;
+                                    gap: 1vmin;
+
+                                    padding: 0.6vmin 1.4vmin;
+                                    border-radius: $borderRadius;
+                                    font-size: $smallSize;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    border: 0.2vmin solid transparent;
+                                    transition: $transition;
+                                    white-space: nowrap;
+
+                                    &.viewBtn, &.updateBtn {
+                                        background-color: $bgColorOrange;
+                                        color: $colorWhite;
+                                        &:hover { background-color: $colorOrange; }
+                                    }
+
+                                    &.approveBtn, &.finishedBtn {
+                                        background-color: rgba(34, 197, 94, 0.15);
+                                        color: #16a34a;
+                                        border-color: #16a34a;
+
+                                        i{ color: #16a34a; }
+                                        &:hover { 
+                                            background-color: #16a34a; 
+                                            color: $colorWhite;
+                                            i{ color: $colorWhite; }
+                                        }
+                                    }
+
+                                    &.rejectBtn, &.cancelledBtn {
+                                        background-color: rgba(239, 68, 68, 0.1);
+                                        color: #dc2626;
+                                        border-color: #dc2626;
+
+                                        i{ color: #dc2626; }
+                                        &:hover { 
+                                            background-color: #dc2626; 
+                                            color: $colorWhite;
+                                            i{ color: $colorWhite; }
+                                        }
+                                    }
+
+                                    &.deleteBtn, &.cancelRequestBtn {
+                                        background-color: rgba(214, 48, 48, 0.1);
+                                        color: #d63030;
+                                        border-color: #d63030;
+                                        &:hover { background-color: #d63030; color: $colorWhite; }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .btnWrapper{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: $gap;
+            padding: $padding;;
+
+            button{
+                flex: 1 1 40%;
+                padding: 2vmin 5vmin;
+                border-radius: $borderRadius;
+                white-space: nowrap;
+                font-size: $smallSize;
+                font-weight: bold;
+                cursor: pointer;
+                border: 0.3vmin solid $colorWhite;
+                transition: $transition;
+                min-width: fit-content;
+            }
+
+            .backBtn{
+                background-color: #d63030;
+                color: $colorWhite;
+
+                &:hover{
+                    border: 0.3vmin solid $colorRed;
+                    background-color: $bgColorWhite;
+                    color: $colorRed;
+                }
+            }
+        }
+    }
+}

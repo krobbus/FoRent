@@ -134,63 +134,63 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
                 ) : applications.length === 0 ? (
                     <p>No applications found.</p>
                 ) : (
-                    <table className="appTable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Property Name</th>
-                                <th>Applicant Name</th>
-                                <th>Applicant Contact</th>
-                                <th>Applicant Email</th>
-                                <th>Date Applied</th>
-                                <th>Status</th>
-                                {userRole === 'landlord' && <th>Message</th>}
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {applications.map((app, index) => (
-                                <tr key={app.id}>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                        {app.property_name || 'N/A'} 
-                                        <button className="viewDetails" onClick={() => handleViewDetails(app.property_id)}>
-                                            View Property
-                                        </button>
-                                    </td>
-                                    <td>{app.tenant_fullname || 'N/A'}</td>
-                                    <td>{app.tenant_contact || 'N/A'}</td>
-                                    <td>{app.tenant_email || 'N/A'}</td>
-                                    <td>{new Date(app.move_in_date || 'N/A').toLocaleDateString()}</td>
-                                    <td>
-                                        <span className={`statusBadge ${app.status}`}>{app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
-                                    </td>
-                                    {userRole === 'landlord' && <td>{!app.message ? "No message from applicant." : app.message }</td>}
-                                    <td>
-                                        {app.status === 'pending' ? (
-                                            userRole === 'landlord' ? (
-                                                <div className="btnWrapper">
-                                                    <button className="approveBtn" onClick={() => handleStatusUpdate(app.id, 'approved')}>Mark Approve</button>
-                                                    <button className="rejectBtn" onClick={() => handleStatusUpdate(app.id, 'rejected')}>Mark Reject</button>
-                                                    <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
-                                                </div>
-                                            ) : (
-                                                <div className="btnWrapper">
-                                                    <button className="updateBtn" onClick={() => handleEditApplication(app)}>Update Details</button>
-                                                    <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
-                                                </div>
-                                            )
-                                        ) : app.status === 'approved' || app.status === 'rejected' || app.status === 'withdrawn' ? (
-                                            <div className="btnWrapper">
-                                                <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
-                                            </div>
-                                        ) : null}
-                                    </td>
+                    <div className='tableWrapper'>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Application ID</th>
+                                    <th>Property Name</th>
+                                    <th>Applicant Name</th>
+                                    <th>Applicant Contact</th>
+                                    <th>Applicant Email</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                    {userRole === 'landlord' && <th>Message</th>}
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                {applications.map((app, index) => (
+                                    <tr key={app.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{app.property_name || '—'}</td>
+                                        <td>{app.tenant_fullname || '—'}</td>
+                                        <td>{app.tenant_contact || '—'}</td>
+                                        <td>{app.tenant_email || '—'}</td>
+                                        <td>{new Date(app.move_in_date || '—').toLocaleDateString()}</td>
+                                        <td>
+                                            <span className={`statusBadge ${app.status}`}>{app.status.charAt(0).toUpperCase() + app.status.slice(1) || '—'}</span>
+                                        </td>
+                                        {userRole === 'landlord' && <td>{!app.message ? "No message from applicant." : app.message }</td>}
+                                        <td>
+                                            {app.status === 'pending' ? (
+                                                userRole === 'landlord' ? (
+                                                    <div className="actionBtnWrapper">
+                                                        <button className='viewBtn' onClick={() => handleViewDetails(app.property_id)}>View Property</button>
+                                                        <button className="approveBtn" onClick={() => handleStatusUpdate(app.id, 'approved')}>Mark Approve</button>
+                                                        <button className="rejectBtn" onClick={() => handleStatusUpdate(app.id, 'rejected')}>Mark Reject</button>
+                                                        <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="actionBtnWrapper">
+                                                        <button className='viewBtn' onClick={() => handleViewDetails(app.property_id)}>View Property</button>
+                                                        <button className="updateBtn" onClick={() => handleEditApplication(app)}>Update Details</button>
+                                                        <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
+                                                    </div>
+                                                )
+                                            ) : app.status === 'approved' || app.status === 'rejected' || app.status === 'withdrawn' ? (
+                                                <div className="actionBtnWrapper">
+                                                    <button className='viewBtn' onClick={() => handleViewDetails(app.property_id)}>View Property</button>
+                                                    <button className="deleteBtn" onClick={() => handleDeleteApplication(app.id)}>Delete Application</button>
+                                                </div>
+                                            ) : null}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 <div className="btnWrapper">

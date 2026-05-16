@@ -315,79 +315,77 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                 ) : payments.length === 0 ? (
                     <p>No payment records found.</p>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Property</th>
-                                <th>Amount</th>
-                                <th>Method</th>
-                                <th>Period Covered</th>
-                                <th>Payment Date</th>
-                                <th>Status</th>
-                                <th>Recorded By</th>
-                                <th>Notes</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {payments.map((payment, index) => (
-                                <tr key={payment.id}>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                        {payment.property_name || payment.property_id}
-                                        <button className="viewDetails" onClick={() => handleViewDetails(payment.property_id)}>
-                                            View Property
-                                        </button>
-                                    </td>
-                                    <td>₱{Number(payment.amount).toLocaleString()}</td>
-                                    <td>{getMethodLabel(payment.payment_method)}</td>
-                                    <td>{payment.period_covered || 'N/A'}</td>
-                                    <td>{payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'Cancelled'}</td>
-                                    <td>
-                                        <span className={`statusBadge ${payment.status}`}>
-                                            {getStatusLabel(payment.status)}
-                                        </span>
-                                    </td>
-                                    <td>{payment.recorded_by.charAt(0).toUpperCase() + payment.recorded_by.slice(1)}</td>
-                                    <td>{payment.notes || '—'}</td>
-                                    <td>
-                                        {payment.status === 'pending' && userRole === 'landlord' && (
-                                            <div className="btnWrapper">
-                                                <button className="approveBtn" onClick={() => handleStatusUpdate(payment.id, 'paid')}>
-                                                    Confirm Paid
-                                                </button>
-
-                                                <button className="rejectBtn" onClick={() => handleStatusUpdate(payment.id, 'failed')}>
-                                                    Mark Failed
-                                                </button>
-                                            </div>
-                                        )}
-
-                                        {payment.status === 'paid' && userRole === 'landlord' && (
-                                            <div className="btnWrapper">
-                                                <button className="cancelledBtn" onClick={() => handleStatusUpdate(payment.id, 'refunded')}>
-                                                    Refund
-                                                </button>
-                                            </div>
-                                        )}
-
-                                        {(
-                                            (payment.status === 'paid' && userRole === 'tenant') || 
-                                            payment.status === 'failed' || 
-                                            payment.status === 'refunded'
-                                        ) && ( 
-                                            <div className="btnWrapper">
-                                                <button className="deleteBtn" onClick={() => handleDelete(payment.id)}>
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
+                    <div className='tableWrapper'>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Property Name</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Period Covered</th>
+                                    <th>Payment Date</th>
+                                    <th>Status</th>
+                                    <th>Recorded By</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            
+                            <tbody>
+                                {payments.map((payment, index) => (
+                                    <tr key={payment.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{payment.property_name || '—'}</td>
+                                        <td>₱{Number(payment.amount).toLocaleString() || '—'}</td>
+                                        <td>{getMethodLabel(payment.payment_method) || '—'}</td>
+                                        <td>{payment.period_covered || '—'}</td>
+                                        <td>{payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : '—'}</td>
+                                        <td>
+                                            <span className={`statusBadge ${payment.status}`}>
+                                                {getStatusLabel(payment.status)}
+                                            </span>
+                                        </td>
+                                        <td>{payment.recorded_by.charAt(0).toUpperCase() + payment.recorded_by.slice(1)}</td>
+                                        <td>{payment.notes || '—'}</td>
+                                        <td>
+                                            {payment.status === 'pending' && userRole === 'landlord' && (
+                                                <div className="actionBtnWrapper">
+                                                    <button className="viewBtn" onClick={() => handleViewDetails(payment.property_id)}>View Property</button>
+                                                    <button className="approveBtn" onClick={() => handleStatusUpdate(payment.id, 'paid')}>
+                                                        <i className='fa-solid fa-thumb-tack' />
+                                                        Confirm Paid
+                                                    </button>
+                                                    <button className="rejectBtn" onClick={() => handleStatusUpdate(payment.id, 'failed')}>
+                                                        <i className='fa-solid fa-thumb-tack' />
+                                                        Mark Failed
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {payment.status === 'paid' && userRole === 'landlord' && (
+                                                <div className="actionBtnWrapper">
+                                                    <button className="viewBtn" onClick={() => handleViewDetails(payment.property_id)}>View Property</button>
+                                                    <button className="cancelledBtn" onClick={() => handleStatusUpdate(payment.id, 'refunded')}>Refund</button>
+                                                </div>
+                                            )}
+
+                                            {(
+                                                (payment.status === 'paid' && userRole === 'tenant') || 
+                                                payment.status === 'failed' || 
+                                                payment.status === 'refunded'
+                                            ) && ( 
+                                                <div className="actionBtnWrapper">
+                                                    <button className="viewBtn" onClick={() => handleViewDetails(payment.property_id)}>View Property</button>
+                                                    <button className="deleteBtn" onClick={() => handleDelete(payment.id)}>Delete Record</button>
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 <div className="btnWrapper">

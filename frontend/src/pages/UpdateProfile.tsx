@@ -1,6 +1,29 @@
 import { useState, useEffect, useRef } from 'react'
 import { authFetch } from '../utils/api'
-import type { UpdateProfileProps } from '../utils/props'
+import type { UpdateProfileProps, Step } from '../utils/props'
+
+function ProgressSteps({ steps }: { steps: Step[] }) {
+    return (
+        <div className='progressWrapper'>
+            {steps.map((step, i) => (
+                <div key={i} className='progressStep'>
+                    <div className={`progressNode ${step.status}`}>
+                        {step.status === 'done'
+                            ? <i className='fa-solid fa-check' />
+                            : <span>{i + 1}</span>
+                        }
+                    </div>
+
+                    <p className={`progressLabel ${step.status}`}>{step.label}</p>
+
+                    {i < steps.length - 1 && (
+                        <div className={`progressLine ${steps[i + 1].status !== 'pending' ? 'done' : ''}`} />
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
 
 function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfileProps) {
     const [loading, setLoading] = useState(true);
@@ -246,6 +269,34 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                 <fieldset className='authField'>
                                     <legend>Change Account Credentials</legend>
                                     <small>For security purposes, please verify your identity before making any changes to your account credentials.</small>
+                                    
+                                    {(() => {
+                                        const hasBoth   = !!credData.currentPassword && !!credData.pin;
+                                        const verified  = isVerified;
+                                        const hasNew    = !!(credData.newUsername || credData.newPassword);
+                                        const confirmed = hasNew && credData.newPassword === credData.confirmNewPassword;
+
+                                        const steps: Step[] = [
+                                            {
+                                                label: 'Enter Credentials',
+                                                status: hasBoth ? 'done' : 'active'
+                                            },
+                                            {
+                                                label: 'Verify Identity',
+                                                status: !hasBoth ? 'pending' : verified ? 'done' : 'active'
+                                            },
+                                            {
+                                                label: 'Set New Details',
+                                                status: !verified ? 'pending' : (hasNew && !confirmed) ? 'active' : hasNew && confirmed ? 'done' : 'active'
+                                            },
+                                            {
+                                                label: 'Save Changes',
+                                                status: !verified || !hasNew ? 'pending' : confirmed ? 'active' : 'pending'
+                                            },
+                                        ];
+
+                                        return <ProgressSteps steps={steps} />;
+                                    })()}
 
                                     <fieldset className='accountIdentityField'>
                                         <legend>Identity Verification</legend>
