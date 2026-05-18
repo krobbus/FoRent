@@ -138,9 +138,9 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
             
             <main>
                 {loading ? (
-                    <p>Loading requests...</p>
+                    <p className='loadingText'>Loading requests...</p>
                 ) : requests.length === 0 ? (
-                    <p>No requests found.</p>
+                    <p className='loadingText'>No requests found.</p>
                 ) : (
                     <div className='tableWrapper'>
                         <table>

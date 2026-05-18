@@ -28,7 +28,7 @@ function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: Prop
                     onChange={e => onQueryChange(e.target.value)}
                 />
 
-                <div className='btnWrapper'>
+                <div className='searchBtnWrapper'>
                     {query && (
                         <button onClick={() => onQueryChange('')}>✕ Clear</button>
                     )}

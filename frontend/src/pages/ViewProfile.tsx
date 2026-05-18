@@ -65,7 +65,7 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
 
             <main>
                 {loading ? (
-                    <p>Loading profile...</p>
+                    <p className='loadingText'>Loading profile...</p>
                 ) : (
                     <>
                         <fieldset>
@@ -115,7 +115,7 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
                             </div>
                         </fieldset>
 
-                        <div className="actionBtnWrapper">
+                        <div className="btnWrapper">
                             <button type="button" className="modifyBtn" onClick={() => onUpdateProfile()}>Modify Details</button>
                             <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
                         </div>

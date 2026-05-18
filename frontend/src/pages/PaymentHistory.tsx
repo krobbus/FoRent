@@ -204,7 +204,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
 
             <main>
                 {userRole === 'tenant' && !showForm && (
-                    <div className="btnWrapper">
+                    <div className="payBtnWrapper">
                         <button className="submitBtn" onClick={() => setShowForm(true)}>
                             + Submit Payment
                         </button>
@@ -212,11 +212,11 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                 )}
 
                 {showForm && (
-                    <form className="paymentForm" onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <h3>Submit Payment Record</h3>
 
                         <div className="formGroup">
-                            <label>Property <span style={{ color: 'red' }}>*</span></label>
+                            <label>Property <span>*</span></label>
                             <select
                                 value={formData.property_id}
                                 onChange={(e) => setFormData({ ...formData, property_id: e.target.value })}
@@ -224,12 +224,12 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                             >
                                 {rentedProperties.length === 0 ?
                                     <>
-                                        <option value="">Select Property</option>
-                                        <option style={{ color: 'gray' }} value="">No rented properties found.</option>
+                                        <option value="" className='default'>Select Property</option>
+                                        <option value="">No rented properties found.</option>
                                     </>
                                 :   
                                     <>
-                                        <option value="">Select Property</option>
+                                        <option value="" className='default'>Select Property</option>
                                         {rentedProperties.map((p) => (
                                             <option key={p.id} value={p.id}>
                                                 {p.property_name}
@@ -241,7 +241,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                         </div>
 
                         <div className="formGroup">
-                            <label>Amount (₱) <span style={{ color: 'red' }}>*</span></label>
+                            <label>Amount (₱)<span>*</span></label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -252,13 +252,13 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                         </div>
 
                         <div className="formGroup">
-                            <label>Payment Method <span style={{ color: 'red' }}>*</span></label>
+                            <label>Payment Method<span>*</span></label>
                             <select
                                 value={formData.payment_method}
                                 onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
                                 required
                             >
-                                <option value="">Select Method</option>
+                                <option value="" className='default'>Select Method</option>
                                 <option value="cash">Cash</option>
                                 <option value="bank_transfer">Bank Transfer</option>
                                 <option value="gcash">GCash</option>
@@ -268,7 +268,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                         </div>
 
                         <div className="formGroup">
-                            <label>Period Covered <span style={{ color: 'red' }}>*</span></label>
+                            <label>Period Covered <span>*</span></label>
                             <input
                                 type="month"
                                 value={formData.period_covered}
@@ -287,11 +287,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                             />
                         </div>
 
-                        <div className="btnWrapper">
-                            <button type="button" className="cancelBtn" onClick={() => setShowForm(false)}>
-                                Cancel
-                            </button>
-
+                        <div className="paymentBtnWrapper">
                             {formData.payment_method === 'card' ? (
                                 <button
                                     type="button"
@@ -306,14 +302,18 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                                     {submitting ? 'Submitting...' : 'Submit'}
                                 </button>
                             )}
+
+                            <button type="button" className="cancelBtn" onClick={() => setShowForm(false)}>
+                                Cancel
+                            </button>
                         </div>
                     </form>
                 )}
 
                 {loading ? (
-                    <p>Loading payments...</p>
+                    <p className='loadingText'>Loading payments...</p>
                 ) : payments.length === 0 ? (
-                    <p>No payment records found.</p>
+                    <p className='loadingText'>No payment records found.</p>
                 ) : (
                     <div className='tableWrapper'>
                         <table>

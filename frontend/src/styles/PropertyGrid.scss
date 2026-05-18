@@ -1,5 +1,11 @@
 #marketplaceContainer, #propertyContainer{
-    padding: $padding;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: $gap;
+    margin: $margin;
+
     main{
         display: flex;
         flex-direction: column;
@@ -45,7 +51,7 @@
                         position: absolute;
                         bottom: -0.5vmin;
                         right: 0;
-                        border-left: 1vmin solid darken($colorOrange, 15%);
+                        border-left: 1vmin solid $colorOrange;
                         border-bottom: 0.5vmin solid transparent;
                     }
                 }
@@ -122,7 +128,7 @@
                             gap: 1vmin;
 
                             .pill{
-                                background-color: $bgColorWhite;
+                                background-color: $colorWhite;
                                 color: $colorOrange;
                                 padding: 0.8vmin 1.5vmin;
                                 border-radius: 999px;
@@ -132,40 +138,41 @@
                     }
                 }
 
-                .btnWrapper{
+                .actionBtnWrapper{
                     display: flex;
                     flex-direction: row;
                     flex-wrap: wrap;
                     justify-content: center;
                     align-items: center;
                     gap: $gap;
-                    padding: $padding;;
+                    padding: $padding;
 
                     button{
-                        flex: 1 1 40%;
-                        padding: 2vmin 3vmin;
+                        flex: 1;
+                        padding: 2vmin 5vmin;
                         border-radius: $borderRadius;
                         white-space: nowrap;
                         font-size: $smallSize;
                         font-weight: bold;
                         cursor: pointer;
-                        border: 0.3vmin solid $colorWhite;
+                        border: 0.3vmin solid;
                         transition: $transition;
                         min-width: fit-content;
                     }
 
                     .applyBtn, .updateBtn, .paymentBtn, .requestBtn{
+                        border-color: $colorWhite;
                         background-color: $colorWhite;
                         color: $colorOrange;
 
                         &:hover{
-                            background-color: transparent;
+                            background-color: $colorOrange;
                             color: $colorWhite;
                         }
                     }
 
                     .detailBtn{
-                        background-color: transparent;
+                        background-color: $colorOrange;
                         color: $colorWhite;
 
                         &:hover{
@@ -175,55 +182,15 @@
                     }
 
                     .deleteBtn{
-                        background-color: #d63030;
+                        border-color: $colorRed;
+                        background-color: $colorRed;
                         color: $colorWhite;
 
                         &:hover{
-                            background-color: transparent;
-                            color: $colorWhite;
+                            background-color: $colorWhite;
+                            color: $colorRed;
                         }
                     }
-                }
-            }
-        }
-
-        .actionBtnWrapper{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: $gap;
-            height: fit-content;
-            width: 50vmin;
-
-            button{
-                flex: 1;
-                padding: 2vmin;
-                border-radius: $borderRadius;
-                font-size: $smallSize;
-                font-weight: bold;
-                cursor: pointer;
-                border: 0.3vmin solid $colorWhite;
-                transition: $transition;
-            }
-
-            .addBtn{
-                background-color: rgba(255, 162, 0);
-                color: $colorWhite;
-
-                &:hover{
-                    background-color: rgba(255, 162, 0, 0.2);
-                    color: $colorOrange;
-                }
-            }
-
-            .backBtn{
-                background-color: rgba(214, 48, 48);
-                color: $colorWhite;
-
-                &:hover{
-                    background-color: rgba(214, 48, 48, 0.2);
-                    color: rgba(214, 48, 48, 0.6);
                 }
             }
         }

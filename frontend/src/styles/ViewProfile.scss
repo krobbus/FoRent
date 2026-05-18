@@ -16,14 +16,14 @@
             gap: $gap;
             padding: $padding;
             width: 100vmin;
-            border: 0.5vmin dashed $colorOrange;
+            border: 0.5vmin dashed $colorLightOrange;
 
             legend{
                 color: $colorOrange;
                 font-size: $subheaderSize;
                 font-weight: bold;
                 text-align: center;
-                padding: $padding;
+                padding: 0 $padding 0 $padding;
             }
 
             .columnGroup{
@@ -44,51 +44,10 @@
                     
                     strong, p{
                         flex: 1;
-                        font-size: $normalSize;
+                        font-size: $smallSize;
                     }
 
                     strong{ text-align: right; }
-                }
-            }
-        }
-
-        .actionBtnWrapper{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: $gap;
-            height: fit-content;
-            width: 50vmin;
-
-            button{
-                flex: 1;
-                padding: 2vmin;
-                border-radius: $borderRadius;
-                font-size: $smallSize;
-                font-weight: bold;
-                cursor: pointer;
-                border: 0.3vmin solid $colorWhite;
-                transition: $transition;
-            }
-
-            .modifyBtn{
-                background-color: rgba(255, 162, 0);
-                color: $colorWhite;
-
-                &:hover{
-                    background-color: rgba(255, 162, 0, 0.2);
-                    color: $colorOrange;
-                }
-            }
-
-            .backBtn{
-                background-color: rgba(214, 48, 48);
-                color: $colorWhite;
-
-                &:hover{
-                    background-color: rgba(214, 48, 48, 0.2);
-                    color: rgba(214, 48, 48, 0.6);
                 }
             }
         }

@@ -15,15 +15,13 @@
         gap: $gap;
 
         input{
-            font-size: $normalSize;
-            border-style: solid;
-            border-width: 0.4vmin;
-            border-color: $colorOrange;
+            border: 0.4vmin solid $colorOrange;
+            font-size: $smallSize;
             padding: $padding;
             width: 100vmin;
         }
 
-        .btnWrapper{
+        .searchBtnWrapper{
             display: flex;
             flex-direction: row;
             justify-content: center;
@@ -31,22 +29,18 @@
             gap: $gap;
 
             button{
-                border-style: solid;
-                border-width: 0.4vmin;
-                border-color: $bgColorOrange;
-                font-size: $normalSize;
+                border: 0.4vmin solid $colorOrange;
+                font-size: $smallSize;
                 font-weight: bold;
-                color: $bgColorWhite;
-                background-color: $bgColorOrange;
+                color: $colorWhite;
+                background-color: $colorOrange;
                 cursor: pointer;
                 padding: $padding;
-                height: auto;
                 width: 20vmin;
 
                 &:hover{
-                    border-color: $bgColorOrange;
-                    color: $bgColorOrange;
-                    background-color: $bgColorWhite;
+                    color: $colorOrange;
+                    background-color: $colorWhite;
                 }
             }
         }
@@ -62,7 +56,7 @@
         gap: $gap;
 
         padding: $padding;
-        background-color: $bgColorOrange;
+        background-color: $colorOrange;
         border-radius: $borderRadius;
         
         z-index: 9999;
@@ -81,11 +75,11 @@
 
             button{
                 border-style: solid;
-                border-color: $bgColorOrange;
-                font-size: $normalSize;
+                border-color: $colorOrange;
+                font-size: $smallSize;
                 font-weight: bold;
-                color: $bgColorOrange;
-                background-color: $bgColorWhite;
+                color: $colorOrange;
+                background-color: $colorWhite;
                 cursor: pointer;
                 height: auto;
                 width: 20vmin;
@@ -93,9 +87,9 @@
                 border-radius: $borderRadius;
 
                 &:hover, &:focus{
-                    border-color: $bgColorOrange;
-                    color: $bgColorOrange;
-                    background-color: $bgColorWhite;
+                    border-color: $colorOrange;
+                    color: $colorOrange;
+                    background-color: $colorWhite;
                 }
             }
         }

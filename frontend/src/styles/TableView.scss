@@ -7,21 +7,111 @@
         justify-content: center;
         align-items: center;
 
+        form{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: $gap;
+            margin: $margin;
+            padding: $padding;
+            border-radius: $borderRadius;
+            background-color: $colorOrange;
+            max-width: 200vmin;
+
+            h3{ 
+                font-size: $normalSize;
+                color: $colorWhite;
+            }
+            
+            .formGroup{
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: flex-start;
+                gap: $gap;
+                width: 100%;
+
+                label{
+                    flex: 1;
+                    white-space: nowrap;
+                    font-size: $smallSize;
+                    color: $colorWhite;
+
+                    span{ color: #ff0000; }
+                }
+
+                select, input[type='number'], input[type='month'], textarea{
+                    font-size: $smallSize;
+                    border: 0.2vmin solid rgba(0, 0, 0, 0.8);
+                    width: 100%;
+                    padding: 0.5vmin;
+
+                    .default{
+                        color: $colorGray;
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+                }   
+            }
+
+            .paymentBtnWrapper{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: $gap;
+
+                button{
+                    flex: 1 1 40%;
+                    padding: 1vmin 5vmin;
+                    border-radius: $borderRadius;
+                    white-space: nowrap;
+                    font-size: $smallSize;
+                    font-weight: bold;
+                    cursor: pointer;
+                    border: 0.3vmin solid $colorWhite;
+                    transition: $transition;
+                    min-width: fit-content;
+                }
+
+                .submitBtn{
+                    border-color: $colorWhite;
+                    background-color: $colorOrange;
+                    color: $colorWhite;
+
+                    &:hover{
+                        background-color: $colorWhite;
+                        color: $colorOrange;
+                    }
+                }
+
+                .cancelBtn{
+                    border-color: $colorRed;
+                    background-color: #d63030;
+                    color: $colorWhite;
+
+                    &:hover{
+                        background-color: $colorWhite;
+                        color: $colorRed;
+                    }
+                }
+            }
+        }
+
         .tableWrapper{
             width: 100%;
             overflow-x: auto;
-            border-radius: $borderRadius;
             cursor: grab;
 
             &:active { cursor: grabbing; }
             &::-webkit-scrollbar-track {
-                background: rgba(0, 0, 0, 0.05);
+                background: rgba(0, 0, 0, 0.3);
                 border-radius: 999px;
             }
             &::-webkit-scrollbar-thumb {
                 background: $colorOrange;
-                border-radius: 999px;
-                &:hover { background: darken($colorOrange, 10%); }
+                border-radius: $borderRadius;
             }
 
             table{
@@ -40,9 +130,6 @@
                         text-transform: uppercase;
                         letter-spacing: 0.08em;
                         white-space: nowrap;
-
-                        &:first-child { border-radius: $borderRadius 0 0 0; }
-                        &:last-child { border-radius: 0 $borderRadius 0 0; }
                     }
                 }
 
@@ -108,9 +195,14 @@
                                     white-space: nowrap;
 
                                     &.viewBtn, &.updateBtn {
-                                        background-color: $bgColorOrange;
+                                        background-color: $colorOrange;
                                         color: $colorWhite;
-                                        &:hover { background-color: $colorOrange; }
+
+                                        &:hover {
+                                            border-color: $colorOrange;
+                                            color: $colorOrange;
+                                            background-color: $colorWhite; 
+                                        }
                                     }
 
                                     &.approveBtn, &.finishedBtn {
@@ -119,6 +211,7 @@
                                         border-color: #16a34a;
 
                                         i{ color: #16a34a; }
+
                                         &:hover { 
                                             background-color: #16a34a; 
                                             color: $colorWhite;
@@ -132,6 +225,7 @@
                                         border-color: #dc2626;
 
                                         i{ color: #dc2626; }
+                                        
                                         &:hover { 
                                             background-color: #dc2626; 
                                             color: $colorWhite;
@@ -143,7 +237,11 @@
                                         background-color: rgba(214, 48, 48, 0.1);
                                         color: #d63030;
                                         border-color: #d63030;
-                                        &:hover { background-color: #d63030; color: $colorWhite; }
+
+                                        &:hover { 
+                                            background-color: #d63030; 
+                                            color: $colorWhite; 
+                                        }
                                     }
                                 }
                             }
@@ -153,17 +251,17 @@
             }
         }
 
-        .btnWrapper{
+        .payBtnWrapper{
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             gap: $gap;
-            padding: $padding;;
+            padding: $padding;
 
-            button{
-                flex: 1 1 40%;
+            .submitBtn{
+                flex: 1;
                 padding: 2vmin 5vmin;
                 border-radius: $borderRadius;
                 white-space: nowrap;
@@ -173,16 +271,13 @@
                 border: 0.3vmin solid $colorWhite;
                 transition: $transition;
                 min-width: fit-content;
-            }
-
-            .backBtn{
-                background-color: #d63030;
-                color: $colorWhite;
+                border-color: $colorOrange;
+                background-color: $colorWhite;
+                color: $colorOrange;
 
                 &:hover{
-                    border: 0.3vmin solid $colorRed;
-                    background-color: $bgColorWhite;
-                    color: $colorRed;
+                    background-color: $colorOrange;
+                    color: $colorWhite;
                 }
             }
         }

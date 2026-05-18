@@ -234,16 +234,16 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                 <p>Manage and update your account credentials and personal information securely.</p>
             </header>
 
-            { loading ? (
-                <p>Loading profile...</p>
+            {loading ? (
+                <p className='loadingText'>Loading profile...</p>
             ) : (
                 <>
                     <main>
-                        <div className='toggleField'>
-                            <h3>Select What You Would Like to Update</h3>
-                            <small>You may update one or both sections simultaneously. Select the applicable option(s) below to proceed.</small>
-                            
-                            <div className='toggleWrapper'>
+                        <form onSubmit={handleSubmit}>
+                            <fieldset className="toggleField">
+                                <legend>Select What You Would Like to Update</legend>
+                                <small>You may update one or both sections simultaneously. Select the applicable option(s) below to proceed.</small>
+                                
                                 <label className='toggleCheckbox'>
                                     <input
                                         type='checkbox'
@@ -261,10 +261,8 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                     />
                                     <p>I would like to update my personal information</p>
                                 </label>
-                            </div>
-                        </div>
+                            </fieldset>
 
-                        <form onSubmit={handleSubmit}>
                             {showCredForm && (
                                 <fieldset className='authField'>
                                     <legend>Change Account Credentials</legend>
@@ -304,7 +302,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
 
                                         <div className="accountIdentityWrapper">
                                             <div className='currentPass'>
-                                                <label>Current Password: <span>*</span></label>
+                                                <label>Current Password <span>*</span></label>
                                                 <input
                                                     name='currentPassword'
                                                     type='password'
@@ -317,7 +315,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                             </div>
                                             
                                             <div className="pin">
-                                                <label>PIN: <span>*</span></label>
+                                                <label>PIN <span>*</span></label>
                                                 <input
                                                     name='pin'
                                                     type='password'
@@ -336,14 +334,14 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                         </div>
                                     </fieldset>
                                         
-                                    { isVerified && (
+                                    {isVerified && (
                                         <fieldset className='accountDetailsField'>
                                             <legend>Account Details</legend>
-                                            <p><small>Leave any field blank to retain its current value.</small></p>
+                                            <small>Leave any field blank to retain its current value.</small>
                                             
                                             <div className="accountDetailsWrapper">
                                                 <div className="username">
-                                                    <label>New Username:</label>
+                                                    <label>New Username</label>
                                                     <input
                                                         name='newUsername'
                                                         type='text'
@@ -355,7 +353,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                                 </div>
                                                 
                                                 <div className="newPassword">
-                                                    <label>New Password:</label>
+                                                    <label>New Password</label>
                                                     <input
                                                         name='newPassword'
                                                         type='password'
@@ -367,7 +365,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                                 </div>
 
                                                 <div className="confirmPassword">
-                                                    <label>Confirm New Password:</label>
+                                                    <label>Confirm New Password</label>
                                                     <input
                                                         name='confirmNewPassword'
                                                         type='password'
@@ -390,39 +388,39 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
 
                                     <div className="infoWrapper">
                                         <div id="firstName">
-                                            <label>First Name: <span style={{ color: 'red' }}>*</span></label>
+                                            <label>First Name <span>*</span></label>
                                             <input name='first_name' type='text' placeholder="Enter your first name" value={infoData.first_name} autoComplete='firstName' onChange={handleInfoChange} required />
                                         </div>
 
                                         <div id="middleName">
-                                            <label>Middle Name:</label>
+                                            <label>Middle Name</label>
                                             <input name='middle_name' type='text' placeholder="Enter your middle name" value={infoData.middle_name} autoComplete='middleName' onChange={handleInfoChange} />
                                         </div>
 
                                         <div id="lastName">
-                                            <label>LastName: <span style={{ color: 'red' }}>*</span></label>
+                                            <label>LastName <span>*</span></label>
                                             <input name='last_name' type='text' placeholder="Enter your last name" value={infoData.last_name} autoComplete='lastName' onChange={handleInfoChange} required />
                                         </div>
 
                                         <div id="extName">
-                                            <label>Extension:</label>
+                                            <label>Extension</label>
                                             <input name='ext_name' type='text' placeholder="e.g. jr., sr., III" value={infoData.ext_name} autoComplete='extenstion' onChange={handleInfoChange} />
                                         </div>
 
                                         <div id="email">
-                                            <label>Email: <span style={{ color: 'red' }}>*</span></label>
+                                            <label>Email <span>*</span></label>
                                             <input name='email' type='email' placeholder="e.g. XXXXXXX@XXXXX.com" value={infoData.email} autoComplete='email' onChange={handleInfoChange} required />
                                         </div>
 
                                         <div id="contactNumber">
-                                            <label>Contact Number:</label>
+                                            <label>Contact Number</label>
                                             <input name='contact_num' type='text' placeholder="09XXXXXXXXX" value={infoData.contact_num} autoComplete='contactNumber' onChange={handleInfoChange} />
                                         </div>
                                     </div>
                                 </fieldset>
                             )}
 
-                            <div className='actionBtnWrapper'>
+                            <div className='btnWrapper'>
                                 {anySelected ? (
                                     <>
                                         <button type='submit' className='saveBtn' disabled={submitting}>
@@ -431,7 +429,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                         <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
                                     </>
                                 ) : (
-                                    <button type='button' className='cancelBtn' onClick={goBack}>Cancel</button>
+                                    <button type='button' className='backBtn' onClick={goBack}>Cancel</button>
                                 )}
                             </div>
                         </form>

@@ -98,19 +98,12 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
         }
     };
 
-    if (userRole !== 'tenant') {
-        return (
-            <div className="errorContainer">
-                <p>Only verified tenants are allowed to create for requests.</p>
-                <button onClick={onCancel}>Go Back</button>
-            </div>
-        );
-    }
-
     return (
         <section id="applyMaintenanceContainer">
             {loading ? (
-                <p>Loading Details...</p>
+                <p className='loadingText'>Loading Details...</p>
+            ) : userRole !== 'tenant' ? (
+                <p className='loadingText'>Only verified tenants are allowed to create for requests.</p>
             ) : (
                 <>
                     <header>
@@ -263,12 +256,19 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                         </fieldset>
 
                         <div className="btnWrapper">
-                            <button type="button" className="cancelBtn" onClick={onCancel}>Cancel</button>
-                            <button type="submit" className="submitBtn" disabled={submitting}>
-                                {submitting 
-                                ? 'Saving...' : editMode 
-                                ? 'Save Changes' : 'Submit Request'}
-                            </button>
+                            {userRole !== 'tenant' ? (
+                                <button type="button" className="cancelBtn" onClick={onCancel}>Cancel</button>
+                            ) : (
+                                <>
+                                    <button type="submit" className="submitBtn" disabled={submitting}>
+                                        {submitting 
+                                        ? 'Saving...' : editMode 
+                                        ? 'Save Changes' : 'Submit Request'}
+                                    </button>
+
+                                    <button type="button" className="cancelBtn" onClick={onCancel}>Cancel</button>
+                                </>
+                            )}
                         </div>
                     </form>
                 </>

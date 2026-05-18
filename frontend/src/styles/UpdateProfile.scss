@@ -9,20 +9,19 @@
         gap: $gap;
         width: 100%;
 
-        .toggleField{
+        form{
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: $gap;
-            margin: $margin;
+            color: $colorOrange;
             padding: $padding;
-            border-radius: 0 0 10vmin 10vmin;
-            background-color: $bgColorOrange;
+            max-width: 150vmin;
             width: 100%;
 
-            h3{
-                color: $colorWhite;
+            legend{
+                color: $colorOrange;
                 font-size: $subheaderSize;
                 font-weight: bold;
                 text-align: center;
@@ -30,19 +29,20 @@
             }
 
             small{ 
+                font-size: $smallSize;
                 font-style: italic;
-                color: $colorWhite; 
+                padding-bottom: $padding;
             }
 
-            .toggleWrapper{
+            .toggleField{
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-start;
+                justify-content: center;
                 align-items: center;
                 gap: $gap;
-                margin: $margin;
-                padding: 4vmin;
-                border: 0.5vmin dashed $colorWhite;
+                padding: $padding;
+                border: 0.5vmin dashed $colorLightOrange;
+                width: 100%;
 
                 .toggleCheckbox{
                     display: flex;
@@ -50,14 +50,15 @@
                     justify-content: flex-start;
                     align-items: center;
                     gap: $gap;
-                    width: 100%;
-                    color: $colorWhite;
+                    font-size: $smallSize;
+                    font-weight: bold;
+                    color: $colorOrange;
 
                     input[type='checkbox']{
                         appearance: none;
                         width: 2.5vmin;
                         height: 2.5vmin;
-                        border: 2px solid $colorWhite;
+                        border: 2px solid $colorOrange;
                         border-radius: 4px;
                         cursor: pointer;
                         display: flex;
@@ -69,7 +70,7 @@
                             height: 2vmin;
                             transform: scale(0);
                             transition: 120ms transform ease-in-out;
-                            background-color: $colorWhite;
+                            background-color: $colorOrange;
                             clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
                         }
 
@@ -81,14 +82,6 @@
                     p > span{ font-style: italic; }
                 }
             }
-        }
-
-        form{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: $gap;
 
             .authField{
                 display: flex;
@@ -97,18 +90,8 @@
                 align-items: center;
                 gap: $gap;
                 padding: $padding;
-                border: 0.5vmin dashed $colorOrange;
+                border: 0.5vmin dashed $colorLightOrange;
                 width: 100%;
-
-                legend{
-                    color: $colorOrange;
-                    font-size: $subheaderSize;
-                    font-weight: bold;
-                    text-align: center;
-                    padding: 0 $padding;
-                }
-
-                small{ font-style: italic; }
 
                 .progressWrapper {
                     display: flex;
@@ -182,7 +165,7 @@
 
                 @keyframes pulse {
                     0%, 100% { box-shadow: 0 0 0 0.4vmin rgba(255, 162, 0, 0.2); }
-                    50%       { box-shadow: 0 0 0 0.8vmin rgba(255, 162, 0, 0.05); }
+                    50% { box-shadow: 0 0 0 0.8vmin rgba(255, 162, 0, 0.05); }
                 }
 
                 .accountIdentityField, .accountDetailsField{
@@ -191,10 +174,25 @@
                     justify-content: center;
                     align-items: center;
                     gap: $gap;
-                    margin-top: $margin;
                     padding: $padding;
-                    border: 0.5vmin solid $colorOrange;
+                    border: 0.5vmin dashed $colorOrange;
                     width: 100%;
+
+                    legend{
+                        color: $colorOrange;
+                        font-size: $subheaderSize;
+                        font-weight: bold;
+                        text-align: left;
+                        padding: 0 $padding;
+                    }
+
+                    small{
+                        text-align: left;
+                        font-size: $smallSize;
+                        font-style: italic;
+                        padding-bottom: $padding;
+                        width: 100%;
+                    }
                     
                     .accountIdentityWrapper, .accountDetailsWrapper{
                         display: flex;
@@ -202,7 +200,6 @@
                         justify-content: flex-start;
                         align-items: flex-start;
                         gap: $gap;
-                        margin-top: $margin;
                         width: 100%;
 
                         .currentPass, .pin, .username, .newPassword, .confirmPassword{
@@ -210,6 +207,7 @@
                             flex-direction: column;
                             justify-content: flex-start;
                             align-items: flex-start;
+                            gap: $gap;
                             color: $colorOrange;
                             width: 100%;
 
@@ -223,10 +221,14 @@
                             }
                             
                             input{
-                                font-size: $normalSize;
-                                border: 0.4vmin solid $colorOrange;
-                                padding: $padding;
                                 width: 100%;
+                                padding: 1.2vmin 1.5vmin;
+                                border: 0.4vmin solid $colorOrange;
+                                color: $colorBlack;
+                                font-size: $smallSize;
+                                outline: none;
+                                transition: $transition;
+                                resize: vertical;
                             }
                         }
                     }
@@ -247,18 +249,8 @@
                 align-items: center;
                 gap: $gap;
                 padding: $padding;
-                border: 0.5vmin dashed $colorOrange;
+                border: 0.5vmin dashed $colorLightOrange;
                 width: 100%;
-
-                legend{
-                    color: $colorOrange;
-                    font-size: $subheaderSize;
-                    font-weight: bold;
-                    text-align: center;
-                    padding: 0 $padding;
-                }
-
-                small{ font-style: italic; }
                     
                 .infoWrapper{
                     display: grid;
@@ -279,6 +271,7 @@
                         flex-direction: column;
                         justify-content: flex-start;
                         align-items: flex-start;
+                        gap: $gap;
                         color: $colorOrange;
                         width: 100%;
 
@@ -292,55 +285,11 @@
                         }
                         
                         input{
-                            font-size: $normalSize;
+                            font-size: $smallSize;
                             border: 0.4vmin solid $colorOrange;
-                            padding: $padding;
+                            padding: 1.2vmin 1.5vmin;
                             width: 100%;
                         }
-                    }
-                }
-            }
-
-            .actionBtnWrapper{
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                gap: $gap;
-                padding: $padding;
-                height: fit-content;
-                width: 100vmin;
-
-                button{
-                    flex: 1;
-                    padding: 2vmin;
-                    border-radius: $borderRadius;
-                    font-size: $smallSize;
-                    font-weight: bold;
-                    cursor: pointer;
-                    border: 0.5vmin solid $colorWhite;
-                    transition: $transition;
-                }
-
-                .saveBtn{
-                    border-color: $colorOrange;
-                    background-color: $colorWhite;
-                    color: $colorOrange;
-
-                    &:hover{
-                        background-color: $colorOrange;
-                        color: $colorWhite;
-                    }
-                }
-
-                .cancelBtn{
-                    border-color: $colorRed;
-                    background-color: $colorRed;
-                    color: $colorWhite;
-
-                    &:hover{
-                        background-color: $colorWhite;
-                        color: $colorRed;
                     }
                 }
             }

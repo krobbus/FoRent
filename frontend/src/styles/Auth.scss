@@ -9,7 +9,6 @@
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
-        max-height: 80vmin;
         min-width: 100vmin;
         margin: $margin;
 
@@ -52,10 +51,16 @@
                 }
 
                 input, select{
-                    font-size: $normalSize;
-                    border: 0.4vmin solid $colorOrange;
                     width: 100%;
-                    padding: $padding;
+                    padding: 1.2vmin 1.5vmin;
+                    border: 0.4vmin solid $colorOrange;
+                    color: $colorBlack;
+                    font-size: $smallSize;
+                    outline: none;
+                    transition: $transition;
+                    resize: vertical;
+
+                    &::placeholder{ opacity: 0.5; }
 
                     .default{
                         color: $colorGray;
@@ -82,50 +87,6 @@
                 #extName { grid-area: 1 / 4 / 2 / 5; }
                 #email { grid-area: 2 / 1 / 3 / 3; }
                 #contactNumber { grid-area: 2 / 3 / 3 / 5; }
-            }
-        }
-
-        .btnWrapper{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: $gap;
-            padding: $padding;
-            height: fit-content;
-            width: 100vmin;
-
-            button{
-                flex: 1;
-                padding: 2vmin;
-                border-radius: $borderRadius;
-                font-size: $smallSize;
-                font-weight: bold;
-                cursor: pointer;
-                border: 0.5vmin solid $colorWhite;
-                transition: $transition;
-            }
-
-            .authBtn, .switchBtn{
-                border-color: $colorOrange;
-                background-color: $colorWhite;
-                color: $colorOrange;
-
-                &:hover{
-                    background-color: $colorOrange;
-                    color: $colorWhite;
-                }
-            }
-
-            .backBtn{
-                border-color: $colorRed;
-                background-color: $colorWhite;
-                color: $colorRed;
-
-                &:hover{
-                    background-color: $colorRed;
-                    color: $colorWhite;
-                }
             }
         }
     }

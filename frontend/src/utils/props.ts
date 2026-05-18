@@ -62,6 +62,7 @@ export interface PropertiesProps {
     onViewDetails: (property: PropertyDataProps) => void;
     onCreateRequest: (property: PropertyDataProps) => void;
     onUpdateProperty: (property: PropertyDataProps) => void;
+    onViewPayment: (property: PropertyDataProps) => void;
 }
 
 export interface PropertyDataProps {
@@ -141,6 +142,8 @@ export interface UpdatePropertyProps {
     property: PropertyDataProps;
     onSuccess: () => void;
 }
+
+export type PropertyFormProps = | ({ mode: 'add' } & AddPropertyProps) | ({ mode: 'update' } & UpdatePropertyProps);
 
 export interface ApplyRentalProps {
     property: any;

@@ -15,22 +15,14 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
     const [query, setQuery] = useState('');
     const [filters, setFilters] = useState<FilterState>(defaultFilters);
 
-    useEffect(() => {
-        const fetchProperties = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/properties');
-                const data = await response.json();
-                setProperties(Array.isArray(data) ? data : []);
-            } catch (error) {
-                console.error("Error fetching properties:", error);
-                setProperties([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProperties();
-    }, []);
+    const getOccupancyLabel = (max: number) => {
+        if (max <= 1) return 'Solo-friendly';
+        if (max <= 2) return 'Couple-friendly';
+        if (max <= 4) return 'Small group-friendly';
+        if (max <= 6) return 'Family-friendly';
+        if (max <= 10) return 'Large family-friendly';
+        return 'Group-friendly';
+    };
 
     const { filtered, matchedKeywords } = usePropertySearch(properties, query, filters);
     const [currentPage, setCurrentPage] = useState(1);
@@ -51,15 +43,13 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
         
         if (filtered.length === 0) {
             return (
-                <p className='searchSummary noResults'>
-                    No properties found for your search. Try different keywords or filters.
-                </p>
+                <p>No properties found for your search. Try different keywords or filters.</p>
             );
         }
 
         if (matchedKeywords.length > 0) {
             return (
-                <p className='searchSummary'>
+                <p>
                     Based on your search{' '}
                     {matchedKeywords.map((kw, i) => (
                         <span key={i} className='searchKeyword'>"{kw}"</span>
@@ -72,9 +62,7 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
         }
 
         return (
-            <p className='searchSummary'>
-                Showing <strong>{filtered.length}</strong> propert{filtered.length === 1 ? 'y' : 'ies'} based on your filters.
-            </p>
+            <p>Showing <strong>{filtered.length}</strong> propert{filtered.length === 1 ? 'y' : 'ies'} based on your filters.</p>
         );
     };
 
@@ -91,18 +79,25 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
     }
 
     useEffect(() => {
-        if (userId) fetchApplications();
-    }, [userId, userRole]);
+        const fetchProperties = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/properties');
+                const data = await response.json();
+                setProperties(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Error fetching properties:", error);
+                setProperties([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const availableProperties = properties.filter(p => p.status?.toLowerCase() === 'available');
-    const getOccupancyLabel = (max: number) => {
-        if (max <= 1) return 'Solo-friendly';
-        if (max <= 2) return 'Couple-friendly';
-        if (max <= 4) return 'Small group-friendly';
-        if (max <= 6) return 'Family-friendly';
-        if (max <= 10) return 'Large family-friendly';
-        return 'Group-friendly';
-    };
+        fetchProperties();
+    }, []);
+
+    useEffect(() => {
+        if (userId) fetchApplications();
+    }, [userId, userRole]); 
 
     return (
         <section id='marketplaceContainer'>
@@ -121,19 +116,15 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
 
             <main>
                 {loading ? (
-                    <p>Loading marketplace...</p>
+                    <p className='loadingText'>Loading marketplace...</p>
                 ) : (
                     <>
                         <div className='propertyGrid'>
-                            {availableProperties.length === 0 ? (
-                                <p>Currently no available properties.</p>
-                            ) : filtered.length === 0 ? (
-                                <p>No properties match your search or filters.</p>
-                            ) : ( paginated.map((p: PropertyDataProps) => (
+                            {paginated.map((p: PropertyDataProps) => (
                                 <div key={p.id} className='propertyCard'>
                                     <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
 
-                                    <div className='galleryWrapper'>
+                                    <section className='galleryWrapper'>
                                         <PropertyGallery
                                             images={Array.isArray(p.images) 
                                                 ? p.images 
@@ -142,15 +133,15 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                         />
 
                                         <p id='statusLabel'>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</p>
-                                    </div>
+                                    </section>
                                     
-                                    <div className='propertyInfo'>
+                                    <section className='propertyInfo'>
                                         <h2>{p.property_name}</h2>
                                         <p>{p.address ? `${p.address}` : 'No address available'}</p>
                                         <p>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
-                                    </div>
+                                    </section>
 
-                                    <div className='propertyDetails'>
+                                    <section className='propertyDetails'>
                                         <div className='detailSection'>
                                             <p className='detailSectionLabel'>Available Rooms</p>
 
@@ -214,9 +205,9 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                                 })()}
                                             </div>
                                         </div>
-                                    </div>
+                                    </section>
 
-                                    <div className='btnWrapper'>
+                                    <section className='actionBtnWrapper'>
                                         {applications.some(app => app.property_id === p.id) ?
                                             <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
                                             :
@@ -226,9 +217,9 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                         <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                             View Details
                                         </button>
-                                    </div>
+                                    </section>
                                 </div>
-                            )))}
+                            ))}
                         </div>
 
                         {filtered.length > 0 && (

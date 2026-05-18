@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getUserFromToken } from './utils/auth';
 import type { Role, Crumb } from './utils/props';
 
@@ -7,6 +7,7 @@ import '../src/styles/Auth.scss';
 import '../src/styles/PropertySearch.scss';
 import '../src/styles/PropertyGallery.scss';
 import '../src/styles/PropertyGrid.scss';
+import '../src/styles/PropertyForm.scss';
 import '../src/styles/ViewDetails.scss';
 import '../src/styles/ViewProfile.scss';
 import '../src/styles/UpdateProfile.scss';
@@ -16,12 +17,10 @@ import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
 import Properties from './pages/Properties';
 import ViewDetails from './pages/ViewDetails';
+import PropertyForm from './pages/PropertyForm';
 
 import ViewProfile from './pages/ViewProfile';
 import UpdateProfile from './pages/UpdateProfile';
-
-import AddProperty from './pages/AddProperty';
-import UpdateProperty from './pages/UpdateProperty';
 
 import ApplyRental from './pages/ApplyRental';
 import RentalApplications from './pages/RentalApplications';
@@ -82,14 +81,6 @@ function App() {
     setIsNavOpen(false);
   };
 
-  const handleLogout = () => {
-    setUserRole(null); 
-    setUserId(null);
-    localStorage.clear();
-    setCurrentView('home');
-    setPreviousView('home');
-  }
-
   const requireAuth = () => {
     if (!localStorage.getItem('token')) {
       setCurrentView('auth');
@@ -98,11 +89,18 @@ function App() {
     return true;
   };
 
-  useEffect(() => {
-    const handleUnauthorized = () => handleLogout();
-    window.addEventListener('unauthorized', handleUnauthorized);
-    return () => window.removeEventListener('unauthorized', handleUnauthorized);
+  const handleLogout = useCallback(() => {
+    setUserRole(null); 
+    setUserId(null);
+    localStorage.clear();
+    setCurrentView('home');
+    setPreviousView('home');
   }, []);
+
+  useEffect(() => {
+    window.addEventListener('unauthorized', handleLogout);
+    return () => window.removeEventListener('unauthorized', handleLogout);
+  }, [handleLogout]);
 
   const getBreadcrumbs = (): Crumb[] => {
     const home: Crumb = { 
@@ -133,7 +131,7 @@ function App() {
       case 'myProperties':
       case 'myRentals': return [home, { label: propertyLabel }];
 
-      case 'addProperty': return [home, propertyParent, { label: 'Add New Property' }];
+      case 'addProperty' : return [home, propertyParent, { label: 'Add New Property' }];
       case 'updateProperty': return [home, propertyParent, { label: 'Update Property' }];
 
       case 'viewDetails': {
@@ -142,13 +140,13 @@ function App() {
       }
 
       case 'applyRental': {
-        const fromProperty    = previousView === 'myProperties' || previousView === 'myRentals';
-        const fromRentalApps  = previousView === 'rentalApplications';
+        const fromProperty = previousView === 'myProperties' || previousView === 'myRentals';
+        const fromRentalApps = previousView === 'rentalApplications';
         const fromViewDetails = previousView === 'viewDetails';
         return [
           home,
-          ...(fromProperty    ? [propertyParent]   : []),
-          ...(fromRentalApps  ? [rentalAppCrumb]   : []),
+          ...(fromProperty ? [propertyParent] : []),
+          ...(fromRentalApps ? [rentalAppCrumb] : []),
           ...(fromViewDetails ? [viewDetailsCrumb] : []),
           { label: 'Apply for Rental' }
         ];
@@ -156,13 +154,13 @@ function App() {
 
       case 'rentalApplications': return [home, { label: 'Rental Applications' }];
       case 'createRequests': {
-        const fromProperty    = previousView === 'myProperties' || previousView === 'myRentals';
+        const fromProperty = previousView === 'myProperties' || previousView === 'myRentals';
         const fromMaintenance = previousView === 'maintenanceRequests';
         const fromViewDetails = previousView === 'viewDetails';
 
         return [
           home,
-          ...(fromProperty    ? [propertyParent]   : []),
+          ...(fromProperty ? [propertyParent] : []),
           ...(fromMaintenance ? [maintenanceCrumb] : []),
           ...(fromViewDetails ? [viewDetailsCrumb] : []),
           { label: 'Create Request' }
@@ -225,20 +223,10 @@ function App() {
             {crumbs}
 
             <UpdateProfile
-              goBack={() => {
-                setSelectedProperty(null);
-
-                if (previousView === 'viewProfile'){
-                  setCurrentView(previousView);
-                } else {
-                  setCurrentView('home');
-                }
-              }}
+              goBack={() => previousView === 'viewProfile' ? setCurrentView(previousView) : setCurrentView('home')}
               userId={userId || 0}
               userRole={userRole} 
-              onSuccess={() => {
-                setCurrentView('viewProfile');
-              }}
+              onSuccess={() => setCurrentView('viewProfile')}
             />
           </>
         );
@@ -272,6 +260,11 @@ function App() {
                 setPreviousView(currentView);
                 setCurrentView('updateProperty');
               }}
+              onViewPayment={(prop) => { 
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('paymentHistory');
+              }}
             />
           </>
         );
@@ -287,13 +280,14 @@ function App() {
               goBack={() => {
                 setSelectedProperty(null);
 
-                if (previousView === 'home') {
-                  navigateTo('availablePropertySection');
-                } else if (previousView === 'myProperties' || 'myRentals' || 'rentalApplications' || 'maintenanceRequests' || 'paymentHistory'){
-                  setCurrentView(previousView);
-                } else {
-                  setCurrentView('home');
-                }
+                previousView === 'home'
+                  ? navigateTo('marketplaceContainer')
+                  : previousView === 'myProperties' ||
+                    previousView === 'myRentals' ||
+                    previousView === 'rentalApplications' ||
+                    previousView === 'maintenanceRequests' ||
+                    previousView === 'paymentHistory'
+                    ? setCurrentView(previousView) : setCurrentView('home');
               }}
 
               userRole={userRole}
@@ -303,9 +297,7 @@ function App() {
                 setSelectedProperty(selectedProperty); 
                 setCurrentView('applyRental'); 
               }}
-              onViewRentalApplications={() => {
-                setCurrentView('rentalApplications'); 
-              }}
+              onViewRentalApplications={() => setCurrentView('rentalApplications')}
             />
           </>
         );
@@ -316,22 +308,22 @@ function App() {
         return (
           <>
             {crumbs}
-
-            <AddProperty 
+            <PropertyForm
+              mode='add'
               goBack={() => setCurrentView('myProperties')}
-              userId={userId || 0} 
+              userId={userId || 0}
             />
           </>
         );
-        
+
       case 'updateProperty':
         if (!requireAuth()) return null;
 
         return (
           <>
             {crumbs}
-
-            <UpdateProperty 
+            <PropertyForm
+              mode='update'
               goBack={() => setCurrentView('myProperties')}
               property={selectedProperty}
               onSuccess={() => {
@@ -357,15 +349,10 @@ function App() {
               onCancel={() => {
                 setSelectedProperty(null);
 
-                if (previousView === 'home') {
-                  navigateTo('availablePropertySection');
-                } else if(previousView === 'myProperties' || previousView === 'myRentals'){
-                  setCurrentView('myProperties');
-                } else if(previousView === 'viewDetails') {
-                  setCurrentView('viewDetails');
-                } else {
-                  setCurrentView('home');
-                }
+                previousView === 'home' 
+                ? navigateTo('availablePropertySection') : previousView === 'myProperties' || previousView === 'myRentals' 
+                  ? setCurrentView(propertyView) : previousView === 'viewDetails'
+                    ? setCurrentView('viewDetails') : setCurrentView('home');
               }}
             />
           </>
@@ -404,13 +391,9 @@ function App() {
               userRole={userRole}
               onSuccess={() => setCurrentView('maintenanceRequests')}
               onCancel={() => {
-                if(previousView === 'myProperties' || previousView === 'myRentals'){
-                  setCurrentView('myProperties');
-                } else if(previousView === 'viewDetails') {
-                  setCurrentView('viewDetails');
-                } else {
-                  setCurrentView('home');
-                }
+                previousView === 'myProperties' || previousView === 'myRentals'
+                  ? setCurrentView(propertyView) : previousView === 'viewDetails'
+                    ? setCurrentView('viewDetails') : setCurrentView('home');
               }}
             />
           </>
@@ -495,7 +478,7 @@ function App() {
               <h1>FoRent</h1>
               <h2>Unlock the Door to Better Living</h2>
 
-              <div className='btnWrapper'>
+              <div className='headerBtnWrapper'>
                 {!userRole && (
                   <button onClick={() => setCurrentView('auth')}>Log In / Sign Up</button>
                 )}
@@ -517,9 +500,7 @@ function App() {
                 setPreviousView('home');
                 setCurrentView('viewDetails');
               }}
-              onViewRentalApplications={() => {
-                setCurrentView('rentalApplications'); 
-              }}
+              onViewRentalApplications={() => setCurrentView('rentalApplications')}
             />
           </>
         );

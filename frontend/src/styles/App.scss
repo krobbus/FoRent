@@ -2,7 +2,7 @@
     width: 2vmin;
     cursor: grab;
     
-    &-track { background: $bgDefault; }
+    &-track { background: $colorDefault; }
     &-thumb { background: $colorOrange; }
 }
 
@@ -43,7 +43,7 @@ body{
             font-size: $headerSize; 
         }
 
-        .btnWrapper{
+        .headerBtnWrapper{
             display: flex;
             flex-direction: row;
             justify-content: center;
@@ -54,18 +54,16 @@ body{
                 border: none;
                 font-size: $normalSize;
                 font-weight: bold;
-                color: $bgColorOrange;
-                background-color: $bgColorWhite;
-                cursor: pointer;
-                height: auto;
-                width: auto;
-                padding: $padding 4vmin;
-                margin: $margin;
+                color: $colorOrange;
                 border-radius: $borderRadius;
+                background-color: $colorWhite;
+                cursor: pointer;
+                padding: 2vmin 5vmin;
+                margin: $margin;
 
                 &:hover, &.active{
-                    color: $bgColorWhite;
-                    background-color: $bgColorOrange;
+                    color: $colorWhite;
+                    background-color: $colorOrange;
                 }
             }
         }
@@ -84,13 +82,64 @@ body{
         p{ font-size: $normalSize; }
     }
 
+    .loadingText{
+        color: $colorOrange;
+        font-style: italic;
+        font-size: $normalSize;
+        text-align: center;
+        margin: 30vmin;
+    }
+
+    .btnWrapper{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: $gap;
+        height: fit-content;
+        width: 100vmin;
+
+        button{
+            flex: 1;
+            padding: 2vmin 5vmin;
+            border-radius: $borderRadius;
+            font-size: $smallSize;
+            font-weight: bold;
+            cursor: pointer;
+            border: 0.3vmin solid $colorOrange;
+            transition: $transition;
+        }
+
+        .authBtn, .switchBtn, .addBtn, .saveBtn, .modifyBtn{
+            background-color: $colorOrange;
+            color: $colorWhite;
+
+            &:hover{
+                border-color: $colorOrange;
+                background-color: $colorWhite;
+                color: $colorOrange;
+            }
+        }
+
+        .backBtn, .cancelBtn{
+            background-color: $colorRed;
+            color: $colorWhite;
+
+            &:hover{
+                border-color: $colorRed;
+                background-color: $colorWhite;
+                color: $colorRed;
+            }
+        }
+    }
+
     .navCrumb{
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
         padding: $padding;
-        background: $bgColorOrange;
+        background: $colorOrange;
         font-weight: bold;
         font-size: $normalSize;
         color: $colorWhite;
@@ -121,8 +170,8 @@ body{
         .fa-bars{
             position: relative;
             font-size: 3vmin;
-            color: $bgColorOrange;
-            background-color: $bgColorWhite;
+            color: $colorOrange;
+            background-color: $colorWhite;
             border-bottom-right-radius: 50%;
             padding: $padding;
             cursor: pointer;
@@ -131,7 +180,7 @@ body{
             transition: $transition;
 
             &.show{
-                color: $bgColorWhite; 
+                color: $colorWhite; 
                 background-color: transparent; 
             }
         }
@@ -167,7 +216,7 @@ body{
             display: none;
             flex-direction: column;
             list-style: none;
-            background: $bgColorOrange;
+            background: $colorOrange;
             position: fixed;
             top: 0;
             padding: 15vmin 4vmin;
@@ -214,7 +263,7 @@ body{
 
                 &:hover, &:focus {
                     position: relative;
-                    background-color: $bgColorWhite;
+                    background-color: $colorWhite;
 
                     i, a{ 
                         transform: translateX(2vmin);

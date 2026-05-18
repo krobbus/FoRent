@@ -52,15 +52,6 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
         }).catch(() => {});
     }, [property?.id]);
 
-    if (!property) {
-        return (
-            <section id='viewDetailsContainer'>
-                <p>No property selected.</p>
-                <button onClick={goBack}>Go Back</button>
-            </section>
-        );
-    }
-
     return (
         <section id='viewDetailsContainer'>
             <header>
@@ -69,7 +60,9 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
             </header>
 
             {loading ? (
-                <p>Loading property details...</p>
+                <p className='loadingText'>Loading property details...</p>
+            ) : !property ? (
+                <p className='loadingText'>No property selected.</p>
             ) : (
                 <>
                     {properties.length > 0 &&
@@ -206,12 +199,19 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
                             </div>
 
                             <div className='actionBtnWrapper'>
-                                {applications.some(app => app.property_id === property.id) ?
-                                    <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
-                                    :
-                                    <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
-                                }
-                                <button className='backBtn' onClick={goBack}>Go Back</button>
+                                {property ? (
+                                    <>
+                                        {applications.some(app => app.property_id === property.id) ? (
+                                            <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
+                                        ) : (
+                                            <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
+                                        )}
+
+                                        <button className='backBtn' onClick={goBack}>Go Back</button>
+                                    </>
+                                ) : (
+                                    <button className='backBtn' onClick={goBack}>Go Back</button>
+                                )}
                             </div>
                         </>
                     }
