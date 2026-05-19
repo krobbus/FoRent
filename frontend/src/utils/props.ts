@@ -100,12 +100,14 @@ export interface FilterState {
     priceMin: string;
     priceMax: string;
     category: string;
-    hasWifi: boolean;
-    hasAircon: boolean;
-    hasParking: boolean;
     hasBedroom: boolean;
     hasKitchen: boolean;
     hasBathroom: boolean;
+    hasOtherRooms: boolean; 
+    hasWifi: boolean;
+    hasAircon: boolean;
+    hasParking: boolean;
+    hasOtherAmenities: boolean;
     occupancy: string;
     hasPets: boolean;
 }

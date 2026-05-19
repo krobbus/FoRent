@@ -71,10 +71,6 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
             <main>
                 {loading ? (
                     <p className='loadingText'>Loading properties...</p>
-                ) : landlordProperties.length === 0 ? (
-                    <p className='loadingText'>You have no properties listed. Start by adding a new property.</p>
-                ) : tenantRentals.length === 0 ? (
-                    <p className='loadingText'>You have no current rentals. Start looking for your next home!</p>
                 ) : (
                     <>
                         {userRole === 'landlord' && (

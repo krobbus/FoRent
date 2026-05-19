@@ -32,12 +32,14 @@ export const defaultFilters: FilterState = {
     priceMin: '',
     priceMax: '',
     category: '',
-    hasWifi: false,
-    hasAircon: false,
-    hasParking: false,
     hasBedroom: false,
     hasKitchen: false,
     hasBathroom: false,
+    hasOtherRooms: false,
+    hasWifi: false,
+    hasAircon: false,
+    hasParking: false,
+    hasOtherAmenities: false,
     occupancy: '',
     hasPets: false
 }
@@ -64,11 +66,21 @@ export const usePropertySearch = (
             if (filters.hasBedroom && p.bedroom_count === 0) return false;
             if (filters.hasKitchen && p.kitchen_count === 0) return false;
             if (filters.hasBathroom && p.bathroom_count === 0) return false;
+            if (filters.hasOtherRooms && (!p.other_rooms || p.other_rooms.trim() === '')) return false;
 
             const amenityStr = Array.isArray(p.amenities) ? p.amenities.join(' ').toLowerCase() : '';
             if (filters.hasWifi && !amenityStr.includes('wifi')) return false;
             if (filters.hasAircon && !amenityStr.includes('aircon')) return false;
             if (filters.hasParking && !amenityStr.includes('parking')) return false;
+            if (filters.hasOtherAmenities) {
+                const otherAmenities = Array.isArray(p.amenities)
+                    ? (p.amenities as unknown as string[])
+                        .flatMap(a => a.split(','))
+                        .map(a => a.trim())
+                        .filter(a => a !== 'Wifi' && a !== 'Aircon' && a !== 'Parking' && a !== '')
+                    : [];
+                if (otherAmenities.length === 0) return false;
+            }
 
             if (filters.occupancy) {
                 const max = p.max_occupants;

@@ -1,4 +1,3 @@
-import { jwtDecode } from 'jwt-decode';
 import type { Role } from './props';
 
 interface TokenPayload {
@@ -6,18 +5,15 @@ interface TokenPayload {
     role: Role;
 }
 
-export const getUserFromToken = (): { userId: number; userRole: Role } | null => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-
+export const getUserFromToken = async (): Promise<{ userId: number; userRole: Role } | null> => {
     try {
-        const decoded = jwtDecode<TokenPayload>(token);
+        const res = await fetch('http://localhost:5000/api/me', {
+            credentials: 'include'
+        });
 
-        const userId = decoded.id ?? null;
-        const userRole = decoded.role ?? null;
-
-        if (!userId || !userRole) return null;
-        return { userId, userRole };
+        if (!res.ok) return null;
+        const data: TokenPayload = await res.json();
+        return { userId: data.id, userRole: data.role };
     } catch {
         return null;
     }

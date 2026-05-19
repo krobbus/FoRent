@@ -33,6 +33,10 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
     const [isVerified, setIsVerified] = useState(false);
     const [verifying, setVerifying] = useState(false);
     const [verifyError, setVerifyError] = useState('');
+    const [viewCurrentPassword, setViewCurrentPassword] = useState(false);
+    const [viewPin, setViewPin] = useState(false);
+    const [viewNewPassword, setViewNewPassword] = useState(false);
+    const [viewConfirmNewPassword, setViewConfirmNewPassword] = useState(false);
 
     const [infoData, setInfoData] = useState({
         first_name: '',
@@ -305,12 +309,17 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                                 <label>Current Password <span>*</span></label>
                                                 <input
                                                     name='currentPassword'
-                                                    type='password'
+                                                    type={viewCurrentPassword ? 'text' : 'password'}
                                                     placeholder="Enter your current password"
                                                     value={credData.currentPassword}
                                                     autoComplete='current-password'
                                                     onChange={handleCredChange}
                                                     required
+                                                />
+
+                                                <i 
+                                                    className={`fa-solid ${viewCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                                                    onClick={() => setViewCurrentPassword(prev => !prev)}
                                                 />
                                             </div>
                                             
@@ -318,11 +327,16 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                                 <label>PIN <span>*</span></label>
                                                 <input
                                                     name='pin'
-                                                    type='password'
+                                                    type={viewPin ? 'text' : 'password'}
                                                     placeholder="Enter your PIN"
                                                     value={credData.pin}
                                                     onChange={handleCredChange}
                                                     required
+                                                />
+
+                                                <i 
+                                                    className={`fa-solid ${viewPin ? 'fa-eye-slash' : 'fa-eye'}`}
+                                                    onClick={() => setViewPin(prev => !prev)}
                                                 />
                                             </div>
                                         </div>
@@ -356,11 +370,16 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                                     <label>New Password</label>
                                                     <input
                                                         name='newPassword'
-                                                        type='password'
+                                                        type = {viewNewPassword ? 'text' : 'password'}
                                                         placeholder="Enter a new password (optional)"
                                                         value={credData.newPassword}
                                                         autoComplete='new-password'
                                                         onChange={handleCredChange}
+                                                    />
+
+                                                    <i 
+                                                        className={`fa-solid ${viewNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                                                        onClick={() => setViewNewPassword(prev => !prev)}
                                                     />
                                                 </div>
 
@@ -368,11 +387,16 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                                     <label>Confirm New Password</label>
                                                     <input
                                                         name='confirmNewPassword'
-                                                        type='password'
+                                                        type = {viewConfirmNewPassword ? 'text' : 'password'}
                                                         placeholder="Re-enter your new password"
                                                         value={credData.confirmNewPassword}
                                                         autoComplete='new-password'
                                                         onChange={handleCredChange}
+                                                    />
+
+                                                    <i 
+                                                        className={`fa-solid ${viewConfirmNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                                                        onClick={() => setViewConfirmNewPassword(prev => !prev)}
                                                     />
                                                 </div>
                                             </div>

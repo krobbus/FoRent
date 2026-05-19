@@ -202,7 +202,7 @@ function PropertyForm(props: PropertyFormProps) {
                         </section>
 
                         <section className='fieldGroup'>
-                            <label>Address <span>*</span></label>
+                            <label>Full Address <span>*</span></label>
                             <input
                                 name='address'
                                 type='text'
@@ -214,7 +214,7 @@ function PropertyForm(props: PropertyFormProps) {
                         </section>
 
                         <section className='fieldGroup'>
-                            <label>Price <span>*</span></label>
+                            <label>Price (₱) per month <span>*</span></label>
                             <input
                                 name='price'
                                 type='number'

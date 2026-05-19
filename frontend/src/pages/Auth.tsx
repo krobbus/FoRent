@@ -2,11 +2,13 @@ import React, { useState, type ChangeEvent } from 'react'
 import type { AuthProps } from '../utils/props'
 
 function Auth({ goBack, setUserRole, setUserId }: AuthProps){
-    const [isLogin, setIsLogin] = useState(true)
+    const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
         username: '',
         password: '',
+        confirmPassword: '',
         pin: '',
+        confirmPin: '',
         role: '',
         firstName: '',
         middleName: '',
@@ -14,7 +16,12 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
         extension: '',
         email: '',
         contactNumber: ''
-    })
+    });
+    
+    const [viewPassword, setViewPassword] = useState(false);
+    const [viewConfirmPassword, setViewConfirmPassword] = useState(false);
+    const [viewPin, setViewPin] = useState(false);
+    const [viewConfirmPin, setViewConfirmPin] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,20 +29,31 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
 
     const handleSubmit = async (e: ChangeEvent) => {
         e.preventDefault();
-        const endpoint = isLogin ? '/api/login' : '/api/register';
-        
+
+        if (!isLogin) {
+            if (formData.password !== formData.confirmPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+            if (formData.pin !== formData.confirmPin) {
+                alert("PINs do not match.");
+                return;
+            }
+        }
+        const { confirmPassword, confirmPin, ...payload } = formData;
+        const endpoint = isLogin ? '/api/login' : '/api/register'; 
         try {
             const response = await fetch(`http://localhost:5000${endpoint}`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
 
             if (response.ok) {
                 const data = await response.json();
 
-                if (isLogin) {
-                    localStorage.setItem('token', data.token);
+                if (isLogin){
                     setUserId(data.user.id);
                     setUserRole(data.user.role);
                 } else {
@@ -62,30 +80,90 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
                     <fieldset className='authField'>
                         <legend>Account {isLogin ? 'Log In' : 'Sign Up Credentials'}</legend>
                         
-                        <div id='username'>
+                        <div id={!isLogin ? 'signup-username' : 'login-username'}>
                             <label>{isLogin ? 'Email or Username' : 'Username'} <span>*</span></label>
                             <input name={isLogin ? 'loginId' : 'username'} type='text' placeholder={isLogin ? 'Enter your email or username' : 'Enter your username'} autoComplete={isLogin ? 'loginId' : 'username'} onChange={handleChange} required />
                         </div>
+
+                        {!isLogin && (
+                            <div id='role'>
+                                <label>Role <span>*</span></label>
+                                <select name='role' onChange={handleChange} required>
+                                    <option value='' className="default">Select Role</option>
+                                    <option value='landlord'>Landlord</option>
+                                    <option value='tenant'>Tenant</option>
+                                </select>
+                            </div>
+                        )}
                         
-                        <div id='password'>              
+                        <div id={!isLogin ? 'signup-password' : 'login-password'}>              
                             <label>Password <span>*</span></label>
-                            <input name='password' type='password' placeholder="Enter your password" autoComplete={isLogin ? 'current-password' : 'new-password'} onChange={handleChange} required />
+                            <input 
+                                name='password' 
+                                type={viewPassword ? 'text' : 'password'}
+                                placeholder="Enter your password"
+                                autoComplete={isLogin ? 'current-password' : 'new-password'}
+                                onChange={handleChange}
+                                required
+                            />
+
+                            <i 
+                                className={`fa-solid ${viewPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                                onClick={() => setViewPassword(prev => !prev)}
+                            />
                         </div>
 
                         {!isLogin && (
                             <>
-                                <div id='pin'> 
-                                    <label>PIN <span>*</span></label>
-                                    <input name='pin' type='password' placeholder="Enter your PIN" autoComplete='pin' onChange={handleChange} required />
+                                <div id='confirmPassword'>              
+                                    <label>Confirm Password <span>*</span></label>
+                                    <input 
+                                        name='confirmPassword' 
+                                        type={viewConfirmPassword ? 'text' : 'password'}
+                                        placeholder="Re-enter your password"
+                                        autoComplete={isLogin ? 'current-password' : 'new-password'}
+                                        onChange={handleChange}
+                                        required
+                                    />
+
+                                    <i 
+                                        className={`fa-solid ${viewConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                                        onClick={() => setViewConfirmPassword(prev => !prev)}
+                                    />
                                 </div>
 
-                                <div id='role'>
-                                    <label>Role <span>*</span></label>
-                                    <select name='role' onChange={handleChange} required>
-                                        <option value='' className="default">Select Role</option>
-                                        <option value='landlord'>Landlord</option>
-                                        <option value='tenant'>Tenant</option>
-                                    </select>
+                                <div id='pin'> 
+                                    <label>PIN <span>*</span></label>
+                                    <input
+                                        name='pin'
+                                        type={viewPin ? 'text' : 'password'}
+                                        placeholder="Enter your PIN"
+                                        autoComplete='pin'
+                                        onChange={handleChange}
+                                        required
+                                    />
+
+                                    <i 
+                                        className={`fa-solid ${viewPin ? 'fa-eye-slash' : 'fa-eye'}`}
+                                        onClick={() => setViewPin(prev => !prev)}
+                                    />
+                                </div>
+
+                                <div id='confirmPin'> 
+                                    <label>Confirm PIN <span>*</span></label>
+                                    <input
+                                        name='confirmPin'
+                                        type={viewConfirmPin ? 'text' : 'password'}
+                                        placeholder="Re-enter your PIN"
+                                        autoComplete='confirmPin'
+                                        onChange={handleChange}
+                                        required
+                                    />
+
+                                    <i 
+                                        className={`fa-solid ${viewConfirmPin ? 'fa-eye-slash' : 'fa-eye'}`}
+                                        onClick={() => setViewConfirmPin(prev => !prev)}
+                                    />
                                 </div>
                             </>
                         )}
@@ -106,7 +184,7 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
                             </div>
 
                             <div id='lastName'>
-                                <label>LastName <span>*</span></label>
+                                <label>Last Name <span>*</span></label>
                                 <input name='lastName' type='text' placeholder="Enter your last name" autoComplete='lastName' onChange={handleChange} required />
                             </div>
 

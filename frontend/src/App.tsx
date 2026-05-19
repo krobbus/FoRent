@@ -40,6 +40,7 @@ function NavCrumb({ crumbs }: { crumbs: Crumb[] }) {
       {crumbs.map((crumb, i) => (
         <span key={i}>
           {i > 0 && <em>&gt;</em>}
+          
           {crumb.onClick
             ? <a className='backCrumb' onClick={crumb.onClick}>{crumb.label}</a>
             : <span className='activeCrumb'>{crumb.label}</span>
@@ -51,8 +52,9 @@ function NavCrumb({ crumbs }: { crumbs: Crumb[] }) {
 }
 
 function App() {
-  const [userRole, setUserRole] = useState<Role>(() => { return getUserFromToken()?.userRole || null; });
-  const [userId, setUserId] = useState<number | null>(() => { return getUserFromToken()?.userId || null; });
+  const [userRole, setUserRole] = useState<Role>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [currentView, setCurrentView] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const payment = params.get('payment');
@@ -82,25 +84,24 @@ function App() {
   };
 
   const requireAuth = () => {
-    if (!localStorage.getItem('token')) {
+    if (!userId || !userRole) {
       setCurrentView('auth');
       return false;
     }
     return true;
   };
 
-  const handleLogout = useCallback(() => {
-    setUserRole(null); 
+  const handleLogout = useCallback(async () => {
+    await fetch('http://localhost:5000/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    setUserRole(null);
     setUserId(null);
-    localStorage.clear();
     setCurrentView('home');
     setPreviousView('home');
   }, []);
-
-  useEffect(() => {
-    window.addEventListener('unauthorized', handleLogout);
-    return () => window.removeEventListener('unauthorized', handleLogout);
-  }, [handleLogout]);
 
   const getBreadcrumbs = (): Crumb[] => {
     const home: Crumb = { 
@@ -184,7 +185,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <Auth
               goBack ={() => setCurrentView('home')}
               setUserId={setUserId} 
@@ -202,7 +202,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <ViewProfile
               goBack={() => setCurrentView('home')}
               userId={userId || 0}
@@ -221,7 +220,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <UpdateProfile
               goBack={() => previousView === 'viewProfile' ? setCurrentView(previousView) : setCurrentView('home')}
               userId={userId || 0}
@@ -238,7 +236,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <Properties
               goBack={() => setCurrentView('home')}
               userId={userId || 0} 
@@ -275,7 +272,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <ViewDetails
               goBack={() => {
                 setSelectedProperty(null);
@@ -340,7 +336,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <ApplyRental
               property={selectedProperty}
               userId={userId || 0}
@@ -364,7 +359,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <RentalApplications
               goBack={() => setCurrentView('home')}
               userId={userId || 0} 
@@ -384,7 +378,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <CreateRequests
               property={selectedProperty}
               userId={userId || 0}
@@ -405,7 +398,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <MaintenanceRequests
               goBack={() => setCurrentView('home')}
               userId={userId || 0}
@@ -425,7 +417,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <PaymentHistory
               goBack={() => setCurrentView('home')}
               userId={userId || 0}
@@ -445,7 +436,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <PaymentSuccess 
               goBack={() => {
                 window.history.replaceState({}, '', '/');
@@ -461,7 +451,6 @@ function App() {
         return (
           <>
             {crumbs}
-
             <PaymentCancel
               goBack={() => {
                 window.history.replaceState({}, '', '/');
@@ -476,7 +465,7 @@ function App() {
           <>
             <div className='headerWrapper'>
               <h1>FoRent</h1>
-              <h2>Unlock the Door to Better Living</h2>
+              <h2>Unlock The Door to Better Living</h2>
 
               <div className='headerBtnWrapper'>
                 {!userRole && (
@@ -506,6 +495,21 @@ function App() {
         );
     }
   }
+
+  useEffect(() => {
+    getUserFromToken().then(result => {
+      if (result) {
+        setUserRole(result.userRole);
+        setUserId(result.userId);
+      }
+      setAuthLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('unauthorized', handleLogout);
+    return () => window.removeEventListener('unauthorized', handleLogout);
+  }, [handleLogout]);
 
   return (
     <>
@@ -589,7 +593,10 @@ function App() {
       </nav>
 
       <main>
-        {renderMainContent()}
+        {authLoading
+          ? <p className='loadingText'>Loading...</p>
+          : renderMainContent()
+        }
       </main>
     </>  
   )

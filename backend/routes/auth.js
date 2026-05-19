@@ -28,7 +28,15 @@ router.post('/login', async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: 60 * 60 * 1000,
+            path: '/'
+        });
+
+        res.json({ user: { id: user.id, username: user.username, role: user.role } });
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: 'Server error' });
@@ -68,6 +76,32 @@ router.post('/register', async (req, res) => {
     } finally {
         client.release();
     }
+});
+
+router.get('/me', (req, res) => {
+    const token = req.cookies?.token;
+    
+    if (!token) return res.status(401).json({ error: 'Not authenticated', code: 'NO_TOKEN' });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_KEY);
+        res.json({ id: decoded.id, role: decoded.role });
+    } catch (err) {
+        const isExpired = err.name === 'TokenExpiredError';
+        res.status(403).json({
+            error: isExpired ? 'Token expired' : 'Invalid token',
+            code: isExpired ? 'TOKEN_EXPIRED' : 'INVALID_TOKEN'
+        });
+    }
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+    res.json({ message: 'Logged out successfully' });
 });
 
 module.exports = router;

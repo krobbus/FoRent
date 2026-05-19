@@ -6,6 +6,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        gap: $gap;
 
         form{
             display: flex;
@@ -28,7 +29,7 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: flex-start;
-                align-items: flex-start;
+                align-items: center;
                 gap: $gap;
                 width: 100%;
 
@@ -42,16 +43,22 @@
                 }
 
                 select, input[type='number'], input[type='month'], textarea{
-                    font-size: $smallSize;
-                    border: 0.2vmin solid rgba(0, 0, 0, 0.8);
                     width: 100%;
-                    padding: 0.5vmin;
+                    border: none;
+                    padding: 1vmin;
+                    color: $colorBlack;
+                    font-size: $smallSize;
+                    outline: none;
+                    transition: $transition;
+                    resize: vertical;
+
+                    &::placeholder{ opacity: 0.5; }
 
                     .default{
                         color: $colorGray;
                         background-color: rgba(0, 0, 0, 0.1);
                     }
-                }   
+                }
             }
 
             .paymentBtnWrapper{
@@ -63,7 +70,7 @@
                 gap: $gap;
 
                 button{
-                    flex: 1 1 40%;
+                    flex: 1;
                     padding: 1vmin 5vmin;
                     border-radius: $borderRadius;
                     white-space: nowrap;

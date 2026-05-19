@@ -241,7 +241,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                         </div>
 
                         <div className="formGroup">
-                            <label>Amount (₱)<span>*</span></label>
+                            <label>Amount (₱) <span>*</span></label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -252,7 +252,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                         </div>
 
                         <div className="formGroup">
-                            <label>Payment Method<span>*</span></label>
+                            <label>Payment Method <span>*</span></label>
                             <select
                                 value={formData.payment_method}
                                 onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
