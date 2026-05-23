@@ -110,11 +110,11 @@ body{
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
-            border: 0.3vmin solid $colorOrange;
+            border: 0.3vmin solid transparent;
             transition: $transition;
         }
 
-        .authBtn, .switchBtn, .addBtn, .saveBtn, .modifyBtn{
+        .authBtn, .switchBtn, .applyBtn, .addBtn, .submitBtn, .saveBtn, .modifyBtn{
             background-color: $colorOrange;
             color: $colorWhite;
 

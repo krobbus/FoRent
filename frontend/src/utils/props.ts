@@ -126,12 +126,14 @@ export interface PaginationProps {
 }
 
 export interface ViewDetailsProps {
-    goBack: () => void;
-    userRole: Role;
-    userId: number;
-    property: PropertyDataProps;
-    onViewApplyRental: () => void;
-    onViewRentalApplications: () => void;
+    goBack?: () => void;
+    userRole?: Role;
+    userId?: number;
+    property?: PropertyDataProps;
+    showHeader?: boolean;
+    showActions?: boolean;
+    onViewApplyRental?: () => void;
+    onViewRentalApplications?: () => void;
 }
 
 export interface AddPropertyProps {

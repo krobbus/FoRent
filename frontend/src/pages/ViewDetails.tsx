@@ -3,7 +3,7 @@ import { authFetch } from '../utils/api';
 import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from '../utils/props';
 import PropertyGallery from '../component/PropertyGallery';
 
-function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, onViewRentalApplications }: ViewDetailsProps) {
+function ViewDetails({ goBack, userRole, userId, property, showHeader, showActions = true, onViewApplyRental, onViewRentalApplications }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [applications, checkApplications] = useState<RentalApplicationDataProps[]>([])
@@ -25,6 +25,11 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
     }, []);
 
     useEffect(() => {
+        if (!userId) {
+            setLoading(false);
+            return;
+        }
+
         const fetchApplications = async () => {
             setLoading(true);
 
@@ -54,10 +59,12 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
 
     return (
         <section id='viewDetailsContainer'>
-            <header>
-                <h2>View Property Details</h2>
-                <p>Review the complete information and specifications of this property listing.</p>
-            </header>
+            {showHeader && (
+                <header>
+                    <h2>View Property Details</h2>
+                    <p>Review the complete information and specifications of this property listing.</p>
+                </header>
+            )}
 
             {loading ? (
                 <p className='loadingText'>Loading property details...</p>
@@ -197,22 +204,24 @@ function ViewDetails({ goBack, userRole, userId, property, onViewApplyRental, on
                                     </div>
                                 </div>
                             </div>
+                        
+                            {showActions && (
+                                <div className='btnWrapper'>
+                                    {property ? (
+                                        <>
+                                            {applications.some(app => app.property_id === property.id) ? (
+                                                <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
+                                            ) : (
+                                                <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
+                                            )}
 
-                            <div className='actionBtnWrapper'>
-                                {property ? (
-                                    <>
-                                        {applications.some(app => app.property_id === property.id) ? (
-                                            <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
-                                        ) : (
-                                            <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
-                                        )}
-
+                                            <button className='backBtn' onClick={goBack}>Go Back</button>
+                                        </>
+                                    ) : (
                                         <button className='backBtn' onClick={goBack}>Go Back</button>
-                                    </>
-                                ) : (
-                                    <button className='backBtn' onClick={goBack}>Go Back</button>
-                                )}
-                            </div>
+                                    )}
+                                </div>
+                            )}
                         </>
                     }
                 </>
