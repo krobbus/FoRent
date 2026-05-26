@@ -1,7 +1,7 @@
 import React, { useState, type ChangeEvent } from 'react'
 import type { AuthProps } from '../utils/props'
 
-function Auth({ goBack, setUserRole, setUserId }: AuthProps){
+function Auth({ goBack, setUserRole, setUserId, onForgotPassword }: AuthProps){
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
         username: '',
@@ -112,6 +112,8 @@ function Auth({ goBack, setUserRole, setUserId }: AuthProps){
                                 onClick={() => setViewPassword(prev => !prev)}
                             />
                         </div>
+
+                        {isLogin && <small>Forgot your password? <a onClick={onForgotPassword}>Click here</a></small>}
 
                         {!isLogin && (
                             <>

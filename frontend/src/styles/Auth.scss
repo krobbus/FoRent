@@ -93,6 +93,24 @@
                         bottom: 1.3vmin;
                     }
                 }
+
+                small{
+                    font-size: $smallSize;
+                    text-align: center;
+                    grid-area: 4 / 1 / 5 / 3;
+
+                    a{
+                        text-decoration: none;
+                        color: $colorOrange;
+                        font-weight: bold;
+                        transition: $transition;
+
+                        &:hover, &:focus{ 
+                            text-decoration: underline;
+                            color: $colorLightOrange;
+                        }
+                    }
+                }
             }
 
             .infoField{

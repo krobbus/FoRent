@@ -24,36 +24,38 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
     };
 
     return (
-        <div className='paginationWrapper'>
-            <button
-                className='pageBtn prevNext'
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-            >
-                ‹ Prev
-            </button>
+        <div id='paginationWrapper'>
+            <div className='pageNav'>
+                <button
+                    className='pageBtn prevNext'
+                    onClick={() => onPageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    ‹ Prev
+                </button>
 
-            {getPages().map((page, i) =>
-                page === '...' ? (
-                    <span key={`ellipsis-${i}`} className='pageEllipsis'>...</span>
-                ) : (
-                    <button
-                        key={page}
-                        className={`pageBtn ${currentPage === page ? 'activePage' : ''}`}
-                        onClick={() => onPageChange(page as number)}
-                    >
-                        {page}
-                    </button>
-                )
-            )}
+                {getPages().map((page, i) =>
+                    page === '...' ? (
+                        <span key={`ellipsis-${i}`} className='pageEllipsis'>...</span>
+                    ) : (
+                        <button
+                            key={page}
+                            className={`pageBtn ${currentPage === page ? 'activePage' : ''}`}
+                            onClick={() => onPageChange(page as number)}
+                        >
+                            {page}
+                        </button>
+                    )
+                )}
 
-            <button
-                className='pageBtn prevNext'
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-            >
-                Next ›
-            </button>
+                <button
+                    className='pageBtn prevNext'
+                    onClick={() => onPageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    Next ›
+                </button>
+            </div>
 
             <span className='pageInfo'>
                 Page {currentPage} of {totalPages}

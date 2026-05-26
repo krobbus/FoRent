@@ -167,7 +167,7 @@ function ViewDetails({ goBack, userRole, userId, property, showHeader, showActio
 
                                             <div className='pill'>
                                                 <i className='fa-solid fa-users' />
-                                                <p>{property.max_occupants}</p>
+                                                <p>{property.max_occupants ? `${property.max_occupants}` : 'No maximum occupants specified'}</p>
                                             </div>
                                         </div>
 
@@ -176,7 +176,7 @@ function ViewDetails({ goBack, userRole, userId, property, showHeader, showActio
 
                                             <div className='pill'>
                                                 <i className='fa-solid fa-paw' />
-                                                <p>{property.pets_allowed ? `${property.pet_count}` : 'Pets not allowed'}</p>
+                                                <p>{property.pet_count ? `${property.pet_count}` : 'Pets not allowed'}</p>
                                             </div>
                                         </div>
                                     </div>

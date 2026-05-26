@@ -1,27 +1,71 @@
-import { useEffect, useState } from 'react'
-import { authFetch } from '../utils/api'
-import type { PropertyDataProps, PropertiesProps } from '../utils/props'
-import PropertyGallery from '../component/PropertyGallery'
+import { useEffect, useState } from 'react';
+import { authFetch } from '../utils/api';
+import type { PropertyDataProps, PropertiesProps, FilterState } from '../utils/props';
+import PropertyGallery from '../component/PropertyGallery';
+import { usePropertySearch, defaultFilters } from '../utils/filter';
+import { usePagination } from '../utils/pagination';
+
+import PropertySearch from '../component/PropertySearch';
+import Pagination from '../component/Pagination';
 
 function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest, onUpdateProperty, onViewPayment }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([]);
     const [loading, setLoading] = useState(true);
+    const landlordProperties = properties.filter(p => Number(p.landlord_id) === Number(userId));
+    const tenantRentals = properties.filter(p => Number(p.tenant_id) === Number(userId));
+    const ownedProperties = userRole === 'landlord' ? landlordProperties : tenantRentals;
+    const [query, setQuery] = useState('');
+    const [filters, setFilters] = useState<FilterState>(defaultFilters);
+    const getOccupancyLabel = (max: number) => {
+        if (max <= 1) return 'Solo-friendly';
+        if (max <= 2) return 'Couple-friendly';
+        if (max <= 4) return 'Small group-friendly';
+        if (max <= 6) return 'Family-friendly';
+        if (max <= 10) return 'Large family-friendly';
+        return 'Group-friendly';
+    };
 
-    useEffect(() => {
-        const fetchProperties = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/properties');
-                const data = await response.json();
-                setProperties(Array.isArray(data) ? data : []);
-            } catch (error) {
-                console.error("Error fetching properties:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const { filtered, matchedKeywords } = usePropertySearch(ownedProperties, query, filters);
+    const [currentPage, setCurrentPage] = useState(1);
+    const { paginated, totalPages } = usePagination(filtered, currentPage, 3);
 
-        fetchProperties();
-    }, []);
+    const handleQueryChange = (q: string) => {
+        setQuery(q);
+        setCurrentPage(1);
+    };
+
+    const handleFiltersChange = (f: FilterState) => {
+        setFilters(f);
+        setCurrentPage(1);
+    };
+
+    const renderSearchSummary = () => {
+        if (matchedKeywords.length === 0 && !Object.values(filters).some(Boolean)) return null;
+        
+        if (filtered.length === 0) {
+            return (
+                <p>No properties found for your search. Try different keywords or filters.</p>
+            );
+        }
+
+        if (matchedKeywords.length > 0) {
+            return (
+                <p>
+                    Based on your search{' '}
+                    {matchedKeywords.map((kw, i) => (
+                        <span key={i} className='searchKeyword'>"{kw}"</span>
+                    )).reduce((prev, curr, i) => (
+                        <>{prev}{i > 0 ? ' and ' : ''}{curr}</>
+                    ) as any)}
+                    , we found <strong>{filtered.length}</strong> propert{filtered.length === 1 ? 'y' : 'ies'}.
+                </p>
+            );
+        }
+
+        return (
+            <p>Showing <strong>{filtered.length}</strong> propert{filtered.length === 1 ? 'y' : 'ies'} based on your filters.</p>
+        );
+    };
 
     const deleteProperty = async (propertyId: number) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this property? This action cannot be undone.");
@@ -45,16 +89,21 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
         }
     };
 
-    const landlordProperties = properties.filter(p => Number(p.landlord_id) === Number(userId));
-    const tenantRentals = properties.filter(p => Number(p.tenant_id) === Number(userId));
-    const getOccupancyLabel = (max: number) => {
-        if (max <= 1) return 'Solo-friendly';
-        if (max <= 2) return 'Couple-friendly';
-        if (max <= 4) return 'Small group-friendly';
-        if (max <= 6) return 'Family-friendly';
-        if (max <= 10) return 'Large family-friendly';
-        return 'Group-friendly';
-    };
+    useEffect(() => {
+        const fetchProperties = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/properties');
+                const data = await response.json();
+                setProperties(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Error fetching properties:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProperties();
+    }, []);
 
     return (
         <section id='propertyContainer'>
@@ -67,6 +116,14 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                     }
                 </p>
             </header>
+
+            <PropertySearch
+                query={query}
+                onQueryChange={handleQueryChange}
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+            />
+            {renderSearchSummary()}
             
             <main>
                 {loading ? (
@@ -75,8 +132,16 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                     <>
                         {userRole === 'landlord' && (
                             <section className='landlordView'>
+                                {filtered.length > 0 && (
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
+                                    />
+                                )}
+
                                 <div className='propertyGrid'>
-                                    {landlordProperties.map(p => (
+                                    {paginated.map(p => (
                                         <div key={p.id} className='propertyCard'>
                                             <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
 
@@ -131,7 +196,7 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                                     <p className='detailSectionLabel'>Occupancy</p>
                                                     
                                                     <div className='pillRow'>
-                                                        {p.pets_allowed && <span className='pill'>Pet-friendly</span>}
+                                                        {p.pet_count > 0 && <span className='pill'>Pet-friendly</span>}
                                                         <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
                                                     </div>
                                                 </div>
@@ -176,6 +241,14 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
 
                         {userRole === 'tenant' && (
                             <section className='tenantView'>  
+                                {filtered.length > 0 && (
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
+                                    />
+                                )}
+
                                 <div className='propertyGrid'>
                                     {tenantRentals.map(p => (
                                         <div key={p.id} className='propertyCard rented'>
@@ -274,12 +347,12 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                                 </div>
                             </section>
                         )}
+
+                        <div className="btnWrapper">
+                            <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
+                        </div>
                     </>
                 )}
-
-                <div className="btnWrapper">
-                    <button type="button" className="backBtn" onClick={goBack}>Go Back</button>
-                </div>
             </main>
         </section>
     )

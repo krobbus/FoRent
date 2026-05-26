@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getUserFromToken } from './utils/auth';
-import type { Role, Crumb } from './utils/props';
+import type { Role, Crumb, ProfileDataProps } from './utils/props';
+import { authFetch } from './utils/api';
 
 import '../src/styles/App.scss';
+import '../src/styles/Paginated.scss';
 import '../src/styles/Auth.scss';
 import '../src/styles/PropertySearch.scss';
 import '../src/styles/PropertyGallery.scss';
@@ -12,22 +14,19 @@ import '../src/styles/ViewDetails.scss';
 import '../src/styles/ViewProfile.scss';
 import '../src/styles/UpdateProfile.scss';
 import '../src/styles/TableView.scss';
+import '../src/styles/RequestForm.scss';
 
 import Auth from './pages/Auth';
 import Marketplace from './pages/Marketplace';
 import Properties from './pages/Properties';
 import ViewDetails from './pages/ViewDetails';
 import PropertyForm from './pages/PropertyForm';
-
 import ViewProfile from './pages/ViewProfile';
 import UpdateProfile from './pages/UpdateProfile';
-
 import ApplyRental from './pages/ApplyRental';
 import RentalApplications from './pages/RentalApplications';
-
 import CreateRequests from './pages/CreateRequests';
 import MaintenanceRequests from './pages/MaintenanceRequests';
-
 import PaymentHistory from './pages/PaymentHistory';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
@@ -54,6 +53,7 @@ function NavCrumb({ crumbs }: { crumbs: Crumb[] }) {
 function App() {
   const [userRole, setUserRole] = useState<Role>(null);
   const [userId, setUserId] = useState<number | null>(null);
+  const [profile, setProfile] = useState<ProfileDataProps | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [currentView, setCurrentView] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -127,6 +127,7 @@ function App() {
 
     switch (currentView) {
       case 'auth': return [home, { label: 'Log In / Sign Up' }];
+      case 'forgotPassword': return [home, { label: 'Log In / Sign Up', onClick: () => setCurrentView('auth') }, { label: 'Reset Password' }];
       case 'viewProfile': return [home, { label: 'View Profile' }];
       case 'updateProfile': return [home, { label: 'View Profile', onClick: () => setCurrentView('viewProfile') }, { label: 'Update Profile' }];
       case 'myProperties':
@@ -192,8 +193,23 @@ function App() {
                 setUserRole(role);
                 selectedProperty ? setCurrentView('viewDetails') : setCurrentView('home');
               }}
+              onForgotPassword={() => setCurrentView('forgotPassword')}
             />
           </>
+        );
+
+      case 'forgotPassword':
+        return (
+            <>
+                {crumbs}
+                <UpdateProfile
+                    goBack={() => setCurrentView('auth')}
+                    userId={userId || 0}
+                    userRole={userRole}
+                    restrictToCredentials={true}
+                    onSuccess={() => setCurrentView('auth')}
+                />
+            </>
         );
 
       case 'viewProfile':
@@ -223,7 +239,8 @@ function App() {
             <UpdateProfile
               goBack={() => previousView === 'viewProfile' ? setCurrentView(previousView) : setCurrentView('home')}
               userId={userId || 0}
-              userRole={userRole} 
+              userRole={userRole}
+              restrictToCredentials={previousView === 'auth'}
               onSuccess={() => setCurrentView('viewProfile')}
             />
           </>
@@ -497,6 +514,26 @@ function App() {
   }
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      const endpoint = userRole === 'landlord' ? `/api/landlords` : `/api/tenants`;
+
+      try {
+        const response = await authFetch(`http://localhost:5000${endpoint}/${userId}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        setProfile(data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [userId, userRole]);
+
+  useEffect(() => {
     getUserFromToken().then(result => {
       if (result) {
         setUserRole(result.userRole);
@@ -513,16 +550,23 @@ function App() {
 
   return (
     <>
-      <nav className={`navbar ${isNavOpen ? 'nav-active' : ''}`}>
+      <nav className={`navbar ${isNavOpen ? 'show' : ''}`}>
         {userRole &&
-          <>
-            <i className={`fa-solid fa-bars ${isNavOpen ? 'show' : ''}`} onClick={() => setIsNavOpen(!isNavOpen)} />
+          <div className='navbarHeader'>
+            <span className={`titleText ${isNavOpen ? 'show' : ''}`}>
+              <i className={`fa-solid fa-bars ${isNavOpen ? 'show' : ''}`} onClick={() => setIsNavOpen(!isNavOpen)} />
 
-            <div className={`navTitle ${isNavOpen ? 'show' : ''}`}>
-              <img src='/Logo.png' />
-              <h2>FoRent</h2>
+              <div className={`navTitle ${isNavOpen ? 'show' : ''}`}>
+                <img src='/Logo.png' />
+                <h2>FoRent</h2>
+              </div>
+            </span>
+
+            <div className={`welcomeWrapper ${isNavOpen ? 'show' : ''}`}>
+              <span>Welcome,</span>
+              <span>{profile?.first_name} {profile?.last_name}</span> 
             </div>
-          </>
+          </div>
         }
 
         <ul className={isNavOpen ? 'show' : ''}>
@@ -581,7 +625,7 @@ function App() {
                 <a onClick={() => handleNavClick('paymentHistory')}>Payment History</a>
               </li>
 
-              <li>
+              <li id='logoutLink'>
                 <i className='fa-solid fa-arrow-right-from-bracket' />
                 <a onClick={() => {
                 handleLogout(); 

@@ -1,24 +1,20 @@
-import { useEffect } from 'react';
 import type { PaymentProps } from '../utils/props';
 
 function PaymentSuccess({goBack} : PaymentProps) {
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            window.history.replaceState({}, '', '/');
-        }, 500);
-        return () => clearTimeout(timer);
-    }, []);
-
     return (
         <section id="paymentSuccessContainer">
             <header>
                 <h2>Payment Successful!</h2>
-                <p>Your payment has been confirmed. A record has been saved to your payment history.</p>
+                <p>Your transaction has been processed and confirmed.</p>
             </header>
 
-            <div className="btnWrapper">
-                <button className="backBtn" onClick={goBack}>Go Back</button>
-            </div>
+            <main>
+                <p className='loadingText'>Your payment has been confirmed. A record has been saved to your payment history.</p>
+
+                <div className="btnWrapper">
+                    <button className="backBtn" onClick={goBack}>Go Back</button>
+                </div>
+            </main>
         </section>
     );
 }

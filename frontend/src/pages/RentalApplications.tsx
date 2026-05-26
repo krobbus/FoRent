@@ -130,9 +130,9 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
 
             <main className="appGrid">
                 {loading ? (
-                    <p>Loading applications...</p>
+                    <p className='loadingText'>Loading applications...</p>
                 ) : applications.length === 0 ? (
-                    <p>No applications found.</p>
+                    <p className='loadingText'>No applications found.</p>
                 ) : (
                     <div className='tableWrapper'>
                         <table>

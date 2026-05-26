@@ -101,26 +101,26 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
 
     return (
         <section id="applyMaintenanceContainer">
+            <header>
+                <h2>{editMode ? 'Update' : 'Create'} Maintenance Request</h2>
+                <p>You're creating maintenance request for <strong>{property?.property_name ?? 'this Property'}</strong></p>
+            </header>
+
+            {property && (
+                <ViewDetails 
+                    property={property}
+                    showHeader={false}
+                    showActions={false}
+                />
+            )}
+
             {loading ? (
                 <p className='loadingText'>Loading Details...</p>
             ) : userRole !== 'tenant' ? (
                 <p className='loadingText'>Only verified tenants are allowed to create for requests.</p>
             ) : (
-                <>
-                    <header>
-                        <h2>{editMode ? 'Update' : 'Create'} Maintenance Request</h2>
-                        <p>You're creating maintenance request for <strong>{property?.property_name ?? 'this Property'}</strong></p>
-                    </header>
-
-                    {property && (
-                        <ViewDetails 
-                            property={property}
-                            showHeader={false}
-                            showActions={false}
-                        />
-                    )}
-
-                    <form className="applyForm" onSubmit={handleSubmit}>
+                <main>
+                    <form onSubmit={handleSubmit}>
                         <fieldset className="verificationSection">
                             <legend>Account Verification</legend>
 
@@ -168,21 +168,6 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
 
                         <fieldset className="applicationDetails">
                             <legend>Request Information</legend>
-                            
-                            <div className="formGroup">
-                                <label>Priority Level <span style={{ color: 'red' }}>*</span></label>
-                                <select 
-                                    value={formData.priorityLevel}
-                                    onChange={(e) => setFormData({...formData, priorityLevel: e.target.value})}
-                                    required
-                                >
-                                    <option value="">Select Category</option>
-                                    <option value="low">Low (Routine)</option>
-                                    <option value="medium">Moderate (Repair Soon)</option>
-                                    <option value="high">High (Urgent)</option>
-                                    <option value="emergency">Emergency (Safety Risk)</option>
-                                </select>
-                            </div>
 
                             <div className="formGroup">
                                 <label>Title of Issue <span style={{ color: 'red' }}>*</span></label>
@@ -202,14 +187,29 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                                     onChange={(e) => setFormData({...formData, issueField: e.target.value})}
                                     required
                                 >
-                                    <option value="">Select Category</option>
-                                    <option value="plumbing">Plumbing</option>
-                                    <option value="electrical">Electrical</option>
-                                    <option value="hvac">Heating/Cooling</option>
-                                    <option value="appliances">Appliances</option>
-                                    <option value="structural">Structural/Carpentry</option>
-                                    <option value="safety">Safety & Security</option>
-                                    <option value="other">Other</option>
+                                    <option value="" className='default'>Select Category</option>
+                                    <option value='plumbing'>Plumbing</option>
+                                    <option value='electrical'>Electrical</option>
+                                    <option value='hvac'>Heating/Cooling</option>
+                                    <option value='appliances'>Appliances</option>
+                                    <option value='structural'>Structural/Carpentry</option>
+                                    <option value='safety'>Safety & Security</option>
+                                    <option value='other'>Other</option>
+                                </select>
+                            </div>
+                            
+                            <div className="formGroup">
+                                <label>Priority Level <span style={{ color: 'red' }}>*</span></label>
+                                <select 
+                                    value={formData.priorityLevel}
+                                    onChange={(e) => setFormData({...formData, priorityLevel: e.target.value})}
+                                    required
+                                >
+                                    <option value="" className='default'>Select Category</option>
+                                    <option value='low'>Low (Routine)</option>
+                                    <option value='medium'>Moderate (Repair Soon)</option>
+                                    <option value='high'>High (Urgent)</option>
+                                    <option value='emergency'>Emergency (Safety Risk)</option>
                                 </select>
                             </div>
 
@@ -241,7 +241,7 @@ function CreateRequests({ property, userId, userRole, onSuccess, onCancel, editM
                             )}
                         </div>
                     </form>
-                </>
+                </main>
             )}
         </section>
     );

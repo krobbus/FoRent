@@ -11,6 +11,7 @@ export interface AuthProps {
     goBack: () => void;
     setUserRole: (role: Role) => void;
     setUserId: (id: number) => void;
+    onForgotPassword?: () => void;
 }
 
 export interface UserDataProps {
@@ -42,6 +43,7 @@ export interface UpdateProfileProps {
     goBack: () => void;
     userRole: Role;
     userId: number;
+    restrictToCredentials?: boolean;
     onSuccess: () => void;
 }
 

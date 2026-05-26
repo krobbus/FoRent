@@ -122,7 +122,6 @@
                     }
 
                     input, select, textarea{
-                        height: 5vmin;
                         width: 100%;
                         padding: 1vmin;
                         border: 0.4vmin solid $colorOrange;
@@ -139,6 +138,8 @@
                             background-color: rgba(0, 0, 0, 0.1);
                         }
                     }
+
+                    input, select{ height: 5vmin; }
                 }
 
                 .counterRow{

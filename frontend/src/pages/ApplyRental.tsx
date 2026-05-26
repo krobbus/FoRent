@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { authFetch } from '../utils/api';
 import type { ProfileDataProps, ApplyRentalProps } from '../utils/props';
+import ViewDetails from './ViewDetails';
 
 function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode = false, existingApplication = null }: ApplyRentalProps) {
     const [loading, setLoading] = useState(true)
@@ -98,56 +99,25 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
 
     return (
         <section id="applyRentalContainer">
+            <header>
+                <h2>{editMode ? 'Update Application' : 'Apply For Rental'}</h2>
+                <p>You're applying for <strong>{property?.property_name ?? 'this Property'}</strong></p>
+            </header>
+
+            {property && (
+                <ViewDetails 
+                    property={property}
+                    showHeader={false}
+                    showActions={false}
+                />
+            )}
+
             {loading ? (
                 <p className='loadingText'>Loading Details...</p>
             ) : userRole !== 'tenant' ? (
                 <p className='loadingText'>Only verified tenants are allowed to apply for properties.</p>
             ) : (
-                <>
-                    <header>
-                        <h2>{editMode ? 'Update Application' : 'Apply For Rental'}</h2>
-                        <p>You're applying for <strong>{property?.property_name ?? 'this Property'}</strong></p>
-                    </header>
-
-                    {property && (
-                        <div key={property.id} className='propertyCard'>
-                            <h3>{property.property_name}</h3>
-
-                            <div className='propertyInfo'>
-                                <p>Price: {property.price != null ? `₱${property.price.toLocaleString()}` : 'N/A'}</p>
-                                <p>Status: <strong>{property.status.charAt(0).toUpperCase() + property.status.slice(1)}</strong></p>
-                            </div>
-
-                            <div className='propertyDetails'>
-                                <p>Category: {property.category != null ? property.category.charAt(0).toUpperCase() + property.category.slice(1) : 'N/A'}</p>
-                                <p>{property.bedroom_count > 0 ? `Bedroom/s: ${property.bedroom_count}` : 'No available bedrooms'}</p>
-                                <p>{property.kitchen_count > 0 ? `Kitchen/s: ${property.kitchen_count}` : 'No available kitchens'}</p>
-                                <p>{property.bathroom_count > 0 ? `Bathroom/s: ${property.bathroom_count}` : 'No available bathrooms'}</p>
-                                <div className='otherRooms'>
-                                    {property.other_rooms && property.other_rooms.length > 0 ? (
-                                        <p>Other Rooms: {
-                                            Array.isArray(property.other_rooms) 
-                                                ? property.other_rooms.join(', ')
-                                                : property.other_rooms
-                                        }</p>
-                                    ) : (
-                                        <p>Other Rooms: No other rooms listed</p>
-                                    )}
-                                </div>
-                                <p>Max Occupants: {property.max_occupants || 0}</p>
-                                <p>{property.pets_allowed ? `Only ${property.pet_count} pet/s allowed` : 'Pets not allowed'}</p>
-                            </div>
-
-                             <div className='amenitiesDetails'>
-                                {Array.isArray(property.amenities) && property.amenities.length > 0 ? (
-                                    <p>Amenities: {property.amenities.join(', ')}</p>
-                                ) : (
-                                    <p>Amenities: No amenities listed</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
+                <main>
                     <form className="applyForm" onSubmit={handleSubmit}>
                         <fieldset className="verificationSection">
                             <legend>Account Verification</legend>
@@ -247,7 +217,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
                             )}
                         </div>
                     </form>
-                </>
+                </main>
             )}
         </section>
     );

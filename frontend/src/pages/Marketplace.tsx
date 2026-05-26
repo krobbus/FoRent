@@ -26,7 +26,7 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
 
     const { filtered, matchedKeywords } = usePropertySearch(properties, query, filters);
     const [currentPage, setCurrentPage] = useState(1);
-    const { paginated, totalPages } = usePagination(filtered, currentPage, 9);
+    const { paginated, totalPages } = usePagination(filtered, currentPage, 3);
 
     const handleQueryChange = (q: string) => {
         setQuery(q);
@@ -119,6 +119,14 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                     <p className='loadingText'>Loading marketplace...</p>
                 ) : (
                     <>
+                        {filtered.length > 0 && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                            />
+                        )}
+                        
                         <div className='propertyGrid'>
                             {paginated.map((p: PropertyDataProps) => (
                                 <div key={p.id} className='propertyCard'>
@@ -221,14 +229,6 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                 </div>
                             ))}
                         </div>
-
-                        {filtered.length > 0 && (
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                onPageChange={setCurrentPage}
-                            />
-                        )}
                     </>
                 )}
             </main>

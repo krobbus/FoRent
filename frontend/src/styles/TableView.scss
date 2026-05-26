@@ -1,4 +1,4 @@
-#rentalApplicationsContainer, #maintenanceRequestsContainer, #paymentHistoryContainer{
+#rentalApplicationsContainer, #maintenanceRequestsContainer, #paymentHistoryContainer, #paymentSuccessContainer, #paymentCancelContainer{
     margin: $margin;
 
     main{
@@ -7,6 +7,36 @@
         justify-content: center;
         align-items: center;
         gap: $gap;
+
+        .createPaymentWrapper{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: $gap;
+            height: fit-content;
+            width: 50vmin;
+
+            .submitBtn{
+                flex: 1;
+                padding: 2vmin 5vmin;
+                border-radius: $borderRadius;
+                font-size: $smallSize;
+                font-weight: bold;
+                background-color: $colorWhite;
+                color: $colorOrange;
+                border: 0.3vmin solid $colorOrange;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: $transition;
+
+                &:hover{
+                    background-color: $colorOrange;
+                    color: $colorWhite;
+                }
+            }
+        }
 
         form{
             display: flex;
@@ -82,7 +112,7 @@
                     min-width: fit-content;
                 }
 
-                .submitBtn{
+                .payBtn,.submitBtn{
                     border-color: $colorWhite;
                     background-color: $colorOrange;
                     color: $colorWhite;
@@ -254,37 +284,6 @@
                             }
                         }
                     }
-                }
-            }
-        }
-
-        .payBtnWrapper{
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: $gap;
-            padding: $padding;
-
-            .submitBtn{
-                flex: 1;
-                padding: 2vmin 5vmin;
-                border-radius: $borderRadius;
-                white-space: nowrap;
-                font-size: $smallSize;
-                font-weight: bold;
-                cursor: pointer;
-                border: 0.3vmin solid $colorWhite;
-                transition: $transition;
-                min-width: fit-content;
-                border-color: $colorOrange;
-                background-color: $colorWhite;
-                color: $colorOrange;
-
-                &:hover{
-                    background-color: $colorOrange;
-                    color: $colorWhite;
                 }
             }
         }

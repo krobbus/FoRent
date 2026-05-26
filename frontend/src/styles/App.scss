@@ -89,7 +89,7 @@ body{
         font-style: italic;
         font-size: $normalSize;
         text-align: center;
-        margin: 30vmin;
+        margin: 20vmin;
     }
 
     .btnWrapper{
@@ -162,53 +162,81 @@ body{
     nav{
         position: fixed;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
+        gap: $gap;
         background: transparent;
+        height: 100%;
         z-index: 3000;
 
-        .fa-bars{
+        .navbarHeader{
             position: relative;
-            font-size: 3vmin;
-            color: $colorOrange;
-            background-color: $colorWhite;
-            border-bottom-right-radius: 50%;
-            padding: $padding;
-            cursor: pointer;
-            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: transparent;
+            width: 100%;
             z-index: 3002;
-            transition: $transition;
+            
+            .titleText{
+                display: flex;
+                flex-direction: row;
+                align-items: center;
 
-            &.show{
-                color: $colorWhite; 
-                background-color: transparent; 
+                .fa-bars{
+                    font-size: 3vmin;
+                    color: $colorOrange;
+                    background-color: $colorWhite;
+                    border-bottom-right-radius: 50%;
+                    padding: $padding;
+                    cursor: pointer;
+                    pointer-events: auto;
+                    transition: $transition;
+
+                    &.show{
+                        color: $colorWhite; 
+                        background-color: transparent; 
+                    }
+                }
+
+                .navTitle{
+                    display: none;
+                    align-items: center;
+                    gap: $gap;
+
+                    img{
+                        position: relative;
+                        -webkit-user-drag: none;
+                        height: auto;
+                        width: 5vmin;
+                    }
+
+                    h2{
+                        position: relative;
+                        font-size: $subheaderSize;
+                        color: $colorWhite;
+                        margin: 0;
+                    }
+
+                    &.show{
+                        display: flex;
+                    }
+                }
             }
-        }
 
-        .navTitle{
-            position: relative;
-            display: none;
-            align-items: center;
-            gap: $gap;
-            margin-left: 2vmin;
-            z-index: 3002;
-
-            img{
-                position: relative;
-                -webkit-user-drag: none;
-                height: auto;
-                width: 5vmin;
-            }
-
-            h2{
-                position: relative;
+            .welcomeWrapper{
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                font-weight: bold;
                 font-size: $subheaderSize;
                 color: $colorWhite;
-                margin: 0;
-            }
+                text-overflow: ellipsis;
+                padding: 2vmin 4vmin;
+                border-bottom: 1vmin dashed $colorLightOrange;
+                width: 100%;
 
-            &.show{
-                display: flex;
+                &.show{ display: flex; }
             }
         }
 
@@ -216,40 +244,32 @@ body{
             display: none;
             flex-direction: column;
             list-style: none;
-            background: $colorOrange;
-            position: fixed;
-            top: 0;
-            padding: 15vmin 4vmin;
-            height: 100vh;
-            width: 43vmin;
             border-top-right-radius: $borderRadius;
-            box-shadow: $boxShadow;
             transition: $transition;
             pointer-events: auto;
-            overflow: hidden;
             z-index: 2000;
 
-            &.show {
-                display: flex !important;
-            }
+            &.show { display: flex !important; }
 
-            li {
+            li, #logoutLink{
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
                 gap: $gap;             
                 width: 100%;
+                padding: 0 4vmin;
                 border-top-left-radius: $borderRadius;
                 border-bottom-left-radius: $borderRadius;
 
-                i {
+                i{
                     font-size: $subheaderSize;
                     color: $colorWhite;
                     transition: $transition;
+                    width: 2vmin;
                 }
                 
-                a {
+                a{
                     display: flex;
                     padding: $padding;
                     text-decoration: none;
@@ -266,11 +286,32 @@ body{
                     background-color: $colorWhite;
 
                     i, a{ 
-                        transform: translateX(2vmin);
+                        transform: translateX(4vmin);
                         color: $colorOrange;
                     }
                 }
             }
+
+            #logoutLink, #logoutLink{
+                i, a{
+                    font-weight: bold;
+                    color: $colorRed; 
+                }
+                
+                &:hover, &:focus {
+                    background-color: $colorRed;
+
+                    i, a{ 
+                        transform: translateX(4vmin);
+                        color: $colorWhite;
+                    }
+                }
+            }
+        }
+
+        &.show{ 
+            background: $colorOrange;
+            box-shadow: $boxShadow;
         }
     }
 }

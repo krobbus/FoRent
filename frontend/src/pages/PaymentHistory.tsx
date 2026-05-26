@@ -204,7 +204,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
 
             <main>
                 {userRole === 'tenant' && !showForm && (
-                    <div className="payBtnWrapper">
+                    <div className="createPaymentWrapper">
                         <button className="submitBtn" onClick={() => setShowForm(true)}>
                             + Submit Payment
                         </button>
@@ -291,7 +291,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
                             {formData.payment_method === 'card' ? (
                                 <button
                                     type="button"
-                                    className="stripeBtn"
+                                    className="payBtn"
                                     onClick={handleStripePayment}
                                     disabled={submitting}
                                 >

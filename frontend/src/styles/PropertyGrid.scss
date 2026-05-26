@@ -9,8 +9,8 @@
     main{
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
+        justify-content: center;
+        align-items: center;
         min-height: 100vh;
         
         .propertyGrid{
@@ -24,7 +24,7 @@
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: space-between;
                 align-items: center;
                 background: linear-gradient(#ffa20098, #ffa200);
                 color: $colorWhite;
@@ -86,7 +86,10 @@
                     flex-direction: column;
                     justify-content: flex-start;
                     align-items: center;
+                    gap: $gap;
                     width: 100%;
+                    padding: 0 $padding;
+                    text-align: center;
 
                     h2{
                         margin-top: $margin;

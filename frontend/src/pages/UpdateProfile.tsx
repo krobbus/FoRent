@@ -25,11 +25,12 @@ function ProgressSteps({ steps }: { steps: Step[] }) {
     );
 }
 
-function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfileProps) {
+function UpdateProfile({ goBack, userRole, userId, restrictToCredentials = false, onSuccess }: UpdateProfileProps) {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [showCredForm, setShowCredForm] = useState(false);
+    const [showCredForm, setShowCredForm] = useState(restrictToCredentials);
     const [showInfoForm, setShowInfoForm] = useState(false);
+    const anySelected = showCredForm || showInfoForm;
     const [isVerified, setIsVerified] = useState(false);
     const [verifying, setVerifying] = useState(false);
     const [verifyError, setVerifyError] = useState('');
@@ -48,6 +49,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
     });
 
     const [credData, setCredData] = useState({
+        identifier: '',
         currentPassword: '',
         pin: '',
         newUsername: '',
@@ -58,6 +60,11 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
+        if (restrictToCredentials) {
+            setLoading(false);
+            return;
+        }
+
         const fetchProfile = async () => {
             const endpoint = userRole === 'landlord' ? '/api/landlords' : '/api/tenants';
             
@@ -84,8 +91,8 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         fetchProfile();
     }, [userId, userRole]);
 
-    const attemptVerify = (password: string, pin: string) => {
-        if (!password || !pin) {
+    const attemptVerify = (identifier: string, pin: string) => {
+        if (!identifier || !pin) {
             setIsVerified(false);
             setVerifyError('');
             return;
@@ -97,13 +104,23 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
             setVerifying(true);
             setVerifyError('');
             try {
-                const response = await authFetch(
-                    `http://localhost:5000/api/users/${userId}/verify`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify({ currentPassword: password, pin })
-                    },
-                );
+                let response: Response;
+
+                if (restrictToCredentials) {
+                    response = await fetch(
+                        `http://localhost:5000/api/users/reset/verify`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ identifier, pin })
+                        },
+                    );
+                } else {
+                    response = await authFetch(
+                        `http://localhost:5000/api/users/${userId}/verify`,
+                        { method: 'POST', body: JSON.stringify({ currentPassword: identifier, pin }) }
+                    );
+                }
 
                 if (response.ok) {
                     setIsVerified(true);
@@ -126,10 +143,14 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         const updated = { ...credData, [e.target.name]: e.target.value };
         setCredData(updated);
 
-        if (e.target.name === 'currentPassword' || e.target.name === 'pin') {
+        if (e.target.name === 'identifier' || e.target.name === 'currentPassword' || e.target.name === 'pin') {
             setIsVerified(false);
+            const identifierVal = restrictToCredentials
+                ? (e.target.name === 'identifier' ? e.target.value : credData.identifier)
+                : (e.target.name === 'currentPassword' ? e.target.value : credData.currentPassword);
+            
             attemptVerify(
-                e.target.name === 'currentPassword' ? e.target.value : credData.currentPassword,
+                identifierVal,
                 e.target.name === 'pin' ? e.target.value : credData.pin
             );
         }
@@ -143,7 +164,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         setShowCredForm(e.target.checked);
         if (!e.target.checked) {
             setCredData({
-                currentPassword: '', pin: '', newUsername: '',
+                identifier: '', currentPassword: '', pin: '', newUsername: '',
                 newPassword: '', confirmNewPassword: '',
             });
         }
@@ -160,14 +181,23 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         e.preventDefault();
         
         if (showCredForm) {
-            if (!credData.currentPassword || !credData.pin) {
-                alert("Current password and PIN are required.");
-                return;
+            if (restrictToCredentials) {
+                if (!credData.identifier || !credData.pin) {
+                    alert("Username/email and PIN are required.");
+                    return;
+                }
+            } else {
+                if (!credData.currentPassword || !credData.pin) {
+                    alert("Current password and PIN are required.");
+                    return;
+                }
             }
+
             if (!credData.newUsername && !credData.newPassword) {
                 alert("Please provide a new username or new password to update.");
                 return;
             }
+            
             if (credData.newPassword && credData.newPassword !== credData.confirmNewPassword) {
                 alert("New passwords do not match.");
                 return;
@@ -179,29 +209,39 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
             const requests: Promise<Response>[] = [];
 
             if (showCredForm) {
-                requests.push(
-                    authFetch(
-                        `http://localhost:5000/api/users/${userId}/credentials`,
-                        {
-                            method: 'PATCH',
-                            body: JSON.stringify({
-                                currentPassword: credData.currentPassword,
-                                pin: credData.pin,
-                                newUsername: credData.newUsername || undefined,
-                                newPassword: credData.newPassword || undefined,
-                            })
-                        }
-                    )
-                );
+                const endpoint = restrictToCredentials
+                    ? 'http://localhost:5000/api/users/reset/credentials'
+                    : `http://localhost:5000/api/users/${userId}/credentials`;
+
+                const body = restrictToCredentials
+                    ? {
+                        identifier: credData.identifier,
+                        pin: credData.pin,
+                        newUsername: credData.newUsername || undefined,
+                        newPassword: credData.newPassword || undefined,
+                    }
+                    : {
+                        currentPassword: credData.currentPassword,
+                        pin: credData.pin,
+                        newUsername: credData.newUsername || undefined,
+                        newPassword: credData.newPassword || undefined,
+                    };
+
+                const fetchFn = restrictToCredentials ? fetch : authFetch;
+                requests.push(fetchFn(endpoint, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                }) as Promise<Response>);
             }
 
             if (showInfoForm) {
                 const endpoint = userRole === 'landlord' ? '/api/landlords' : '/api/tenants';
                 requests.push(
-                    authFetch(
-                        `http://localhost:5000${endpoint}/${userId}`,
-                        { method: 'PATCH', body: JSON.stringify(infoData) },
-                    )
+                    authFetch(`http://localhost:5000${endpoint}/${userId}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify(infoData),
+                    })
                 );
             }
 
@@ -214,12 +254,10 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                 return;
             }
 
-            if (showCredForm) {
-                alert("Updates saved. You will be logged out since your credentials changed.");
-                localStorage.removeItem('token');
-            } else {
-                alert("Profile updated successfully!");
-            }
+            alert(showCredForm
+                ? "Credentials updated. Please log in again."
+                : "Profile updated successfully!"
+            );
 
             onSuccess();
         } catch (error) {
@@ -229,13 +267,11 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
         }
     };
 
-    const anySelected = showCredForm || showInfoForm;
-
     return (
         <section id='updateProfileContainer'>
             <header>
-                <h2>Update Profile</h2>
-                <p>Manage and update your account credentials and personal information securely.</p>
+                <h2>{restrictToCredentials ? 'Password Recovery' : 'Update Profile'}</h2>
+                <p>{restrictToCredentials ? 'Securely reset your password for your account.' : 'Manage and update your account credentials and personal information securely.'}</p>
             </header>
 
             {loading ? (
@@ -244,28 +280,31 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                 <>
                     <main>
                         <form onSubmit={handleSubmit}>
-                            <fieldset className="toggleField">
-                                <legend>Select What You Would Like to Update</legend>
-                                <small>You may update one or both sections simultaneously. Select the applicable option(s) below to proceed.</small>
-                                
-                                <label className='toggleCheckbox'>
-                                    <input
-                                        type='checkbox'
-                                        checked={showCredForm}
-                                        onChange={handleCredToggle}
-                                    />
-                                    <p>I would like to update my account credentials <span>(username or password)</span></p>
-                                </label>
+                            {!restrictToCredentials && (
+                                <fieldset className="toggleField">
+                                    <legend>Select What You Would Like to Update</legend>
+                                    <small>You may update one or both sections simultaneously. Select the applicable option(s) below to proceed.</small>
+                                    
+                                    <label className='toggleCheckbox'>
+                                        <input
+                                            type='checkbox'
+                                            checked={showCredForm}
+                                            onChange={handleCredToggle}
+                                        />
+                                        <p>I would like to update my account credentials <span>(username or password)</span></p>
+                                    </label>
 
-                                <label className='toggleCheckbox'>
-                                    <input
-                                        type='checkbox'
-                                        checked={showInfoForm}
-                                        onChange={handleInfoToggle}
-                                    />
-                                    <p>I would like to update my personal information</p>
-                                </label>
-                            </fieldset>
+                                
+                                    <label className='toggleCheckbox'>
+                                        <input
+                                            type='checkbox'
+                                            checked={showInfoForm}
+                                            onChange={handleInfoToggle}
+                                        />
+                                        <p>I would like to update my personal information</p>
+                                    </label>
+                                </fieldset>
+                            )}
 
                             {showCredForm && (
                                 <fieldset className='authField'>
@@ -273,28 +312,18 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                     <small>For security purposes, please verify your identity before making any changes to your account credentials.</small>
                                     
                                     {(() => {
-                                        const hasBoth   = !!credData.currentPassword && !!credData.pin;
+                                        const hasBoth = restrictToCredentials
+                                            ? !!credData.identifier && !!credData.pin
+                                            : !!credData.currentPassword && !!credData.pin;
                                         const verified  = isVerified;
                                         const hasNew    = !!(credData.newUsername || credData.newPassword);
                                         const confirmed = hasNew && credData.newPassword === credData.confirmNewPassword;
 
                                         const steps: Step[] = [
-                                            {
-                                                label: 'Enter Credentials',
-                                                status: hasBoth ? 'done' : 'active'
-                                            },
-                                            {
-                                                label: 'Verify Identity',
-                                                status: !hasBoth ? 'pending' : verified ? 'done' : 'active'
-                                            },
-                                            {
-                                                label: 'Set New Details',
-                                                status: !verified ? 'pending' : (hasNew && !confirmed) ? 'active' : hasNew && confirmed ? 'done' : 'active'
-                                            },
-                                            {
-                                                label: 'Save Changes',
-                                                status: !verified || !hasNew ? 'pending' : confirmed ? 'active' : 'pending'
-                                            },
+                                            { label: 'Enter Credentials', status: hasBoth ? 'done' : 'active' },
+                                            { label: 'Verify Identity', status: !hasBoth ? 'pending' : verified ? 'done' : 'active' },
+                                            { label: 'Set New Details', status: !verified ? 'pending' : (hasNew && !confirmed) ? 'active' : hasNew && confirmed ? 'done' : 'active' },
+                                            { label: 'Save Changes', status: !verified || !hasNew ? 'pending' : confirmed ? 'active' : 'pending' },
                                         ];
 
                                         return <ProgressSteps steps={steps} />;
@@ -305,23 +334,37 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                         <small>Enter your current password and PIN exactly as registered. Verification occurs automatically.</small>
 
                                         <div className="accountIdentityWrapper">
-                                            <div className='currentPass'>
-                                                <label>Current Password <span>*</span></label>
-                                                <input
-                                                    name='currentPassword'
-                                                    type={viewCurrentPassword ? 'text' : 'password'}
-                                                    placeholder="Enter your current password"
-                                                    value={credData.currentPassword}
-                                                    autoComplete='current-password'
-                                                    onChange={handleCredChange}
-                                                    required
-                                                />
+                                            {restrictToCredentials ? (
+                                                <div className='username'>
+                                                    <label>Username or Email <span>*</span></label>
+                                                    <input
+                                                        name='identifier'
+                                                        type='text'
+                                                        placeholder="Enter your username or email"
+                                                        value={credData.identifier}
+                                                        onChange={handleCredChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className='currentPass'>
+                                                    <label>Current Password <span>*</span></label>
+                                                    <input
+                                                        name='currentPassword'
+                                                        type={viewCurrentPassword ? 'text' : 'password'}
+                                                        placeholder="Enter your current password"
+                                                        value={credData.currentPassword}
+                                                        autoComplete='current-password'
+                                                        onChange={handleCredChange}
+                                                        required
+                                                    />
 
-                                                <i 
-                                                    className={`fa-solid ${viewCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                                                    onClick={() => setViewCurrentPassword(prev => !prev)}
-                                                />
-                                            </div>
+                                                    <i 
+                                                        className={`fa-solid ${viewCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                                                        onClick={() => setViewCurrentPassword(prev => !prev)}
+                                                    />
+                                                </div>
+                                            )}
                                             
                                             <div className="pin">
                                                 <label>PIN <span>*</span></label>
@@ -405,7 +448,7 @@ function UpdateProfile({ goBack, userRole, userId, onSuccess }: UpdateProfilePro
                                 </fieldset>
                             )}
 
-                            {showInfoForm && (
+                            {showInfoForm && !restrictToCredentials && (
                                 <fieldset className='infoField'>
                                     <legend>Personal Information</legend>
                                     <small>Ensure all required fields are accurately filled in before submitting your changes.</small>
