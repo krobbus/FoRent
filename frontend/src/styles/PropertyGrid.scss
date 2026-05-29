@@ -1,3 +1,6 @@
+#marketplaceContainer main{ min-height: 100vh; }
+.searchKeyword{ font-weight: bold; }
+
 #marketplaceContainer, #propertyContainer{
     display: flex;
     flex-direction: column;
@@ -11,7 +14,6 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
         
         .propertyGrid{
             display: grid;
@@ -185,7 +187,7 @@
                         }
                     }
 
-                    .deleteBtn{
+                    .deleteBtn, .terminateBtn{
                         border-color: $colorRed;
                         background-color: $colorRed;
                         color: $colorWhite;
@@ -194,6 +196,14 @@
                             background-color: $colorWhite;
                             color: $colorRed;
                         }
+                    }
+
+                    .disabledBtn{
+                        background-color: $colorWhite;
+                        color: $colorGray;
+                        cursor: not-allowed;
+                        border-color: $colorGray;
+                        opacity: 0.6;
                     }
                 }
             }

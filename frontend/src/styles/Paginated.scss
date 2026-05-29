@@ -5,7 +5,13 @@
     justify-content: center;
     width: 100%;
 
+    .pageInfo{
+        font-size: $normalSize;
+        color: $colorOrange;
+    }
+
     .pageNav{
+        margin: $margin;
         display: flex;
         flex-direction: row;
         justify-content: center;
@@ -29,11 +35,5 @@
                 background-color: $colorOrange;
             }
         }
-    }
-
-    .pageInfo{
-        margin-top: $margin;
-        font-size: $normalSize;
-        color: $colorOrange;
     }
 }

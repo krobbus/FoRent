@@ -21,6 +21,7 @@ import Marketplace from './pages/Marketplace';
 import Properties from './pages/Properties';
 import ViewDetails from './pages/ViewDetails';
 import PropertyForm from './pages/PropertyForm';
+import TerminateLease from './pages/TerminateLease';
 import ViewProfile from './pages/ViewProfile';
 import UpdateProfile from './pages/UpdateProfile';
 import ApplyRental from './pages/ApplyRental';
@@ -140,6 +141,7 @@ function App() {
         const fromProperty = previousView === 'myProperties' || previousView === 'myRentals';
         return [home, ...(fromProperty ? [propertyParent] : []), { label: 'View Details' }];
       }
+      case 'terminateLease': return [home, propertyParent, { label: 'Terminate Lease' }];
 
       case 'applyRental': {
         const fromProperty = previousView === 'myProperties' || previousView === 'myRentals';
@@ -279,6 +281,11 @@ function App() {
                 setPreviousView(currentView);
                 setCurrentView('paymentHistory');
               }}
+              onTerminateLease={(prop) => {
+                setSelectedProperty(prop);
+                setPreviousView(currentView);
+                setCurrentView('terminateLease');
+              }}
             />
           </>
         );
@@ -311,8 +318,28 @@ function App() {
                 setCurrentView('applyRental'); 
               }}
               onViewRentalApplications={() => setCurrentView('rentalApplications')}
+              onTerminateLease={() => setCurrentView('terminateLease')}
             />
           </>
+        );
+      
+      case 'terminateLease':
+        if (!requireAuth()) return null;
+        
+        return (
+            <>
+                {crumbs}
+                <TerminateLease
+                    property={selectedProperty}
+                    userId={userId || 0}
+                    userRole={userRole}
+                    onSuccess={() => {
+                        setSelectedProperty(null);
+                        setCurrentView(propertyView);
+                    }}
+                    onCancel={() => setCurrentView(previousView)}
+                />
+            </>
         );
 
       case 'addProperty':

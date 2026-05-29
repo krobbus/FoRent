@@ -40,6 +40,7 @@ function Auth({ goBack, setUserRole, setUserId, onForgotPassword }: AuthProps){
                 return;
             }
         }
+
         const { confirmPassword, confirmPin, ...payload } = formData;
         const endpoint = isLogin ? '/api/login' : '/api/register'; 
         try {
@@ -61,7 +62,13 @@ function Auth({ goBack, setUserRole, setUserId, onForgotPassword }: AuthProps){
                     setIsLogin(true);
                 }
             } else {
-                alert("Auth failed!");
+                const data = await response.json();
+
+                if (isLogin) {
+                    alert("Wrong credentials, please try again.");
+                } else {
+                    alert(`Registration failed: ${data.message || 'Please check your input and try again.'}`);
+                }
             }
         } catch (error) {
             console.error("Connection error:", error);

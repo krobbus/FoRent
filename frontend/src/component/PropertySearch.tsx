@@ -2,8 +2,9 @@ import { useState } from 'react';
 import type { FilterState, PropertySearchProps } from '../utils/props';
 import { defaultFilters } from '../utils/filter';
 
-function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: PropertySearchProps) {
+function PropertySearch({ query, onQueryChange, filters, onFiltersChange, renderSearchSummary }: PropertySearchProps) {
     const [showFilters, setShowFilters] = useState(false);
+    const summary = renderSearchSummary ? renderSearchSummary() : null;
 
     const activeFilterCount = [
         filters.priceMin, filters.priceMax, filters.category,
@@ -30,14 +31,16 @@ function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: Prop
 
                 <div className='searchBtnWrapper'>
                     {query && (
-                        <button onClick={() => onQueryChange('')}>✕ Clear</button>
+                        <button className='clearBtn' onClick={() => onQueryChange('')}>✕ Clear</button>
                     )}
 
                     <button
-                        className={`filterToggleBtn ${activeFilterCount > 0 ? 'hasActive' : ''}`}
+                        className={`filterToggleBtn ${showFilters ? 'clicked' : ''}`}
                         onClick={() => setShowFilters(prev => !prev)}
-                    >
-                        ⚙ Filters {activeFilterCount > 0 && <span className='filterBadge'>({activeFilterCount})</span>}
+                    >   
+                        <i className='fa-solid fa-cog' />
+                        <span className='filterText'>Filters</span>
+                        {activeFilterCount > 0 && <span className='filterBadge'>({activeFilterCount})</span>}
                     </button>
                 </div>
             </div>
@@ -51,6 +54,14 @@ function PropertySearch({ query, onQueryChange, filters, onFiltersChange }: Prop
                             <button className='resetFilters' onClick={resetFilters}>Reset All</button>
                         )}
                     </div>
+
+                    {summary && (
+                        <div className='searchSummary'>
+                            <span className='dashedLine' />
+                            <span>{summary}</span>
+                            <span className='dashedLine' />
+                        </div>
+                    )}
                     
                     <div className='filterContainer'>
                         <div className='inputField'>

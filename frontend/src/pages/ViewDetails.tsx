@@ -3,7 +3,7 @@ import { authFetch } from '../utils/api';
 import type { PropertyDataProps, RentalApplicationDataProps, ViewDetailsProps } from '../utils/props';
 import PropertyGallery from '../component/PropertyGallery';
 
-function ViewDetails({ goBack, userRole, userId, property, showHeader, showActions = true, onViewApplyRental, onViewRentalApplications }: ViewDetailsProps) {
+function ViewDetails({ goBack, userRole, userId, property, showHeader, showActions = true, onViewApplyRental, onViewRentalApplications, onTerminateLease }: ViewDetailsProps) {
     const [loading, setLoading] = useState(true);
     const [properties, setProperties] = useState<PropertyDataProps[]>([])
     const [applications, checkApplications] = useState<RentalApplicationDataProps[]>([])
@@ -207,19 +207,39 @@ function ViewDetails({ goBack, userRole, userId, property, showHeader, showActio
                         
                             {showActions && (
                                 <div className='btnWrapper'>
-                                    {property ? (
+                                    {userRole === 'tenant' && (
                                         <>
-                                            {applications.some(app => app.property_id === property.id) ? (
-                                                <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
-                                            ) : (
-                                                <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
+                                            {property.status === 'available' && (
+                                                applications.some(app => app.property_id === property.id)
+                                                    ? <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
+                                                    : <button className='applyBtn' onClick={onViewApplyRental}>Apply Now</button>
                                             )}
 
-                                            <button className='backBtn' onClick={goBack}>Go Back</button>
+                                            {property.status === 'rented' && Number(property.tenant_id) === Number(userId) && (
+                                                <>
+                                                    <button className='applyBtn' onClick={onViewRentalApplications}>View Application</button>
+                                                    <button className='terminateBtn' onClick={onTerminateLease}>Terminate Lease</button>
+                                                </>
+                                            )}
+
+                                            {property.status === 'rented' && Number(property.tenant_id) !== Number(userId) && (
+                                                <button className='disabledBtn' disabled>This property is currently occupied.</button>
+                                            )}
                                         </>
-                                    ) : (
-                                        <button className='backBtn' onClick={goBack}>Go Back</button>
                                     )}
+
+                                    {userRole === 'landlord' && (
+                                        <>
+                                            {property.status === 'available' && (
+                                                <button className='applyBtn' onClick={onViewRentalApplications}>View Applications</button>
+                                            )}
+                                            {property.status === 'rented' && (
+                                                <button className='applyBtn' onClick={onViewRentalApplications}>View Tenant Application</button>
+                                            )}
+                                        </>
+                                    )}
+
+                                    <button className='backBtn' onClick={goBack}>Go Back</button>
                                 </div>
                             )}
                         </>

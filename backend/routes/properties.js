@@ -111,4 +111,31 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+router.patch('/:id/terminate', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { tenant_id, reason } = req.body;
+
+    try {
+        const propertyCheck = await req.pool.query('SELECT * FROM properties WHERE id = $1', [id]);
+
+        if (propertyCheck.rows.length === 0) return res.status(404).json({ error: "Property not found" });
+
+        const property = propertyCheck.rows[0];
+        if (property.status !== 'rented') return res.status(400).json({ error: "Property is not currently rented" });
+        if (Number(property.tenant_id) !== Number(tenant_id)) return res.status(403).json({ error: "You are not the tenant of this property" });
+
+        await req.pool.query(
+            `UPDATE properties 
+             SET status = 'available', tenant_id = NULL 
+             WHERE id = $1`,
+            [id]
+        );
+
+        res.json({ message: "Lease terminated successfully" });
+    } catch (err) {
+        console.error("Termination error:", err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 module.exports = router;

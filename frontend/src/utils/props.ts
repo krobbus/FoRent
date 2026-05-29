@@ -65,6 +65,7 @@ export interface PropertiesProps {
     onCreateRequest: (property: PropertyDataProps) => void;
     onUpdateProperty: (property: PropertyDataProps) => void;
     onViewPayment: (property: PropertyDataProps) => void;
+    onTerminateLease: (property: PropertyDataProps) => void;
 }
 
 export interface PropertyDataProps {
@@ -119,6 +120,7 @@ export interface PropertySearchProps {
     filters: FilterState;
     onQueryChange: (q: string) => void;
     onFiltersChange: (f: FilterState) => void;
+    renderSearchSummary?: () => React.ReactNode;
 }
 
 export interface PaginationProps {
@@ -136,6 +138,15 @@ export interface ViewDetailsProps {
     showActions?: boolean;
     onViewApplyRental?: () => void;
     onViewRentalApplications?: () => void;
+    onTerminateLease?: () => void;
+}
+
+export interface TerminateLeaseProps {
+    property: any;
+    userId: number;
+    userRole: Role;
+    onSuccess: () => void;
+    onCancel: () => void;
 }
 
 export interface AddPropertyProps {

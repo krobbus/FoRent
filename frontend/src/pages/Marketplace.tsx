@@ -111,22 +111,14 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                 onQueryChange={handleQueryChange}
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
+                renderSearchSummary={renderSearchSummary}
             />
-            {renderSearchSummary()}
 
             <main>
                 {loading ? (
                     <p className='loadingText'>Loading marketplace...</p>
                 ) : (
                     <>
-                        {filtered.length > 0 && (
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                onPageChange={setCurrentPage}
-                            />
-                        )}
-                        
                         <div className='propertyGrid'>
                             {paginated.map((p: PropertyDataProps) => (
                                 <div key={p.id} className='propertyCard'>
@@ -216,12 +208,22 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                     </section>
 
                                     <section className='actionBtnWrapper'>
-                                        {applications.some(app => app.property_id === p.id) ?
-                                            <button className='applyBtn' onClick={onViewRentalApplications}>Check Application</button>
-                                            :
-                                            <button className='applyBtn' onClick={() => onViewApplyRental(p)}>Apply Now</button>
-                                        }
-                                        
+                                        {p.status === 'available' ? (
+                                            <>
+                                                {applications.some(app => app.property_id === p.id) ? (
+                                                    <button className='applyBtn' onClick={onViewRentalApplications}>
+                                                        Check Application
+                                                    </button>
+                                                ) : (
+                                                    <button className='applyBtn' onClick={() => onViewApplyRental(p)}>
+                                                        Apply Now
+                                                    </button>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <button className='disabledBtn' disabled>Currently Occupied</button>
+                                        )}
+
                                         <button className='detailBtn' onClick={() => onViewDetails(p)}>
                                             View Details
                                         </button>
@@ -229,6 +231,14 @@ function Marketplace({ userId, userRole, onViewDetails, onViewApplyRental, onVie
                                 </div>
                             ))}
                         </div>
+
+                        {filtered.length > 0 && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                            />
+                        )}
                     </>
                 )}
             </main>

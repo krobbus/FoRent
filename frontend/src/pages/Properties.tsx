@@ -8,7 +8,7 @@ import { usePagination } from '../utils/pagination';
 import PropertySearch from '../component/PropertySearch';
 import Pagination from '../component/Pagination';
 
-function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest, onUpdateProperty, onViewPayment }: PropertiesProps) {
+function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest, onUpdateProperty, onViewPayment, onTerminateLease }: PropertiesProps) {
     const [properties, setProperties] = useState<PropertyDataProps[]>([]);
     const [loading, setLoading] = useState(true);
     const landlordProperties = properties.filter(p => Number(p.landlord_id) === Number(userId));
@@ -122,8 +122,8 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                 onQueryChange={handleQueryChange}
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
+                renderSearchSummary={renderSearchSummary}
             />
-            {renderSearchSummary()}
             
             <main>
                 {loading ? (
@@ -132,219 +132,240 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
                     <>
                         {userRole === 'landlord' && (
                             <section className='landlordView'>
-                                {filtered.length > 0 && (
-                                    <Pagination
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        onPageChange={setCurrentPage}
-                                    />
-                                )}
+                                {landlordProperties.length === 0 ? (
+                                    <p className='loadingText'>You have no current rentals. Start looking for your next home!</p>
+                                ) : (
+                                    <>
+                                        <div className='propertyGrid'>
+                                            {paginated.map(p => (
+                                                <div key={p.id} className='propertyCard'>
+                                                    <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
 
-                                <div className='propertyGrid'>
-                                    {paginated.map(p => (
-                                        <div key={p.id} className='propertyCard'>
-                                            <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
+                                                    <div className='galleryWrapper'>
+                                                        <PropertyGallery
+                                                            images={Array.isArray(p.images) 
+                                                                ? p.images 
+                                                                : JSON.parse(p.images || '[]'
+                                                            )}
+                                                        />
 
-                                            <div className='galleryWrapper'>
-                                                <PropertyGallery
-                                                    images={Array.isArray(p.images) 
-                                                        ? p.images 
-                                                        : JSON.parse(p.images || '[]'
-                                                    )}
-                                                />
+                                                        <p id='statusLabel'>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</p>
+                                                    </div>
 
-                                                <p id='statusLabel'>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</p>
-                                            </div>
+                                                    <div className='propertyInfo'>
+                                                        <h2>{p.property_name}</h2>
+                                                        <p>{p.address ? `${p.address}` : 'No address available'}</p>
+                                                        <p>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                    </div>
 
-                                            <div className='propertyInfo'>
-                                                <h2>{p.property_name}</h2>
-                                                <p>{p.address ? `${p.address}` : 'No address available'}</p>
-                                                <p>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
-                                            </div>
+                                                    <div className='propertyDetails'>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Available Rooms</p>
 
-                                            <div className='propertyDetails'>
-                                                <div className='detailSection'>
-                                                    <p className='detailSectionLabel'>Available Rooms</p>
+                                                            <div className='pillRow'>
+                                                                {(() => {
+                                                                    const rooms = [
+                                                                        p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                        p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                        p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                        ...(p.other_rooms 
+                                                                            ? p.other_rooms.split(',').map((r: string) => r.trim()).filter(Boolean)
+                                                                            : []
+                                                                        )
+                                                                    ].filter(Boolean);
 
-                                                    <div className='pillRow'>
-                                                        {(() => {
-                                                            const rooms = [
-                                                                p.bedroom_count > 0 ? 'Bedroom' : '',
-                                                                p.kitchen_count > 0 ? 'Kitchen' : '',
-                                                                p.bathroom_count > 0 ? 'Bathroom' : '',
-                                                                ...(p.other_rooms 
-                                                                    ? p.other_rooms.split(',').map((r: string) => r.trim()).filter(Boolean)
-                                                                    : []
-                                                                )
-                                                            ].filter(Boolean);
+                                                                    const visible = rooms.slice(0, 2);
+                                                                    const remaining = rooms.length - 2;
 
-                                                            const visible = rooms.slice(0, 2);
-                                                            const remaining = rooms.length - 2;
+                                                                    return rooms.length > 0
+                                                                        ?
+                                                                        <>
+                                                                            {visible.map((room, i) => <span key={i} className='pill'>{room}</span>)}
+                                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                                        </>
+                                                                        : <span className='pill'>No rooms listed</span>;
+                                                                })()}
+                                                            </div>
+                                                        </div>
 
-                                                            return rooms.length > 0
-                                                                ?
-                                                                <>
-                                                                    {visible.map((room, i) => <span key={i} className='pill'>{room}</span>)}
-                                                                    {remaining > 0 && <span className='pill'>+{remaining}</span>}
-                                                                </>
-                                                                : <span className='pill'>No rooms listed</span>;
-                                                        })()}
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Occupancy</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {p.pet_count > 0 && <span className='pill'>Pet-friendly</span>}
+                                                                <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Amenities</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {(() => {
+                                                                    if (!Array.isArray(p.amenities) || p.amenities.length === 0)
+                                                                        return <span className='pill'>No amenities listed</span>;
+
+                                                                    const all = p.amenities
+                                                                        .flatMap(a => a.split(','))
+                                                                        .map(a => a.trim())
+                                                                        .filter(Boolean);
+
+                                                                    const visible = all.slice(0, 2);
+                                                                    const remaining = all.length - 2;
+
+                                                                    return (
+                                                                        <>
+                                                                            {visible.map((a, i) => <span key={i} className='pill'>{a}</span>)}
+                                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                                        </>
+                                                                    );
+                                                                })()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='actionBtnWrapper'>
+                                                        <button className='updateBtn' onClick={() => onUpdateProperty(p)}>Update Details</button>
+                                                        {p.status !== 'rented' && (
+                                                            <>
+                                                                <button className='updateBtn' onClick={() => onUpdateProperty(p)}>Update Details</button>
+                                                                <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>Delete Property</button>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
-
-                                                <div className='detailSection'>
-                                                    <p className='detailSectionLabel'>Occupancy</p>
-                                                    
-                                                    <div className='pillRow'>
-                                                        {p.pet_count > 0 && <span className='pill'>Pet-friendly</span>}
-                                                        <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className='detailSection'>
-                                                    <p className='detailSectionLabel'>Amenities</p>
-                                                    
-                                                    <div className='pillRow'>
-                                                        {(() => {
-                                                            if (!Array.isArray(p.amenities) || p.amenities.length === 0)
-                                                                return <span className='pill'>No amenities listed</span>;
-
-                                                            const all = p.amenities
-                                                                .flatMap(a => a.split(','))
-                                                                .map(a => a.trim())
-                                                                .filter(Boolean);
-
-                                                            const visible = all.slice(0, 2);
-                                                            const remaining = all.length - 2;
-
-                                                            return (
-                                                                <>
-                                                                    {visible.map((a, i) => <span key={i} className='pill'>{a}</span>)}
-                                                                    {remaining > 0 && <span className='pill'>+{remaining}</span>}
-                                                                </>
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className='actionBtnWrapper'>
-                                                <button className='updateBtn' onClick={() => onUpdateProperty(p)}>Update Details</button>
-                                                <button className='detailBtn' onClick={() => onViewDetails(p)}>View Details</button>
-                                                <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>Delete Property</button>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+
+                                        {filtered.length > 0 && (
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                onPageChange={setCurrentPage}
+                                            />
+                                        )}
+                                    </>
+                                )}
                             </section>
                         )}
 
                         {userRole === 'tenant' && (
-                            <section className='tenantView'>  
-                                {filtered.length > 0 && (
-                                    <Pagination
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        onPageChange={setCurrentPage}
-                                    />
-                                )}
+                            <section className='tenantView'>
+                                {tenantRentals.length === 0 ? (
+                                    <p className='loadingText'>You have no current rentals. Start looking for your next home!</p>
+                                ) : (
+                                    <>
+                                        <div className='propertyGrid'>
+                                            {tenantRentals.map(p => (
+                                                <div key={p.id} className='propertyCard rented'>
+                                                    <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
 
-                                <div className='propertyGrid'>
-                                    {tenantRentals.map(p => (
-                                        <div key={p.id} className='propertyCard rented'>
-                                            <p id='priceLabel'>₱ {Number(p.price).toLocaleString()} /mo</p>
+                                                    <div className='galleryWrapper'>
+                                                        <PropertyGallery
+                                                            images={Array.isArray(p.images) 
+                                                                ? p.images 
+                                                                : JSON.parse(p.images || '[]'
+                                                            )}
+                                                        />
 
-                                            <div className='galleryWrapper'>
-                                                <PropertyGallery
-                                                    images={Array.isArray(p.images) 
-                                                        ? p.images 
-                                                        : JSON.parse(p.images || '[]'
-                                                    )}
-                                                />
-
-                                                <p id='statusLabel'>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</p>
-                                            </div>
-                                            
-                                            <div className='propertyInfo'>
-                                                <h2>{p.property_name}</h2>
-                                                <p>{p.address ? `${p.address}` : 'No address available'}</p>
-                                                <p>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
-                                            </div>
-
-                                            <div className='propertyDetails'>
-                                                <div className='detailSection'>
-                                                    <p className='detailSectionLabel'>Available Rooms</p>
-
-                                                    <div className='pillRow'>
-                                                        {(() => {
-                                                            const rooms = [
-                                                                p.bedroom_count > 0 ? 'Bedroom' : '',
-                                                                p.kitchen_count > 0 ? 'Kitchen' : '',
-                                                                p.bathroom_count > 0 ? 'Bathroom' : '',
-                                                                ...(p.other_rooms 
-                                                                    ? p.other_rooms.split(',').map((r: string) => r.trim()).filter(Boolean)
-                                                                    : []
-                                                                )
-                                                            ].filter(Boolean);
-
-                                                            const visible = rooms.slice(0, 2);
-                                                            const remaining = rooms.length - 2;
-
-                                                            return rooms.length > 0
-                                                                ?
-                                                                <>
-                                                                    {visible.map((room, i) => <span key={i} className='pill'>{room}</span>)}
-                                                                    {remaining > 0 && <span className='pill'>+{remaining}</span>}
-                                                                </>
-                                                                : <span className='pill'>No rooms listed</span>;
-                                                        })()}
+                                                        <p id='statusLabel'>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</p>
                                                     </div>
-                                                </div>
-
-                                                <div className='detailSection'>
-                                                    <p className='detailSectionLabel'>Occupancy</p>
                                                     
-                                                    <div className='pillRow'>
-                                                        {p.pets_allowed && <span className='pill'>Pet-friendly</span>}
-                                                        <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
+                                                    <div className='propertyInfo'>
+                                                        <h2>{p.property_name}</h2>
+                                                        <p>{p.address ? `${p.address}` : 'No address available'}</p>
+                                                        <p>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</p>
+                                                    </div>
+
+                                                    <div className='propertyDetails'>
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Available Rooms</p>
+
+                                                            <div className='pillRow'>
+                                                                {(() => {
+                                                                    const rooms = [
+                                                                        p.bedroom_count > 0 ? 'Bedroom' : '',
+                                                                        p.kitchen_count > 0 ? 'Kitchen' : '',
+                                                                        p.bathroom_count > 0 ? 'Bathroom' : '',
+                                                                        ...(p.other_rooms 
+                                                                            ? p.other_rooms.split(',').map((r: string) => r.trim()).filter(Boolean)
+                                                                            : []
+                                                                        )
+                                                                    ].filter(Boolean);
+
+                                                                    const visible = rooms.slice(0, 2);
+                                                                    const remaining = rooms.length - 2;
+
+                                                                    return rooms.length > 0
+                                                                        ?
+                                                                        <>
+                                                                            {visible.map((room, i) => <span key={i} className='pill'>{room}</span>)}
+                                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                                        </>
+                                                                        : <span className='pill'>No rooms listed</span>;
+                                                                })()}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Occupancy</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {p.pets_allowed && <span className='pill'>Pet-friendly</span>}
+                                                                <span className='pill'>{getOccupancyLabel(p.max_occupants)}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='detailSection'>
+                                                            <p className='detailSectionLabel'>Amenities</p>
+                                                            
+                                                            <div className='pillRow'>
+                                                                {(() => {
+                                                                    if (!Array.isArray(p.amenities) || p.amenities.length === 0)
+                                                                        return <span className='pill'>No amenities listed</span>;
+
+                                                                    const all = p.amenities
+                                                                        .flatMap(a => a.split(','))
+                                                                        .map(a => a.trim())
+                                                                        .filter(Boolean);
+
+                                                                    const visible = all.slice(0, 2);
+                                                                    const remaining = all.length - 2;
+
+                                                                    return (
+                                                                        <>
+                                                                            {visible.map((a, i) => <span key={i} className='pill'>{a}</span>)}
+                                                                            {remaining > 0 && <span className='pill'>+{remaining}</span>}
+                                                                        </>
+                                                                    );
+                                                                })()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='actionBtnWrapper'>
+                                                        <button className='detailBtn' onClick={() => onViewDetails(p)}>View Details</button>
+                                                        {p.status === 'rented' && (
+                                                            <>
+                                                                <button className='paymentBtn' onClick={() => onViewPayment(p)}>Check Payment</button>
+                                                                <button className='requestBtn' onClick={() => onCreateRequest(p)}>Request Maintenance</button>
+                                                                <button className='terminateBtn' onClick={() => onTerminateLease(p)}>Terminate Lease</button>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
-
-                                                <div className='detailSection'>
-                                                    <p className='detailSectionLabel'>Amenities</p>
-                                                    
-                                                    <div className='pillRow'>
-                                                        {(() => {
-                                                            if (!Array.isArray(p.amenities) || p.amenities.length === 0)
-                                                                return <span className='pill'>No amenities listed</span>;
-
-                                                            const all = p.amenities
-                                                                .flatMap(a => a.split(','))
-                                                                .map(a => a.trim())
-                                                                .filter(Boolean);
-
-                                                            const visible = all.slice(0, 2);
-                                                            const remaining = all.length - 2;
-
-                                                            return (
-                                                                <>
-                                                                    {visible.map((a, i) => <span key={i} className='pill'>{a}</span>)}
-                                                                    {remaining > 0 && <span className='pill'>+{remaining}</span>}
-                                                                </>
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className='actionBtnWrapper'>
-                                                <button className='detailBtn' onClick={() => onViewDetails(p)}>View Details</button>
-                                                <button className='paymentBtn' onClick={() => onViewPayment(p)}>Check Payment</button>
-                                                <button className='requestBtn' onClick={() => onCreateRequest(p)}>Request Maintenance</button>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+
+                                        {filtered.length > 0 && (
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                onPageChange={setCurrentPage}
+                                            />
+                                        )}
+                                    </>
+                                )}
                             </section>
                         )}
 

@@ -13,11 +13,13 @@
         justify-content: center;
         align-items: center;
         gap: $gap;
+        height: 8vmin;
 
         input{
             border: 0.4vmin solid $colorOrange;
             font-size: $smallSize;
             padding: 2vmin 5vmin;
+            height: 100%;
             width: 100vmin;
         }
 
@@ -28,18 +30,25 @@
             align-items: center;
             gap: $gap;
 
-            button{
+            .filterToggleBtn, .clearBtn{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: $gap;
                 border: 0.4vmin solid $colorOrange;
                 font-size: $normalSize;
                 font-weight: bold;
-                color: $colorWhite;
-                background-color: $colorOrange;
+                color: $colorOrange;
+                background-color: $colorWhite;
                 cursor: pointer;
-                padding: 1.5vmin 5vmin;
+                height: 8vmin;
+                width: 25vmin;
 
-                &:hover{
-                    color: $colorOrange;
-                    background-color: $colorWhite;
+                &.clicked{
+                    color: $colorWhite;
+                    background-color: $colorOrange;
+
+                    i { animation: spinIcon 1.5s linear infinite; }
                 }
             }
         }
@@ -102,12 +111,37 @@
                 }
             }
 
+            .searchSummary{
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: $gap;
+                font-size: $normalSize;
+                text-align: center;
+                color: $colorWhite;
+                width: 100%;
+                
+                .dashedLine{
+                    flex: 1;
+                    height: 0.1vmin;
+                    background: repeating-linear-gradient(
+                        to right,
+                        $colorWhite,
+                        $colorWhite 0.5vmin,
+                        transparent 0.5vmin,
+                        transparent 1vmin
+                    );
+                }
+            }
+
             .filterContainer{
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
                 align-items: flex-start;
                 gap: 6vmin;
+                margin: $margin 0;
 
                 label, span{ font-size: $normalSize; }
 
@@ -209,4 +243,9 @@
             }
         }
     }
+}
+
+@keyframes spinIcon {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

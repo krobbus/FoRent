@@ -25,6 +25,8 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 
     return (
         <div id='paginationWrapper'>
+            <span className='pageInfo'>Page {currentPage} of {totalPages}</span>
+
             <div className='pageNav'>
                 <button
                     className='pageBtn prevNext'
@@ -56,10 +58,6 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
                     Next ›
                 </button>
             </div>
-
-            <span className='pageInfo'>
-                Page {currentPage} of {totalPages}
-            </span>
         </div>
     );
 }
