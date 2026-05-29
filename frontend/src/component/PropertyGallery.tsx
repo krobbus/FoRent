@@ -49,9 +49,11 @@ function PropertyGallery({ images, variant = 'card' }: { images: string[], varia
                     <div className='lightboxOverlay' onClick={() => setLightboxOpen(false)}>
                         <div className='lightboxContent' onClick={e => e.stopPropagation()}>
                             <button className='lightboxClose' onClick={() => setLightboxOpen(false)}>✕</button>
+
                             <button className='lightboxPrev' onClick={prev}>‹</button>
                             <img src={images[activeIndex]} alt={`Property ${activeIndex + 1}`} />
                             <button className='lightboxNext' onClick={next}>›</button>
+                            
                             <div className='lightboxCounter'>{activeIndex + 1} / {images.length}</div>
                             <div className='lightboxThumbs'>
                                 {images.map((img, i) => (
