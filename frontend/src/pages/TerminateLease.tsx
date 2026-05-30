@@ -20,7 +20,7 @@ function TerminateLease({ property, userId, userRole, onSuccess, onCancel }: Ter
         setSubmitting(true);
         try {
             const response = await authFetch(
-                `http://localhost:5000/api/properties/${property.id}/terminate`,
+                `${import.meta.env.VITE_API_URL}/api/properties/${property.id}/terminate`,
                 {
                     method: 'PATCH',
                     body: JSON.stringify({ tenant_id: userId, reason }),

@@ -13,7 +13,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
         setLoading(true);
 
         try{
-            const response = await authFetch(`http://localhost:5000/api/maintenance/view?userId=${userId}&userRole=${userRole}`)
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/maintenance/view?userId=${userId}&userRole=${userRole}`)
             const data = await response.json();
             setRequests(Array.isArray(data) ? data : []);
         } catch(error) {
@@ -25,7 +25,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
 
     const handleViewDetails = async (propertyId: number) => {
         try {
-            const response = await authFetch(`http://localhost:5000/api/properties/${propertyId}`);
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/properties/${propertyId}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 onViewDetails(propertyData);
@@ -37,7 +37,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
 
     const handleEditRequest = async (req: MaintenanceRequestsDataProps) => {
         try {
-            const response = await authFetch(`http://localhost:5000/api/properties/${req.property_id}`);
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/properties/${req.property_id}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 setEditingProperty(propertyData);
@@ -76,7 +76,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
         if (!confirmed) return;
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/maintenance/${reqId}/status`,
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/maintenance/${reqId}/status`,
                 {
                     method: 'PATCH',
                     body: JSON.stringify({ status: newStatus }),
@@ -102,7 +102,7 @@ function MaintenanceRequests({ goBack, userId, userRole, onViewDetails }: Mainte
         if (!confirmed) return;
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/maintenance/${reqId}`, {
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/maintenance/${reqId}`, {
                 method: 'DELETE',
             });
 

@@ -4,6 +4,9 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: 'dist'
+  },
   css: {
     preprocessorOptions: {
       scss: {

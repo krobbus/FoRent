@@ -13,7 +13,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
         setLoading(true);
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/applications/view?userId=${userId}&userRole=${userRole}`);
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/applications/view?userId=${userId}&userRole=${userRole}`);
             const data = await response.json();
             setApplications(Array.isArray(data) ? data : []);
         } catch (error) {
@@ -25,7 +25,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
 
     const handleViewDetails = async (propertyId: number) => {
         try {
-            const response = await authFetch(`http://localhost:5000/api/properties/${propertyId}`);
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/properties/${propertyId}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 onViewDetails(propertyData);
@@ -37,7 +37,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
 
     const handleEditApplication = async (app: RentalApplicationDataProps) => {
         try {
-            const response = await authFetch(`http://localhost:5000/api/properties/${app.property_id}`);
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/properties/${app.property_id}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 setEditingProperty(propertyData);
@@ -73,7 +73,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
         if (!confirmed) return;
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/applications/${appId}/status`,
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/applications/${appId}/status`,
                 {
                     method: 'PATCH',
                     body: JSON.stringify({ status: newStatus }),
@@ -99,7 +99,7 @@ function RentalApplications({ goBack, userId, userRole, onViewDetails }: RentalA
         if (!confirmed) return;
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/applications/${appId}`, {
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/applications/${appId}`, {
                 method: 'DELETE',
             });
 

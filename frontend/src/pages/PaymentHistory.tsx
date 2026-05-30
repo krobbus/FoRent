@@ -21,7 +21,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
         setLoading(true);
         try {
             const response = await authFetch(
-                `http://localhost:5000/api/payment/view?userId=${userId}&userRole=${userRole}`
+                `${import.meta.env.VITE_API_URL}/api/payment/view?userId=${userId}&userRole=${userRole}`
             );
             const data = await response.json();
             setPayments(Array.isArray(data) ? data : []);
@@ -42,7 +42,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
 
             try {
                 const response = await authFetch(
-                    `http://localhost:5000/api/properties/rented?userId=${userId}`
+                    `${import.meta.env.VITE_API_URL}/api/properties/rented?userId=${userId}`
                 );
                 const data = await response.json();
                 setRentedProperties(Array.isArray(data) ? data : []);
@@ -77,7 +77,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
 
     const handleViewDetails = async (propertyId: number) => {
         try {
-            const response = await authFetch(`http://localhost:5000/api/properties/${propertyId}`);
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/properties/${propertyId}`);
             if (response.ok) {
                 const propertyData = await response.json();
                 onViewDetails(propertyData);
@@ -96,7 +96,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
         const selectedProperty = rentedProperties.find(p => p.id === Number(formData.property_id));
 
         try {
-            const response = await authFetch('http://localhost:5000/api/payment/create-checkout-session', {
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/payment/create-checkout-session`, {
                 method: 'POST',
                 body: JSON.stringify({
                     property_id: formData.property_id,
@@ -129,7 +129,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
 
         try {
             const response = await authFetch(
-                `http://localhost:5000/api/payment/${paymentId}/status`,
+                `${import.meta.env.VITE_API_URL}/api/payment/${paymentId}/status`,
                 { method: 'PATCH', body: JSON.stringify({ status: newStatus }) }
             );
 
@@ -152,7 +152,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
 
         try {
             const response = await authFetch(
-                `http://localhost:5000/api/payment/${paymentId}`,
+                `${import.meta.env.VITE_API_URL}/api/payment/${paymentId}`,
                 { method: 'DELETE' }
             );
             if (response.ok) {
@@ -170,7 +170,7 @@ function PaymentHistory({ goBack, userId, userRole, onViewDetails }: PaymentHist
         e.preventDefault();
         setSubmitting(true);
         try {
-            const response = await authFetch('http://localhost:5000/api/payment', {
+            const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/payment`, {
                 method: 'POST',
                 body: JSON.stringify({
                     ...formData,

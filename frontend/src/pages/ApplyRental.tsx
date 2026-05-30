@@ -28,7 +28,7 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await authFetch(`http://localhost:5000/api/tenants/${userId}`);
+                const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/tenants/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setProfile(data);
@@ -62,8 +62,8 @@ function ApplyRental({ property, userId, userRole, onSuccess, onCancel, editMode
 
         try {
             const url = editMode
-                ? `http://localhost:5000/api/applications/${existingApplication?.id}`
-                : 'http://localhost:5000/api/applications';
+                ? `${import.meta.env.VITE_API_URL}/api/applications/${existingApplication?.id}`
+                : `${import.meta.env.VITE_API_URL}/api/applications`;
             
             const method = editMode ? 'PATCH' : 'POST';
             const body = editMode ? applicationData : {

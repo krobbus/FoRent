@@ -10,7 +10,7 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await authFetch(`http://localhost:5000/api/users/${userId}`);
+                const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}`);
                 if (!response.ok) return;
 
                 const data = await response.json();
@@ -30,7 +30,7 @@ function ViewProfile({ goBack, userRole, userId, onUpdateProfile }: ViewProfileP
             const endpoint = userRole === 'landlord' ? `/api/landlords` : `/api/tenants`;
 
             try {
-                const response = await authFetch(`http://localhost:5000${endpoint}/${userId}`);
+                const response = await authFetch(`${import.meta.env.VITE_API_URL}${endpoint}/${userId}`);
                 if (!response.ok) return;
 
                 const data = await response.json();

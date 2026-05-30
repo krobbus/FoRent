@@ -104,8 +104,8 @@ function PropertyForm(props: PropertyFormProps) {
 
         try {
             const url = isEdit
-                ? `http://localhost:5000/api/properties/${property!.id}`
-                : 'http://localhost:5000/api/properties';
+                ? `${import.meta.env.VITE_API_URL}/api/properties/${property!.id}`
+                : `${import.meta.env.VITE_API_URL}/api/properties`;
 
             const response = await authFetch(url, {
                 method: isEdit ? 'PATCH' : 'POST',

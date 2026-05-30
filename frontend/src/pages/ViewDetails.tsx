@@ -11,7 +11,7 @@ function ViewDetails({ goBack, userRole, userId, property, showHeader, showActio
     useEffect(() => {
         const fetchProperties = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/properties');
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/properties`);
                 const data = await response.json();
                 setProperties(data);
             } catch (error) {
@@ -34,7 +34,7 @@ function ViewDetails({ goBack, userRole, userId, property, showHeader, showActio
             setLoading(true);
 
             try {
-                const response = await authFetch(`http://localhost:5000/api/applications/view?userId=${userId}&userRole=${userRole}`);
+                const response = await authFetch(`${import.meta.env.VITE_API_URL}/api/applications/view?userId=${userId}&userRole=${userRole}`);
                 const data = await response.json();
                 checkApplications(Array.isArray(data) ? data : []);
             } catch (error) {
@@ -50,7 +50,7 @@ function ViewDetails({ goBack, userRole, userId, property, showHeader, showActio
     useEffect(() => {
         if (!property?.id) return;
 
-        fetch(`http://localhost:5000/api/analytics/properties/${property.id}/view`, {
+        fetch(`${import.meta.env.VITE_API_URL}/api/analytics/properties/${property.id}/view`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ viewer_user_id: userId || null }),

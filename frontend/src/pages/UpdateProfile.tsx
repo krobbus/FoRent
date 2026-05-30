@@ -69,7 +69,7 @@ function UpdateProfile({ goBack, userRole, userId, restrictToCredentials = false
             const endpoint = userRole === 'landlord' ? '/api/landlords' : '/api/tenants';
             
             try {
-                const response = await authFetch(`http://localhost:5000${endpoint}/${userId}`);
+                const response = await authFetch(`${import.meta.env.VITE_API_URL}${endpoint}/${userId}`);
                 if (!response.ok) return;
 
                 const data = await response.json();
@@ -210,8 +210,8 @@ function UpdateProfile({ goBack, userRole, userId, restrictToCredentials = false
 
             if (showCredForm) {
                 const endpoint = restrictToCredentials
-                    ? 'http://localhost:5000/api/users/reset/credentials'
-                    : `http://localhost:5000/api/users/${userId}/credentials`;
+                    ? `${import.meta.env.VITE_API_URL}/api/users/reset/credentials`
+                    : `${import.meta.env.VITE_API_URL}/api/users/${userId}/credentials`;
 
                 const body = restrictToCredentials
                     ? {
@@ -238,7 +238,7 @@ function UpdateProfile({ goBack, userRole, userId, restrictToCredentials = false
             if (showInfoForm) {
                 const endpoint = userRole === 'landlord' ? '/api/landlords' : '/api/tenants';
                 requests.push(
-                    authFetch(`http://localhost:5000${endpoint}/${userId}`, {
+                    authFetch(`${import.meta.env.VITE_API_URL}${endpoint}/${userId}`, {
                         method: 'PATCH',
                         body: JSON.stringify(infoData),
                     })

@@ -94,7 +94,7 @@ function App() {
   };
 
   const handleLogout = useCallback(async () => {
-    await fetch('http://localhost:5000/api/logout', {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/logout`, {
       method: 'POST',
       credentials: 'include'
     });
@@ -546,7 +546,7 @@ function App() {
       const endpoint = userRole === 'landlord' ? `/api/landlords` : `/api/tenants`;
 
       try {
-        const response = await authFetch(`http://localhost:5000${endpoint}/${userId}`);
+        const response = await authFetch(`${import.meta.env.VITE_API_URL}${endpoint}/${userId}`);
         if (!response.ok) return;
 
         const data = await response.json();
