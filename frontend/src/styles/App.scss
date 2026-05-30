@@ -126,6 +126,17 @@ body{
             }
         }
 
+        .deleteBtn{
+            border-color: $colorRed;
+            background-color: $colorWhite;
+            color: $colorRed;
+
+            &:hover{
+                background-color: $colorRed;
+                color: $colorWhite;
+            }
+        }
+
         .backBtn, .cancelBtn, .terminateBtn{
             background-color: $colorRed;
             color: $colorWhite;

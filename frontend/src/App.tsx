@@ -10,6 +10,7 @@ import '../src/styles/PropertySearch.scss';
 import '../src/styles/PropertyGallery.scss';
 import '../src/styles/PropertyGrid.scss';
 import '../src/styles/PropertyForm.scss';
+import '../src/styles/TerminateLease.scss';
 import '../src/styles/ViewDetails.scss';
 import '../src/styles/ViewProfile.scss';
 import '../src/styles/UpdateProfile.scss';

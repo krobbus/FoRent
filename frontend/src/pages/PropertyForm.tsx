@@ -5,15 +5,12 @@ import type { AddPropertyProps, UpdatePropertyProps, PropertyFormProps } from '.
 function PropertyForm(props: PropertyFormProps) {
     const isEdit = props.mode === 'update';
     const property = isEdit ? props.property : null;
-    const existingAmenities = Array.isArray(property?.amenities)
-        ? (property.amenities as unknown as string[]) : [];
-    const knownAmenities = ['Wifi', 'Aircon', 'Parking'];
     const [images, setImages] = useState<string[]>(() => {
         if (!isEdit || !property?.images) return [];
-        return Array.isArray(property.images)
-            ? property.images
-            : JSON.parse(property.images || '[]');
+        return Array.isArray(property.images) ? property.images : JSON.parse(property.images || '[]');
     });
+    const existingAmenities = Array.isArray(property?.amenities) ? (property.amenities as unknown as string[]) : [];
+    const knownAmenities = ['Wifi', 'Aircon', 'Parking'];
 
     const [formData, setFormData] = useState({
         name: property?.property_name || '',
