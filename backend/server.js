@@ -14,13 +14,20 @@ app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const pool = new Pool({
-    user: process.env.USER,
-    host: 'localhost',
-    database: process.env.DB,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT,
-});
+const pool = new Pool(
+    process.env.NODE_ENV === 'production'
+        ? {
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false }
+          }
+        : {
+            user: process.env.USER,
+            host: 'localhost',
+            database: process.env.DB,
+            password: process.env.DB_PASS,
+            port: process.env.DB_PORT,
+          }
+);
 
 app.use((req, _res, next) => {
     req.pool = pool;
@@ -35,4 +42,8 @@ app.use('/api/applications', require('./routes/applications'));
 app.use('/api/maintenance', require('./routes/maintenance'));
 app.use('/api/payment', require('./routes/payment'));
 
-app.listen(process.env.SERVER_PORT, () => console.log('Server running'));
+const port = process.env.NODE_ENV === 'production' 
+    ? process.env.RENDER_SERVER_PORT 
+    : process.env.LOCAL_SERVER_PORT;
+
+app.listen(port, () => console.log('Server running'));
