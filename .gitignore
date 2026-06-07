@@ -4,4 +4,7 @@ node_modules/
 dist/
 build/
 database.txt
+/backend .env
+backend/ .env
+/backend
 backend/
