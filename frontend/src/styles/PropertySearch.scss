@@ -21,7 +21,8 @@
             font-size: $smallSize;
             padding: 2vmin 5vmin;
             height: 100%;
-            width: 100vmin;
+            width: 100%;
+            max-width: 80vmin;
         }
 
         .searchBtnWrapper{
@@ -139,7 +140,6 @@
             .filterContainer{
                 display: flex;
                 flex-wrap: wrap;
-                flex-direction: row;
                 justify-content: center;
                 align-items: flex-start;
                 gap: 6vmin;
@@ -153,6 +153,7 @@
                     justify-content: flex-start;
                     align-items: flex-start;
                     gap: $gap;
+                    max-width: 40vmin;
 
                     .inputWrapper{
                         display: flex;
@@ -190,6 +191,7 @@
                     justify-content: flex-start;
                     align-items: flex-start;
                     gap: $gap;
+                    max-width: 40vmin;
 
                     .checkboxWrapper{
                         display: flex;
