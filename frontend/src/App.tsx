@@ -585,7 +585,7 @@ function App() {
               <i className={`fa-solid fa-bars ${isNavOpen ? 'show' : ''}`} onClick={() => setIsNavOpen(!isNavOpen)} />
 
               <div className={`navTitle ${isNavOpen ? 'show' : ''}`}>
-                <img src='/Logo.png' />
+                <img src='public/Logo.png' />
                 <h2>FoRent</h2>
               </div>
             </span>
