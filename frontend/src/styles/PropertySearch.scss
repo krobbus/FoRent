@@ -61,7 +61,7 @@
         transition: max-height 0.35s ease, opacity 0.25s ease;
 
         &.open {
-            max-height: 60vmin;
+            max-height: 100vmin;
             opacity: 1;
             z-index: 9999;
         }
@@ -76,6 +76,7 @@
             border-radius: $borderRadius;
             padding: $padding;
             box-shadow: 0 0.5vmin 2vmin rgba(255, 162, 0, 0.15);
+            max-width: 100vmin;
 
             .filterHeader{
                 display: flex;
@@ -136,11 +137,12 @@
 
             .filterContainer{
                 display: flex;
+                flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: flex-start;
                 gap: $gap;
-                width: 60vmin;
+                min-width: 60vmin;
 
                 label, span{ font-size: $normalSize; }
 
