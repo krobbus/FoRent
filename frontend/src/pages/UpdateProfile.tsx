@@ -108,7 +108,7 @@ function UpdateProfile({ goBack, userRole, userId, restrictToCredentials = false
 
                 if (restrictToCredentials) {
                     response = await fetch(
-                        `http://localhost:5000/api/users/reset/verify`,
+                        `${import.meta.env.VITE_API_URL}/api/users/reset/verify`,
                         {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -117,7 +117,7 @@ function UpdateProfile({ goBack, userRole, userId, restrictToCredentials = false
                     );
                 } else {
                     response = await authFetch(
-                        `http://localhost:5000/api/users/${userId}/verify`,
+                        `${import.meta.env.VITE_API_URL}/api/users/${userId}/verify`,
                         { method: 'POST', body: JSON.stringify({ currentPassword: identifier, pin }) }
                     );
                 }
