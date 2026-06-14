@@ -17,11 +17,10 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(45vmin, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             margin: $margin;
             padding: $padding;
             gap: $gap;
-            width: 100%;
 
             .propertyCard{
                 position: relative;
@@ -32,7 +31,6 @@
                 background: linear-gradient(#ffa20098, #ffa200);
                 color: $colorWhite;
                 border-radius: $borderRadius 0 $borderRadius $borderRadius;
-                max-height: 100vmin;
                 width: 100%;
                 min-width: 0;
 
@@ -63,7 +61,7 @@
 
                 .galleryWrapper{
                     position: relative;
-                    height: 40vmin;
+                    height: 30vmin;
                     width: 100%;
                     border-top-left-radius: $borderRadius;
                     overflow: hidden;
@@ -212,6 +210,9 @@
                     }
                 }
             }
+
+            @media (max-width: 1200px){ grid-template-columns: repeat(2, 1fr); }
+            @media (max-width: 768px) { grid-template-columns: 1fr; }
         }
     }
 }
