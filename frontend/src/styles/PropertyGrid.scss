@@ -31,8 +31,7 @@
                 background: linear-gradient(#ffa20098, #ffa200);
                 color: $colorWhite;
                 border-radius: $borderRadius 0 $borderRadius $borderRadius;
-                width: 100%;
-                min-width: 0;
+                max-width: 50vmin;
 
                 #priceLabel {
                     position: absolute;
@@ -113,7 +112,6 @@
                     font-size: $smallSize;
                     width: 100%;
                     background-color: rgba(0, 0, 0, 0.2);
-                    overflow-y: auto;
 
                     .detailSection{
                         display: flex;
