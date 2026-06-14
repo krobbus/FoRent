@@ -17,7 +17,7 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(50vmin, 1fr));
             margin: $margin;
             padding: $padding;
             gap: $gap;
@@ -112,6 +112,7 @@
                     padding: $padding;
                     font-size: $smallSize;
                     width: 100%;
+                    background-color: rgba(255, 255, 255, 0.4);
                     overflow-y: auto;
 
                     .detailSection{
