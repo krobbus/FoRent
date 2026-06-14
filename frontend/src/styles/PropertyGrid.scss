@@ -8,19 +8,24 @@
     align-items: center;
     gap: $gap;
     margin: $margin;
+    width: 100%;
+    overflow: hidden;
 
     main{
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        width: 100%;
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(3, 50vmin);
+            grid-template-columns: repeat(3, 1fr);
             margin: $margin;
             padding: $padding;
             gap: $gap;
+            width: 100%;
+            min-width: 0;
 
             .propertyCard{
                 position: relative;
@@ -32,6 +37,8 @@
                 color: $colorWhite;
                 border-radius: $borderRadius 0 $borderRadius $borderRadius; 
                 width: 100%;
+                min-width: 0;
+                overflow: hidden;
 
                 #priceLabel {
                     position: absolute;
