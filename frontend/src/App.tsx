@@ -543,6 +543,7 @@ function App() {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      if (!userId || !userRole) return;
       const endpoint = userRole === 'landlord' ? `/api/landlords` : `/api/tenants`;
 
       try {
