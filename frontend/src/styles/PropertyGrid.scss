@@ -17,7 +17,7 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(50vmin, 1fr));
             margin: $margin;
             padding: $padding;
             gap: $gap;
@@ -62,7 +62,8 @@
                 .galleryWrapper{
                     position: relative;
                     height: 40vmin;
-                    width: 50vmin;
+                    max-width: 50vmin;
+                    width: 100%;
                     border-top-left-radius: $borderRadius;
                     overflow: hidden;
                     flex-shrink: 0;
