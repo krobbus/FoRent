@@ -17,7 +17,7 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50vmin, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             margin: $margin;
             padding: $padding;
             gap: $gap;
@@ -32,7 +32,7 @@
                 color: $colorWhite;
                 border-radius: $borderRadius 0 $borderRadius $borderRadius;
                 max-height: 100vmin;
-                width: 100%;
+                width: 50vmin;
                 min-width: 0;
 
                 #priceLabel {
