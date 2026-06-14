@@ -17,7 +17,7 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(20vmin, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(50vmin, 1fr));
             margin: $margin;
             padding: $padding;
             gap: $gap;
@@ -30,7 +30,8 @@
                 align-items: center;
                 background: linear-gradient(#ffa20098, #ffa200);
                 color: $colorWhite;
-                border-radius: $borderRadius 0 $borderRadius $borderRadius; 
+                border-radius: $borderRadius 0 $borderRadius $borderRadius;
+                height: 200vmin;
                 width: 100%;
                 min-width: 0;
 
