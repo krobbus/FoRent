@@ -17,7 +17,7 @@
         
         .propertyGrid{
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             margin: $margin;
             padding: $padding;
             gap: $gap;
@@ -93,7 +93,6 @@
                     width: 100%;
                     padding: 0 $padding;
                     text-align: center;
-                    overflow-y: auto;
 
                     h2{
                         margin-top: $margin;
@@ -113,6 +112,7 @@
                     padding: $padding;
                     font-size: $smallSize;
                     width: 100%;
+                    overflow-y: auto;
 
                     .detailSection{
                         display: flex;
