@@ -8,15 +8,12 @@
     align-items: center;
     gap: $gap;
     margin: $margin;
-    width: 100%;
-    overflow: hidden;
 
     main{
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        width: 100%;
         
         .propertyGrid{
             display: grid;
@@ -24,8 +21,6 @@
             margin: $margin;
             padding: $padding;
             gap: $gap;
-            width: 100%;
-            min-width: 0;
 
             .propertyCard{
                 position: relative;
@@ -38,7 +33,6 @@
                 border-radius: $borderRadius 0 $borderRadius $borderRadius; 
                 width: 100%;
                 min-width: 0;
-                overflow: hidden;
 
                 #priceLabel {
                     position: absolute;
@@ -69,7 +63,6 @@
                     position: relative;
                     height: 40vmin;
                     width: 50vmin;
-                    width: 100%;
                     border-top-left-radius: $borderRadius;
                     overflow: hidden;
                     flex-shrink: 0;
