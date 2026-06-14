@@ -21,7 +21,6 @@
             margin: $margin;
             padding: $padding;
             gap: $gap;
-            width: 100%;
 
             .propertyCard{
                 position: relative;
@@ -33,7 +32,7 @@
                 color: $colorWhite;
                 border-radius: $borderRadius 0 $borderRadius $borderRadius;
                 max-height: 100vmin;
-                width: 50vmin;
+                width: 100%;
                 min-width: 0;
 
                 #priceLabel {
