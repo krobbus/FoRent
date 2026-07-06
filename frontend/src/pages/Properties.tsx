@@ -226,12 +226,7 @@ function Properties({ goBack, userId, userRole,  onViewDetails, onCreateRequest,
 
                                                     <div className='actionBtnWrapper'>
                                                         <button className='updateBtn' onClick={() => onUpdateProperty(p)}>Update Details</button>
-                                                        {p.status !== 'rented' && (
-                                                            <>
-                                                                <button className='updateBtn' onClick={() => onUpdateProperty(p)}>Update Details</button>
-                                                                <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>Delete Property</button>
-                                                            </>
-                                                        )}
+                                                        {p.status !== 'rented' && <button className='deleteBtn' onClick={() => deleteProperty(p.id)}>Delete Property</button>}
                                                     </div>
                                                 </div>
                                             ))}
